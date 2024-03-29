@@ -10,7 +10,6 @@ import HomeScreen from "./HomeScreen";
 import CameraPage from "./Camera";
 import GalleryPage from "./Gallery";
 import DebugPage from "./Debug"
-import DailyMacros from "./DailyMacros";
 
 const Tab = createBottomTabNavigator();
 
@@ -45,11 +44,11 @@ export default function Tabs() {
           let icon;
           if (route.name === "Home") {
             icon = focused
-              ? <Home2 variant="Bold" size={24} style={styles.sfcompact} />
+              ? <Home2 variant="Bold" size={24} style={{ color: "black" }} />
               : <Home2 size={24} style={{ color: "black" }} />
           } else if (route.name === "Camera") {
-            icon = focused
-              ? <View style={{
+            return(
+              <View style={{
                 height: 60,
                 width: 60,
                 borderRadius: 20,
@@ -60,21 +59,13 @@ export default function Tabs() {
                 shadowOffset: 5,
                 marginBottom: 40,
               }}>
-                <CameraIcon variant="Bold" size={27} color="black" />
+
+                {icon = focused
+                  ? <CameraIcon variant="Bold" size={27} color="black" />
+                  : <CameraIcon size={27} color="black" />
+                }
               </View>
-              : <View style={{
-                height: 60,
-                width: 60,
-                borderRadius: 20,
-                backgroundColor: '#FFFFFF',
-                paddingTop: 15,
-                alignItems: "center",
-                shadowOpacity: 0.5,
-                shadowOffset: 5,
-                marginBottom: 40,
-              }}>
-                <CameraIcon size={27} color="black" />
-              </View>
+            )
           } else if (route.name === "Gallery") {
             icon = focused
               ? <Gallery variant="Bold" size={24} color="black" />

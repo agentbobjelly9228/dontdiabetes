@@ -7,7 +7,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Camera from './components/Camera';
 import HomeScreen from './components/HomeScreen';
-import DailyMacros from './components/DailyMacros';
+import ShowPhoto from "./components/ShowPhoto";
+import Feedback from "./components/Feedback";
 
 import Tabs from './components/Tabs';
 
@@ -15,6 +16,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Stack = createNativeStackNavigator(); // Moved inside the component file, but outside the component function
 const Tab = createBottomTabNavigator();
+
 
 export default function App() {
   return (
@@ -24,21 +26,18 @@ export default function App() {
           name="Start"
           component={Tabs}
         />
-        <Stack.Screen
-          name="dailyMacros"
-          component={DailyMacros}
+        <Stack.Screen 
+          name="ShowPhoto"
+          component={ShowPhoto}
         />
+        <Stack.Screen 
+          name="Feedback"
+          component={Feedback}
+          // options={{ animation: 'none' }}
+          />
       </Stack.Navigator>
     </NavigationContainer>
   );
-  const [fontsLoaded] = useFonts({
-    "SF-Compact": require("./assets/fonts/SF-Compact-Text-Medium.otf"),
-    "SF-Rounded": require("./assets/fonts/SF-Pro-Rounded-Bold.otf"),
-    "SF-Text": require("./assets/fonts/SF-Pro-Text-Regular.otf"),
-  });
-  if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
-  }
 }
 
 

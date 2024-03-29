@@ -1,35 +1,28 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, SafeAreaView, ActivityIndicator, Pressable } from 'react-native';
 import { Link } from 'expo-router';
 import { Camera, CameraType } from 'expo-camera';
 import React, { useState, useEffect, useRef } from 'react';
+import { useFonts } from 'expo-font'
 
-import { TouchableOpacity } from 'react-native';
+
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AddCircle } from 'iconsax-react-native';
+import Feedback from './Feedback';
 
-export default function CameraPage({ navigation }) {
+export default function ShowPhoto({ route, navigation }) {
+    const { data } = route.params;
 
-    const [type, setType] = useState(CameraType.back);
-    const [permission, requestPermission] = Camera.useCameraPermissions();
-    const cameraRef = useRef(null);
-    const [image, setImage] = useState(null);
-    const [cameraOpen, setOpen] = useState(true);
+    const [fontsLoaded] = useFonts({
+        "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
+        "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
+        "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
+    });
+
     const [nutritionData, setData] = useState(null);
-    const [awaitingResponse, setAwaitingResponse] = useState(true)
-
-    async function clearAsyncStorageIfFull() {
-        try {
-            let data = await AsyncStorage.getItem('@totalMacros')
-            let parsedData = JSON.parse(data)
-            if (parsedData.numMeals >= 3)
-                return await AsyncStorage.clear();
-        } catch(e) {
-
-        }
-    }
+    const [awaitingResponse, setAwaitingResponse] = useState(false)
 
     function trimForJson(input) {
         const match = input.match(/\{.*\}/s);
@@ -37,7 +30,7 @@ export default function CameraPage({ navigation }) {
     }
 
     async function storeData(value, imageLink) {
-        try {
+        return new Promise(async (resolve) => {
             value = JSON.parse(value)
             let savedData = await AsyncStorage.getItem('@totalMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
@@ -71,23 +64,10 @@ export default function CameraPage({ navigation }) {
 
             // Save the updated macros back to AsyncStorage
             await AsyncStorage.setItem('@totalMacros', JSON.stringify(macros));
-        } catch (e) {
-            // Handle saving error
-            console.log(e);
-        }
+            resolve(0)
+        })
+
     }
-
-    useFocusEffect(
-        React.useCallback(() => {
-            // Set cameraOpen to true whenever this screen is focused
-            setOpen(true);
-            setData(null)
-            
-            
-            clearAsyncStorageIfFull()
-
-        }, [])
-    );
 
     function sendRequest(imageData, imageLink) {
         const API_ENDPOINT = "us-central1-aiplatform.googleapis.com";
@@ -105,7 +85,7 @@ export default function CameraPage({ navigation }) {
                             Consult online sources and be realistic. Return your answer in only a JSON format like this: 
                             {
                                 "food": food description with quantity,
-                                "emoji": one emoji that best represents the food,
+                                "emoji": one single food emoji that best represents the food,
                                 "kcal": amount of kilocalories,
                                 "fruit": amount of fruit in cups,
                                 "vegetables": amount of vegetables in cups,
@@ -156,135 +136,89 @@ export default function CameraPage({ navigation }) {
         const config = {
             headers: {
                 //if it breaks use this command gcloud auth print-access-token
-                "Authorization": `Bearer ya29.a0Ad52N3_0C5z7v4ISDz9iY_Wrtjgf-KVOkdNpQEeNsOGhJHJpemy-1_23ol9qWtuoFNwrGQmSXi9ZsyWqBrpkrfsYtVUXaBabhhNAb0_dH7O3ncYs52o-gXBI3TXjriHCcl4arlu35D5lFy1B2szRTLgTvOuTm4qLuP0bwGWPWwaCgYKAWsSARMSFQHGX2Mih426AX_I0FplbNyC-_QbJQ0177`,
+                "Authorization": `Bearer ya29.a0Ad52N39TfSunXoT68jICMkFF8aOUW_DEclx56S2IpcMcO-UBqOlrpjVHFl87FX0hadRF53x9xGbDzKeeqdf4CYCCb57R2SaYpwgTOqTaQWHzz2N7egpuqsRcPqFt4ZK9ekU5cMKNS91qlBvF4SUyNGPmLaIz3lf6JmsKeOlXtwaCgYKAYASARMSFQHGX2Mi-m-u5cKZ7sTy5Q2Zeqp5DQ0177`,
                 "Content-Type": "application/json"
             }
         };
 
         const url = `https://${API_ENDPOINT}/v1/projects/${PROJECT_ID}/locations/${LOCATION_ID}/publishers/google/models/${MODEL_ID}:streamGenerateContent`;
 
-        // setAwaitingResponse(true);
+        setAwaitingResponse(true);
         axios.post(url, requestBody, config)
             .then(response => {
-                setAwaitingResponse(false);
-                console.log(response.data);
-                console.log(response.data[0].candidates[0].content.parts)
+                // setAwaitingResponse(false);
+                // console.log(response.data);
+                // console.log(response.data[0].candidates[0].content.parts)
                 var result = ""
                 for (let i = 0; i < response.data.length; i++) {
                     result += response.data[i].candidates[0].content.parts[0].text;
                 }
 
-                console.log(result)
                 result = trimForJson(result)
                 console.log(result)
-                storeData(result, imageLink)
-                // setData(result)
+                storeData(result, imageLink).then(response => {
+                    navigation.navigate("Feedback");
+                })
+
+
+
                 const foodData = JSON.parse(result)
                 console.log(foodData["GIindex"])
-                if (foodData["GIindex"] <= 55) {
-                    setData("Good for diabetics")
-                } else {
-                    setData("Not recommended for diabetics")
-                }
+                // if (foodData["GIindex"] <= 55) {
+                //     setData("Good for diabetics")
+                // } else {
+                //     setData("Not recommended for diabetics")
+                // }
             })
             .catch(error => {
                 console.error(error.message);
             });
     }
 
-    const takePicture = async () => {
-        if (cameraRef.current) {
-            try {
-                const options = { quality: 0.5, base64: true };
-                const data = await cameraRef.current.takePictureAsync(options);
-                // console.log(data.uri);
-                // console.log(data.base64)
-                navigation.navigate("ShowPhoto", { data: data })
-
-                // setImage(data.uri);
-                // setOpen(false);
-                // sendRequest(data.base64, data.uri);
-                // Here you can handle the captured image, e.g., display it or upload it to a server
-            } catch (error) {
-                console.log(error);
-                // Handle any errors here
-            }
-        }
-    };
-
-    if (!permission) {
-        // Camera permissions are still loading
-        return (
-            <View style={styles.container}>
-                <Text>Requesting permissions...</Text>
-            </View>
-        );
-    }
-
-    if (!permission.granted) {
-        // Camera permissions are not granted yet
-        return (
-            <View style={styles.container}>
-                <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-                <Button onPress={requestPermission} title="Grant permission" />
-            </View>
-        );
-    }
-
-    if (cameraOpen)
-        return (
-            <View style={styles.container}>
-
-                {image && !cameraOpen ? <Image source={{ uri: image }} style={styles.previewImage} /> : null}
-                {/* <Text>{nutritionData}</Text> */}
-
-                {cameraOpen ? <Camera style={styles.camera} type={type} ref={cameraRef}>
-                    <View style={styles.buttonContainer}>
-                        {/* <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-                        <Text style={styles.text}>Flip Camera</Text>
-                    </TouchableOpacity> */}
-
-                        <AddCircle onPress={takePicture} size="64" color="#FFFFFF" style={{ alignSelf: "center" }} />
-                        {/* <Button title="Take picture" onPress={takePicture}></Button> */}
-                        <Button title="print data" onPress={async () => {
-                            let savedData = await AsyncStorage.getItem('@totalMacros');
-                            console.log(savedData)
-                        }}></Button>
-
-                    </View>
-                </Camera> : null}
-            </View >
-        );
 
     return (
-        <View style={styles.container}>
 
-            {image && !cameraOpen ? <Image source={{ uri: image }} style={styles.previewImage} /> : null}
+        <SafeAreaView style={styles.container}>
+            <Button title="Take another picture" onPress={() => navigation.goBack()} />
+            <Image source={{ uri: data.uri }} style={styles.previewImage} />
             <Text>{nutritionData}</Text>
 
-            {!nutritionData
-                ? <Text>Looks Delicious! Hang tight - we're recording your food.</Text>
-                : <Button title="Let's recap!" onPress={() => navigation.navigate("dailyMacros")} />
-            }
+            <Pressable style={styles.submitButton} onPress={() => sendRequest(data.base64, data.uri)}>
+                {!awaitingResponse
+                    ?  <Text style={styles.submitButtonText}>Looks Good!</Text>
+                    :  <ActivityIndicator />
+                }
 
-        </View >
+            </Pressable>
+
+
+            <Button title="print data" onPress={async () => {
+                let savedData = await AsyncStorage.getItem('@totalMacros');
+                console.log(savedData)
+            }}></Button>
+
+        </SafeAreaView >
     )
 }
+
+
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#F5F5F5',
+
     },
     camera: {
         flex: 1,
         width: '100%',
     },
     previewImage: {
-        width: 300, // Set this to your desired width
-        height: 300, // Set this to your desired height
-        marginTop: 20, // Adds some space above the image
+        width: 300,
+        height: 300,
+        marginTop: 20,
+        borderRadius: 15,
     },
 
     buttonContainer: {
@@ -303,4 +237,17 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'white',
     },
+    submitButton: {
+        backgroundColor: "#2B2F56",
+        width: 150,
+        height: 50,
+        borderRadius: 10,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    submitButtonText: {
+        color: "white",
+        fontSize: 20,
+        fontFamily: "SF-Rounded",
+    }
 });

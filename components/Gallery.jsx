@@ -1,6 +1,6 @@
 import { useFonts } from "expo-font";
 import React from 'react';
-import { Text, View, FlatList, Image, Button, StyleSheet } from 'react-native';
+import { Text, View, FlatList, Image, Button, StyleSheet, SafeAreaView } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,11 +25,7 @@ export default function Gallery({ navigation }) {
         getData();
     })
     return (
-        <>
-            <View style={{ alignItems: "left", marginLeft: 30, marginRight: 30 }}>
-                <Text>Hi Teddy,</Text>
-            </View>
-
+        <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <FlatList
                     data={images}
@@ -46,7 +42,7 @@ export default function Gallery({ navigation }) {
                     showsVerticalScrollIndicator={false}
                 />
             </View>
-        </>
+        </SafeAreaView>
     );
 }
 

@@ -1,11 +1,29 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFonts } from 'expo-font'
 
-export default function DailyMacros({ navigation }) {
+export default function Feedback({ navigation }) {
+    const [fontsLoaded] = useFonts({
+        "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
+        "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
+        "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
+    });
+
     const [score, setScore] = useState(0);
     const [avgGI, setGI] = useState(0);
+    const [numMeals, setNumMeals] = useState(null);
+
+
+    useEffect(() => {
+        setScore(0)
+        getData();
+    }, [])
+
+    useEffect(() => {
+        if (numMeals && numMeals 2!== 3)
+            setTimeout(() => navigation.navigate("Home"), 3000);
+    }, [numMeals])
 
     async function getData() {
         const savedDataStr = await AsyncStorage.getItem('@totalMacros');
@@ -19,14 +37,9 @@ export default function DailyMacros({ navigation }) {
         if (savedData) {
             calculateFoodScore(savedData);
         }
+
+        setNumMeals(savedData.numMeals)
     }
-
-    useEffect(() => {
-        setScore(0)
-        console.log("teddy")
-        getData();
-    }, [])
-
 
     function calculateFoodScore(data) {
         let optimalCal = 2000.0;
@@ -37,7 +50,7 @@ export default function DailyMacros({ navigation }) {
         let optimalDairy = 3.0;
         let optimal = [optimalCal, optimalFruits, optimalVeg, optimalGrain, optimalProtein, optimalDairy];
 
-        let eaten = [data.kcal, data.fruit, data.vegetables, data.grains, data.protein, data.diary];
+        let eaten = [data.kcal, data.fruit, data.vegetables, data.grains, data.protein, data.dairy];
         let totalPercentage = 0;
 
         optimal.forEach((optimalValue, index) => {
@@ -65,8 +78,23 @@ export default function DailyMacros({ navigation }) {
         setScore(avgPercentage);
     }
 
+
+
+
+
+
+    if (numMeals != 3) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
+                <View style={styles.container}>
+                    <Text style={styles.title}>Enjoy your meal!</Text>
+                </View>
+            </SafeAreaView>
+        )
+    }
+
     return (
-        <View style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
             <View style={styles.container}>
                 <Text style={styles.title}>Let's Recap</Text>
                 <View style={styles.progressBarContainer}>
@@ -77,9 +105,10 @@ export default function DailyMacros({ navigation }) {
                 {avgGI <= 55 ? <Text> Your average meal is diabetic friendly</Text> : <Text>Your average meal is not diabetic friendly</Text>}
             </View>
             <Button title="Go back home" onPress={() => navigation.navigate("Home")} />
-        </View>
+        </SafeAreaView>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -89,9 +118,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 20,
+        fontFamily: "SF-Rounded",
     },
     progressBarContainer: {
         width: 40, // Width of the progress bar
