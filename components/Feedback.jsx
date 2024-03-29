@@ -21,7 +21,7 @@ export default function Feedback({ navigation }) {
     }, [])
 
     useEffect(() => {
-        if (numMeals && numMeals 2!== 3)
+        if (numMeals && numMeals !== 3)
             setTimeout(() => navigation.navigate("Home"), 3000);
     }, [numMeals])
 
