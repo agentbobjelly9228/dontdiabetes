@@ -4,6 +4,7 @@ import { Link } from 'expo-router';
 import { Camera, CameraType } from 'expo-camera';
 import React, { useState, useEffect, useRef } from 'react';
 import { useFonts } from 'expo-font'
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
 import axios from 'axios';
@@ -36,7 +37,7 @@ export default function ShowPhoto({ route, navigation }) {
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
 
             // Initialize macros properties if they don't exist
-            if (!macros.GIs) {
+            if (!macros.foods) {
                 console.log("null")
                 macros.fruit = 0;
                 macros.vegetables = 0;
@@ -48,6 +49,8 @@ export default function ShowPhoto({ route, navigation }) {
                 macros.images = [];
                 macros.GIs = [];
                 macros.emojis = [];
+                macros.foods = [];
+
             }
 
             // Assuming `value` is already an object with the correct structure
@@ -61,6 +64,10 @@ export default function ShowPhoto({ route, navigation }) {
             macros.images.push(imageLink)
             macros.GIs.push(value.GIindex)
             macros.emojis.push(value.emoji)
+            value.image = imageLink
+            value.protein = value.protein;
+            value.description = value.food
+            macros.foods.push(value)
 
             // Save the updated macros back to AsyncStorage
             await AsyncStorage.setItem('@totalMacros', JSON.stringify(macros));
@@ -69,22 +76,15 @@ export default function ShowPhoto({ route, navigation }) {
 
     }
 
-    function sendRequest(imageData, imageLink) {
-        const API_ENDPOINT = "us-central1-aiplatform.googleapis.com";
-        const PROJECT_ID = "inferapp-8a180";
-        const MODEL_ID = "gemini-1.0-pro-vision-001";
-        const LOCATION_ID = "us-central1";
-
-        const requestBody = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [
-                        {
-                            "text": `Here is an image of food. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
+    async function sendRequest(imageData, imageLink) {
+        const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+        setAwaitingResponse(true);
+        const result = await model.generateContent([`Here is an image of food. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
                             Consult online sources and be realistic. Return your answer in only a JSON format like this: 
                             {
-                                "food": food description with quantity,
+                                "food": food description,
                                 "emoji": one single food emoji that best represents the food,
                                 "kcal": amount of kilocalories,
                                 "fruit": amount of fruit in cups,
@@ -94,85 +94,126 @@ export default function ShowPhoto({ route, navigation }) {
                                 "dairy": amount of dairy in cups,
                                 "GIindex": estimated GI index of the food,
                                 
-                            }. `
-                        },
-                        {
-                            "inlineData": {
-                                "mimeType": "image/jpeg",
-                                "data": imageData
-                            }
-                        }
-
-                    ],
-
-                }
-            ],
-            "generation_config": {
-                "maxOutputTokens": 2048,
-                "temperature": 0.4,
-                "topP": 1,
-                "topK": 32
-            },
-            "safetySettings": [
-                {
-                    "category": "HARM_CATEGORY_HATE_SPEECH",
-                    "threshold": "BLOCK_ONLY_HIGH"
-                },
-                {
-                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                    "threshold": "BLOCK_ONLY_HIGH"
-                },
-                {
-                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    "threshold": "BLOCK_ONLY_HIGH"
-                },
-                {
-                    "category": "HARM_CATEGORY_HARASSMENT",
-                    "threshold": "BLOCK_ONLY_HIGH"
-                }
-            ]
-        };
-
-        const config = {
-            headers: {
-                //if it breaks use this command gcloud auth print-access-token
-                "Authorization": `Bearer ya29.a0Ad52N39TfSunXoT68jICMkFF8aOUW_DEclx56S2IpcMcO-UBqOlrpjVHFl87FX0hadRF53x9xGbDzKeeqdf4CYCCb57R2SaYpwgTOqTaQWHzz2N7egpuqsRcPqFt4ZK9ekU5cMKNS91qlBvF4SUyNGPmLaIz3lf6JmsKeOlXtwaCgYKAYASARMSFQHGX2Mi-m-u5cKZ7sTy5Q2Zeqp5DQ0177`,
-                "Content-Type": "application/json"
-            }
-        };
-
-        const url = `https://${API_ENDPOINT}/v1/projects/${PROJECT_ID}/locations/${LOCATION_ID}/publishers/google/models/${MODEL_ID}:streamGenerateContent`;
-
-        setAwaitingResponse(true);
-        axios.post(url, requestBody, config)
-            .then(response => {
-                // setAwaitingResponse(false);
-                // console.log(response.data);
-                // console.log(response.data[0].candidates[0].content.parts)
-                var result = ""
-                for (let i = 0; i < response.data.length; i++) {
-                    result += response.data[i].candidates[0].content.parts[0].text;
-                }
-
-                result = trimForJson(result)
-                console.log(result)
-                storeData(result, imageLink).then(response => {
-                    navigation.navigate("Feedback");
-                })
+                            }.`, { inlineData: { data: imageData, mimeType: 'image/png' } }]);
+        const response = await result.response;
+        var text = response.text().toString();
+        console.log("sup" + text);
+        text = trimForJson(text)
+        console.log(text)
+        console.log("hi")
+        storeData(text, imageLink).then(response => {
+            console.log("hi")
+            navigation.navigate("Feedback");
+        })
 
 
 
-                const foodData = JSON.parse(result)
-                console.log(foodData["GIindex"])
-                // if (foodData["GIindex"] <= 55) {
-                //     setData("Good for diabetics")
-                // } else {
-                //     setData("Not recommended for diabetics")
-                // }
-            })
-            .catch(error => {
-                console.error(error.message);
-            });
+        const foodData = JSON.parse(result)
+        console.log(foodData["GIindex"])
+        //start doing stuff here
+        // const API_ENDPOINT = "us-central1-aiplatform.googleapis.com";
+        // const PROJECT_ID = "inferapp-8a180";
+        // const MODEL_ID = "gemini-1.0-pro-vision-001";
+        // const LOCATION_ID = "us-central1";
+
+        // const requestBody = {
+        //     "contents": [
+        //         {
+        //             "role": "user",
+        //             "parts": [
+        //                 {
+        //                     "text": `Here is an image of food. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
+        //                     Consult online sources and be realistic. Return your answer in only a JSON format like this: 
+        //                     {
+        //                         "food": food description,
+        //                         "emoji": one single food emoji that best represents the food,
+        //                         "kcal": amount of kilocalories,
+        //                         "fruit": amount of fruit in cups,
+        //                         "vegetables": amount of vegetables in cups,
+        //                         "grains": amount of grains in ounces,
+        //                         "protein": amount of protein in ounces,
+        //                         "dairy": amount of dairy in cups,
+        //                         "GIindex": estimated GI index of the food,
+
+        //                     }. Let's think step by step`
+        //                 },
+        //                 {
+        //                     "inlineData": {
+        //                         "mimeType": "image/jpeg",
+        //                         "data": imageData
+        //                     }
+        //                 }
+
+        //             ],
+
+        //         }
+        //     ],
+        //     "generation_config": {
+        //         "maxOutputTokens": 2048,
+        //         "temperature": 0.4,
+        //         "topP": 1,
+        //         "topK": 32
+        //     },
+        //     "safetySettings": [
+        //         {
+        //             "category": "HARM_CATEGORY_HATE_SPEECH",
+        //             "threshold": "BLOCK_ONLY_HIGH"
+        //         },
+        //         {
+        //             "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        //             "threshold": "BLOCK_ONLY_HIGH"
+        //         },
+        //         {
+        //             "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        //             "threshold": "BLOCK_ONLY_HIGH"
+        //         },
+        //         {
+        //             "category": "HARM_CATEGORY_HARASSMENT",
+        //             "threshold": "BLOCK_ONLY_HIGH"
+        //         }
+        //     ]
+        // };
+
+        // const config = {
+        //     headers: {
+        //         //if it breaks use this command gcloud auth print-access-token
+        //         "Authorization": `Bearer $(gcloud auth print-access-token)`,
+        //         "Content-Type": "application/json"
+        //     }
+        // };
+
+        // const url = `https://${API_ENDPOINT}/v1/projects/${PROJECT_ID}/locations/${LOCATION_ID}/publishers/google/models/${MODEL_ID}:streamGenerateContent`;
+
+
+        // axios.post(url, requestBody, config)
+        //     .then(response => {
+        //         // setAwaitingResponse(false);
+        //         // console.log(response.data);
+        //         // console.log(response.data[0].candidates[0].content.parts)
+        //         var result = ""
+        //         for (let i = 0; i < response.data.length; i++) {
+        //             result += response.data[i].candidates[0].content.parts[0].text;
+        //         }
+
+        //         result = trimForJson(result)
+        //         console.log(result)
+        //         storeData(result, imageLink).then(response => {
+        //             navigation.navigate("Feedback");
+        //         })
+
+
+
+        //         const foodData = JSON.parse(result)
+        //         console.log(foodData["GIindex"])
+        //         // if (foodData["GIindex"] <= 55) {
+        //         //     setData("Good for diabetics")
+        //         // } else {
+        //         //     setData("Not recommended for diabetics")
+        //         // }
+        //     })
+        //     .catch(error => {
+        //         console.error(error.message);
+        //     });
     }
 
 
@@ -185,8 +226,8 @@ export default function ShowPhoto({ route, navigation }) {
 
             <Pressable style={styles.submitButton} onPress={() => sendRequest(data.base64, data.uri)}>
                 {!awaitingResponse
-                    ?  <Text style={styles.submitButtonText}>Looks Good!</Text>
-                    :  <ActivityIndicator />
+                    ? <Text style={styles.submitButtonText}>Looks Good!</Text>
+                    : <ActivityIndicator />
                 }
 
             </Pressable>

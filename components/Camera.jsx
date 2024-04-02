@@ -26,7 +26,7 @@ export default function CameraPage({ navigation }) {
             let parsedData = JSON.parse(data)
             if (parsedData.numMeals >= 3)
                 return await AsyncStorage.clear();
-        } catch(e) {
+        } catch (e) {
 
         }
     }
@@ -82,8 +82,8 @@ export default function CameraPage({ navigation }) {
             // Set cameraOpen to true whenever this screen is focused
             setOpen(true);
             setData(null)
-            
-            
+
+
             clearAsyncStorageIfFull()
 
         }, [])
@@ -156,7 +156,7 @@ export default function CameraPage({ navigation }) {
         const config = {
             headers: {
                 //if it breaks use this command gcloud auth print-access-token
-                "Authorization": `Bearer ya29.a0Ad52N3_0C5z7v4ISDz9iY_Wrtjgf-KVOkdNpQEeNsOGhJHJpemy-1_23ol9qWtuoFNwrGQmSXi9ZsyWqBrpkrfsYtVUXaBabhhNAb0_dH7O3ncYs52o-gXBI3TXjriHCcl4arlu35D5lFy1B2szRTLgTvOuTm4qLuP0bwGWPWwaCgYKAWsSARMSFQHGX2Mih426AX_I0FplbNyC-_QbJQ0177`,
+                "Authorization": `Bearer ya29.a0Ad52N3-DLY9LiZeCH3qcEL4xb34iPeNY4UoKihZghF44SBm3nf-7GJqgezUeHgfhNEMuNwYhrN85aZFlS8QiF6peSwHvE1YcdXqI9BmJ4EG9bLYw6nPuO24mgNaj3bIK45QtdnRrTeC843Afwn0wdkHy6Ekzup3OOgHsZmm-XJcaCgYKARoSARASFQHGX2MiRriJz8NKUbL2QnUDUdc1Bw0178`,
                 "Content-Type": "application/json"
             }
         };

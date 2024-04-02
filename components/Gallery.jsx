@@ -1,14 +1,22 @@
 import { useFonts } from "expo-font";
 import React from 'react';
-import { Text, View, FlatList, Image, Button, StyleSheet, SafeAreaView } from 'react-native';
-import { useState, useEffect, useRef } from 'react';
+import { Text, View, FlatList, Image, Button, StyleSheet, SafeAreaView, Pressable } from 'react-native';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Gallery({ navigation }) {
-    const [images, setImages] = useState([]);
+    const [foods, setFoods] = useState([]);
     async function getData() {
         let savedData = JSON.parse(await AsyncStorage.getItem('@totalMacros'));
-        setImages(savedData.images)
+        // var temp = [];
+
+        // for (let i = 0; i < savedData.images.length; i++) {
+        //     temp.push({ "image": savedData.images[i], "description": savedData.foods[i] })
+        // }
+        // setFoods(temp)
+        console.log(savedData.foods)
+        setFoods(savedData.foods);
         // console.log(savedData.images)
 
     }
@@ -21,19 +29,30 @@ export default function Gallery({ navigation }) {
         return <Text>Loading...</Text>;
     }
 
-    useEffect(() => {
-        getData();
-    })
+    useFocusEffect(
+        useCallback(() => {
+            getData();
+
+        }, [])
+    );
+
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <FlatList
-                    data={images}
+                    data={foods}
                     renderItem={({ item }) => (<>
-                        <View style={{ backgroundColor: "white", margin: 20, marginHorizontal: 10, paddingBottom: 50, borderRadius: 15 }}>
-                            <Image source={{ uri: item }} style={styles.image} />
-                            <Text style={styles.sfrounded}>We don't have time</Text>
-                        </View>
+                        <Pressable onPress={() => {
+                            navigation.navigate("macroPage", item)
+                        }}>
+                            <View style={styles.container}>
+                                <Image source={{ uri: item.image }} style={styles.image} />
+                                <Text style={styles.sfrounded} numberOfLines={2} ellipsizeMode='tail'>
+                                    {item.description}
+                                </Text>
+                            </View>
+                        </Pressable>
+
 
                     </>
                     )}
@@ -66,7 +85,10 @@ const styles = StyleSheet.create({
     sfrounded: {
         fontSize: 20,
         fontFamily: "SF-Rounded",
+        textAlign: 'center', // Ensure text is centered
+        marginHorizontal: 5, // Add horizontal margin for padding
     },
+
     sfroundedbig: {
         fontSize: 30,
         fontFamily: "SF-Rounded",
@@ -74,6 +96,15 @@ const styles = StyleSheet.create({
     sftext: {
         fontSize: 15,
         fontFamily: "SF-Text",
+    },
+    container: {
+        backgroundColor: "white",
+        margin: 20,
+        marginHorizontal: 10,
+        paddingBottom: 50,
+        borderRadius: 15,
+        width: 160, // Adjusted to fit the image width plus some padding
+        alignItems: 'center', // Center align the items
     },
 
 });

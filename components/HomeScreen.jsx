@@ -10,7 +10,6 @@ import greenGuy from '../assets/mascots/greenGuy.png';
 import yellowGuy from '../assets/mascots/yellowGuy.png';
 import redGuy from '../assets/mascots/redGuy.png';
 
-
 import ProgressBar from "./ProgressBar";
 
 
@@ -18,8 +17,9 @@ export default function HomeScreen({ navigation }) {
     const [loading, setLoading] = useState(true)
     const [emojis, setEmojis] = useState([])
     const [numMeals, setNumMeals] = useState(0)
-
-    const [title, setTitle] = useState("")
+    const [mascot, setMascot] = useState("");
+    const [themeColor, setTheme] = useState("");
+    const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("")
 
 
@@ -28,14 +28,22 @@ export default function HomeScreen({ navigation }) {
         if (numMeals == 0) {
             setTitle("BREAKFAST TIME!!!!");
             setSubtitle("Let's go! Kick today off with a great start by enjoying your meal. Scan your breakfast to get started!");
+            setMascot(greenGuy);
+            setTheme("#A8C84C");
         } else if (numMeals == 1) {
             setTitle("It's Lunch Time!");
             setSubtitle("Woohoo! Let's set the tone for today and make it a good one. Pay attention to your hunger cues but don't stress out. You're already doing great!");
+            setMascot(yellowGuy);
+            setTheme("#F1CF48");
         } else if (numMeals == 2) {
             setTitle("Time for Dinner!");
             setSubtitle("Take some time to relax. Enjoy your meal, savor those veggies, and know that you are valuable just the way you are. Go you!");
-        }  else {
+            setMascot(redGuy);
+            setTheme("#F3B15B")
+        } else {
             setTitle("What a Good Day!")
+            setMascot(greenGuy);
+            setTheme("#A8C84C");
             setSubtitle("You've done it! Enjoy the rest of your day.")
         }
     }
@@ -46,9 +54,14 @@ export default function HomeScreen({ navigation }) {
         React.useCallback(() => {
             const getAsyncData = async () => {
                 let savedData = await AsyncStorage.getItem('@totalMacros');
-                let macros = savedData ? JSON.parse(savedData) : null; 
+                let macros = savedData ? JSON.parse(savedData) : null;
                 if (macros) {
-                    setEmojis(macros.emojis);
+                    if (macros.emojis) {
+                        setEmojis(macros.emojis);
+                    } else {
+                        setEmojis([" ", " ", " "]);
+                    }
+
                     setNumMeals(macros.numMeals);
                     setMessages(macros.numMeals);
                 } else {
@@ -59,9 +72,9 @@ export default function HomeScreen({ navigation }) {
             }
             getAsyncData()
         }, [])
-      );
+    );
 
-      
+
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -73,7 +86,7 @@ export default function HomeScreen({ navigation }) {
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5" }}>
 
-                <Image source={greenGuy} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
+                <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
                 <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
                     <Text style={styles.blurb}>Hi Teddy,</Text>
                     <Text style={styles.title}>{title}</Text>
@@ -81,10 +94,10 @@ export default function HomeScreen({ navigation }) {
 
                 </View>
 
-                <ProgressBar 
+                <ProgressBar
                     stage={numMeals}
-                    color={"green"}
-                    emojis={emojis} 
+                    color={themeColor}
+                    emojis={emojis}
                 />
 
             </ScrollView>

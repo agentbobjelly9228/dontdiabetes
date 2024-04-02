@@ -9,7 +9,7 @@ import Camera from './components/Camera';
 import HomeScreen from './components/HomeScreen';
 import ShowPhoto from "./components/ShowPhoto";
 import Feedback from "./components/Feedback";
-
+import MacroPage from "./components/macroPage";
 import Tabs from './components/Tabs';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -26,15 +26,20 @@ export default function App() {
           name="Start"
           component={Tabs}
         />
-        <Stack.Screen 
+        <Stack.Screen
           name="ShowPhoto"
           component={ShowPhoto}
         />
-        <Stack.Screen 
+        <Stack.Screen
           name="Feedback"
           component={Feedback}
-          // options={{ animation: 'none' }}
-          />
+        // options={{ animation: 'none' }}
+        />
+        <Stack.Screen
+          name="macroPage"
+          component={MacroPage}
+        // options={{ animation: 'none' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
