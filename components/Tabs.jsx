@@ -2,14 +2,14 @@ import React from "react";
 import { Text, View, StyleSheet, } from "react-native"
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home2, Camera as CameraIcon, Gallery } from "iconsax-react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+// import SweetSFSymbol from "sweet-sfsymbols";
 import { useFonts } from "expo-font";
 
 import HomeScreen from "./HomeScreen";
 import CameraPage from "./Camera";
 import GalleryPage from "./Gallery";
 import DebugPage from "./Debug"
+import Feedback from "./Feedback";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,6 +44,8 @@ export default function Tabs() {
           let icon;
           if (route.name === "Home") {
             icon = focused
+              // ? <SweetSFSymbol name="leaf.fill" variant="Bold" size={24} style={{ color: "black" }} />
+              // : <SweetSFSymbol name="leaf" variant="Bold" size={24} style={{ color: "black" }} />
               ? <Home2 variant="Bold" size={24} style={{ color: "black" }} />
               : <Home2 size={24} style={{ color: "black" }} />
           } else if (route.name === "Camera") {
@@ -61,6 +63,8 @@ export default function Tabs() {
               }}>
 
                 {icon = focused
+                  // ? <SweetSFSymbol name="dot.circle.viewfinder" variant="Bold" size={27} style={{ color: "black" }} />
+                  // : <SweetSFSymbol name="arrow.uturn.backward" variant="Bold" size={27} style={{ color: "black" }} />
                   ? <CameraIcon variant="Bold" size={27} color="black" />
                   : <CameraIcon size={27} color="black" />
                 }
@@ -68,6 +72,8 @@ export default function Tabs() {
             )
           } else if (route.name === "Gallery") {
             icon = focused
+              // ? <SweetSFSymbol name="circle.grid.2x2.fill" variant="Bold" size={27} style={{ color: "black" }} />
+              // : <SweetSFSymbol name="circle.grid.2x2" variant="Bold" size={27} style={{ color: "black" }} />
               ? <Gallery variant="Bold" size={24} color="black" />
               : <Gallery size={24} color="black" />
           }
@@ -82,9 +88,11 @@ export default function Tabs() {
       <Tab.Screen
         name="Camera"
         component={CameraPage}
+        options={{ tabBarStyle: { display: 'none' } }}
       />
       <Tab.Screen name="Gallery" component={GalleryPage} />
 
+      {/* <Tab.Screen name="Feedback" component={Feedback} />  */}
       {/* <Tab.Screen name="DailyMacros" component={DailyMacros} /> */}
       {/* <Tab.Screen name="DEBUG" component={DebugPage} /> */}
 

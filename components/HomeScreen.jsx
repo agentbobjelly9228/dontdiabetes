@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
-
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 import greenGuy from '../assets/mascots/greenGuy.png';
 import yellowGuy from '../assets/mascots/yellowGuy.png';
@@ -23,6 +23,7 @@ export default function HomeScreen({ navigation }) {
     const [subtitle, setSubtitle] = useState("")
 
 
+    // AsyncStorage.clear()
     // Change to logic include time of day
     const setMessages = (numMeals) => {
         if (numMeals == 0) {
@@ -49,11 +50,12 @@ export default function HomeScreen({ navigation }) {
     }
 
 
-    // Add reset on new day
+    // TODO: Add reset on new day
     useFocusEffect(
         React.useCallback(() => {
             const getAsyncData = async () => {
-                let savedData = await AsyncStorage.getItem('@totalMacros');
+                let savedData = await AsyncStorage.getItem('@todayMacros');
+                // console.log(savedData)
                 let macros = savedData ? JSON.parse(savedData) : null;
                 if (macros) {
                     if (macros.emojis) {
@@ -72,8 +74,14 @@ export default function HomeScreen({ navigation }) {
             }
             getAsyncData()
         }, [])
+
     );
 
+    const handleSheetChanges = React.useCallback((index) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+
+    const bottomSheetRef = React.useRef(null);
 
 
     const [fontsLoaded] = useFonts({
@@ -84,7 +92,7 @@ export default function HomeScreen({ navigation }) {
 
     if (!loading)
         return (
-            <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5" }}>
+            <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5", }}>
 
                 <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
                 <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
@@ -99,6 +107,8 @@ export default function HomeScreen({ navigation }) {
                     color={themeColor}
                     emojis={emojis}
                 />
+
+                <Button title="Thing" onPress={() => navigation.navigate("Feedback")} />
 
             </ScrollView>
         );
@@ -127,4 +137,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: "SF-Text",
     },
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center',
+      },
 });

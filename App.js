@@ -13,35 +13,42 @@ import MacroPage from "./components/macroPage";
 import Tabs from './components/Tabs';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator(); // Moved inside the component file, but outside the component function
 const Tab = createBottomTabNavigator();
 
 
 export default function App() {
+  // AsyncStorage.clear()
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false, }}>
-        <Stack.Screen
-          name="Start"
-          component={Tabs}
-        />
-        <Stack.Screen
-          name="ShowPhoto"
-          component={ShowPhoto}
-        />
-        <Stack.Screen
-          name="Feedback"
-          component={Feedback}
-        // options={{ animation: 'none' }}
-        />
-        <Stack.Screen
-          name="macroPage"
-          component={MacroPage}
-        // options={{ animation: 'none' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false, }}>
+          <Stack.Screen
+            name="Start"
+            component={Tabs}
+          />
+          <Stack.Screen
+            name="ShowPhoto"
+            component={ShowPhoto}
+          />
+          <Stack.Screen
+            name="Feedback"
+            component={Feedback}
+          // options={{ animation: 'none' }}
+          />
+          <Stack.Screen
+            name="macroPage"
+            component={MacroPage}
+          // options={{ animation: 'none' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
