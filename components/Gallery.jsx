@@ -93,7 +93,7 @@ export default function Gallery({ navigation }) {
             >
             <BottomSheet
                 ref={bottomSheetRef}
-                snapPoints={['85%', '90%']}
+                snapPoints={['90%']}
                 enablePanDownToClose={true}
                 backgroundStyle={styles.bottomSheetBg}
                 index={-1}

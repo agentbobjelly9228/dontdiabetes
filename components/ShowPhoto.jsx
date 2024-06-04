@@ -5,16 +5,20 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import smallGuy from '../assets/mascots/smallGuy.png';
 import { Like1, Back } from 'iconsax-react-native';
+
+
 // import SweetSFSymbol from "sweet-sfsymbols";
 
 const windowHeight = Dimensions.get('window').height;
 
+const dayjs = require('dayjs')
 
 export default function ShowPhoto({ route, navigation }) {
     const { data } = route.params;
 
     const [angle, setAngle] = useState(null);
     const [awaitingResponse, setAwaitingResponse] = useState(false);
+    const [hour, setHour] = useState(null)
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -26,11 +30,13 @@ export default function ShowPhoto({ route, navigation }) {
         "Caveat-SemiBold": require("../assets/fonts/Caveat-SemiBold.ttf"),
     });
 
-    // Get random angle of photo (between -5 and 5)
     useEffect(() => {
+        // Get random angle of photo (between -5 and 5)
         let number = Math.round(Math.random() * 5) * (Math.random() > 0.5 ? 1 : -1)
         setAngle(number + "deg")
 
+        // Get current hour
+        setHour(dayjs().hour())
     }, [])
 
 

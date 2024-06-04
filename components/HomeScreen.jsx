@@ -1,17 +1,20 @@
 // In HomeScreen.js
 import { useFonts } from "expo-font";
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import DashedLine from 'react-native-dashed-line';
+
+
 
 import greenGuy from '../assets/mascots/greenGuy.png';
 import yellowGuy from '../assets/mascots/yellowGuy.png';
 import redGuy from '../assets/mascots/redGuy.png';
 
 import ProgressBar from "./ProgressBar";
-
+import WeeklyGraph from "./WeeklyGraph";
 
 export default function HomeScreen({ navigation }) {
     const [loading, setLoading] = useState(true)
@@ -92,23 +95,31 @@ export default function HomeScreen({ navigation }) {
 
     if (!loading)
         return (
-            <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5", }}>
+            <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5"}}>
 
                 <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
                 <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
                     <Text style={styles.blurb}>Hi Teddy,</Text>
                     <Text style={styles.title}>{title}</Text>
                     <Text style={styles.blurb}>{subtitle}</Text>
-
                 </View>
 
-                <ProgressBar
-                    stage={numMeals}
-                    color={themeColor}
-                    emojis={emojis}
-                />
+                <View style={{ height: 175, marginBottom: 20 }}>
+                    <ProgressBar
+                        stage={numMeals}
+                        color={themeColor}
+                        emojis={emojis}
+                    />
+                </View>
+                <View style={{ height: 300, alignItems: "center", }}>
+                    <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute" }} />
+                    <View style={{position: "absolute"}}>
+                        <WeeklyGraph datapoints={[1, 2, 2.3, 1.4, 2.5, 3.6, 1.7]} />
+                    </View>
+                    <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute", top: 205 }} />
+                </View>
 
-                <Button title="Thing" onPress={() => navigation.navigate("Feedback")} />
+                <Pressable onPress={() => navigation.navigate("Feedback")} style={{ paddingBottom: 100, }}><Text>Thing</Text></Pressable>
 
             </ScrollView>
         );
@@ -141,4 +152,9 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
       },
+    dottedLine: {
+        borderColor: "red",
+        borderWidth: 1,
+        borderStyle: "dashed"
+    }
 });
