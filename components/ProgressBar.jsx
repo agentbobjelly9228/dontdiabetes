@@ -1,12 +1,15 @@
 import React from 'react';
-import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 // import SweetSFSymbol from "sweet-sfsymbols";
 import { Alarm, Sun1, Moon, Add } from "iconsax-react-native";
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProgressBar({ stage, color, emojis }) {
 
     const totalStages = 3;
-    const currentStagePercentage = (emojis.length / totalStages) * 100;
+    const currentStagePercentage = (emojis?.length / totalStages) * 100;
+
+    const navigation = useNavigation();
 
     return (
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginLeft: 20, marginRight: 20, marginTop: 30 }}>
@@ -42,32 +45,32 @@ export default function ProgressBar({ stage, color, emojis }) {
             {/* white progress bar */}
             <View style={{ position: "absolute", backgroundColor: "white", height: 4, zIndex: 1, marginLeft: 20, marginRight: 20, width: stage === 0 ? "0%" : stage === 1 ? "42%" : "88%" }} />
             <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", position: "absolute", zIndex: 100, top: 50 }}>
-                {emojis.length > 0
+                {emojis?.breakfast
                     ? <View style={{ alignItems: "center", width: 75, justifyContent: "center" }}>
-                        <Text style={styles.emoji}>{[...emojis[0]].slice(0, 1).join('')}</Text>
+                        <Text style={styles.emoji}>{[...emojis.breakfast].slice(0, 1).join('')}</Text>
                     </View>
-                    : <View style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
+                    : <Pressable onPress={() => navigation.navigate("Camera", {mealIndex: 0})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
                         {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
                         <Add size={40} color="black" />
-                    </View>
+                    </Pressable>
                 }
-                {emojis.length > 1
+                {emojis?.lunch
                     ? <View style={{ alignItems: "center", width: 75, justifyContent: "center" }}>
-                        <Text style={styles.emoji}>{[...emojis[1]].slice(0, 1).join('')}</Text>
+                        <Text style={styles.emoji}>{[...emojis.lunch].slice(0, 1).join('')}</Text>
                     </View>
-                    : <View style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
-                        {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
-                        <Add size={40} color="black" />
-                    </View>
+                    : <Pressable onPress={() => navigation.navigate("Camera", {mealIndex: 1})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
+                    {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
+                    <Add size={40} color="black" />
+                </Pressable>
                 }
-                {emojis.length > 2
+                {emojis?.dinner
                     ? <View style={{ alignItems: "center", width: 75, justifyContent: "center" }}>
-                        <Text style={styles.emoji}>{[...emojis[2]].slice(0, 1).join('')}</Text>
+                        <Text style={styles.emoji}>{[...emojis.dinner].slice(0, 1).join('')}</Text>
                     </View>
-                    : <View style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
-                        {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
-                        <Add size={40} color="black" />
-                    </View>
+                    : <Pressable onPress={() => navigation.navigate("Camera", {mealIndex: 2})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
+                    {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
+                    <Add size={40} color="black" />
+                </Pressable>
                 }
 
 

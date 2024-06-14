@@ -32,14 +32,14 @@ export default function WeeklyGraph({ navigation, datapoints }) {
 
     return (
         <View>
-            <View style={{ backgroundColor: "white", height: 100, borderRadius: 45, alignItems: "center", position: "absolute", width: screenWidth, top: 55 }} />
+            <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 45, alignItems: "center", position: "absolute", width: screenWidth, top: 55 }} />
             <LineChart
                 data={{
                     labels: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
                     datasets: [
                         {
                             data: datapoints,
-                            color: () => `rgba(255, 255, 255, 1)`,
+                            color: () => `rgba(255, 204, 38, 1)`,
                             strokeWidth: 11
                         }
                     ],

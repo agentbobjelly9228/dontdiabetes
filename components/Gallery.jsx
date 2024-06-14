@@ -29,7 +29,6 @@ export default function Gallery({ navigation }) {
     async function getData() {
         let savedData = JSON.parse(await AsyncStorage.getItem('@allFoods'));
         setFoods(savedData);
-
     }
     useFocusEffect(
         useCallback(() => {

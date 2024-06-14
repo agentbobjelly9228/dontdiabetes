@@ -1,14 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Button, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Button, SafeAreaView, Pressable, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font'
 import WeeklyGraph from './WeeklyGraph';
+import Svg, { Path, Circle } from 'react-native-svg';
+import { ArrowRight } from 'iconsax-react-native';
+import Animated, { FadeInDown, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
+
+const screenHeight = Dimensions.get('window').height;
 
 export default function Feedback({ navigation }) {
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
         "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
         "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
+        "SpaceGrotesk-Regular": require("../assets/fonts/SpaceGrotesk-Regular.ttf"),
+        "SpaceGrotesk-Bold": require("../assets/fonts/SpaceGrotesk-Bold.ttf"),
     });
 
     const [scores, setScores] = useState([]);
@@ -17,11 +24,17 @@ export default function Feedback({ navigation }) {
     const [page, setPage] = useState(0);
 
 
+    // For animatimations
+    const duration = 350
+    const delay = 500
+
+    // For calculations
+    const leeway = 0.5;
+
+
     useEffect(() => {
         handleData();
-
         // Get Stored Scores
-
     }, [])
 
     useEffect(() => {
@@ -29,6 +42,118 @@ export default function Feedback({ navigation }) {
             setTimeout(() => navigation.navigate("Home"), 3000);
     }, [numMeals])
 
+    const [todayScreenSubtitle, setTodayScreenSubtitle] = useState(null);
+    const [todayScreenText, setTodayScreenText] = useState(null);
+
+    const [tmrwAdvice1, setTmrwAdvice1] = useState(null);
+    const [tmrwAdvice1Highlight, settmrwAdvice1Highlight] = useState(null);
+
+    const [tmrwAdvice2, setTmrwAdvice2] = useState(null);
+    const [tmrwAdvice2Highlight, settmrwAdvice2Highlight] = useState(null);
+
+    const [tmrwAdvice3, setTmrwAdvice3] = useState(null);
+    const [tmrwAdvice3Highlight, settmrwAdvice3Highlight] = useState(null);
+
+    const [finalNote, setFinalNote] = useState(null);
+
+    const continueAdviceStarters = ["Continue eating lots of", "Keep on having lots of"]
+    const changeMoreAdviceStarters = ["Try to eat more", "Think about prioritizing your", "Considering consuming more", "Focus on boosting your"]
+    const changeLessAdviceStarters = ["Try to eat less", "Try to lessen your", "Consider consuming less", "Think about lowering your"]
+    const indexToMacro = ["food", "fruit", "vegetables", "grains", "protein", "dairy"]
+
+    const finalNotes = ["Don't die.", "Your body deserves nourishment. :)", "Cars don't run on soda, but also they don't run on water either. Eat gasoline.", "Don't stress yourself out! You're doing great.", "Your most important sale in life is to sell yourself to yourself."]
+
+    // From mozilla
+    function getRandomInt(min, max) {
+        const minCeiled = Math.ceil(min);
+        const maxFloored = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+    }
+
+    // Set messages in daily recap
+    function setMessages(position, allErrors) {
+        // Final Note
+        let randInt = getRandomInt(0, finalNotes.length);
+        setFinalNote(finalNotes[randInt])
+    
+
+        // Today Screen: good or bad job
+        if (position >= 1 && position <= 4) {
+            setTodayScreenSubtitle("Wonderful job!");
+            setTodayScreenText("You're continuing your commitment to long-term health and happiness, so pat yourself on the back!");
+        } else {
+            setTodayScreenSubtitle("Tough day.");
+            setTodayScreenText("Looks like you're out of your zone today. But don't fret -- tomorrow is your chance to regain your ground.")
+        }
+
+        // Tomorrow Screen: 3 pieces of advice
+        console.log("ALL ERRORS: " + allErrors);
+
+        // Guaranteed "change" advice
+        let largestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) > Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
+        // console.log("LARGEST: " + largestErrorIndex)
+        if (Math.abs(allErrors[largestErrorIndex]) > leeway) {
+            if (allErrors[largestErrorIndex] < 0) {
+                // Ate too little of the macro
+                let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+                setTmrwAdvice1(changeMoreAdviceStarters[randInt]);
+                changeMoreAdviceStarters.splice(randInt, randInt);
+
+                settmrwAdvice1Highlight(indexToMacro[largestErrorIndex]);
+            } else {
+                // Ate too much
+                let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+                setTmrwAdvice1(changeLessAdviceStarters[randInt]);
+                settmrwAdvice1Highlight(indexToMacro[largestErrorIndex]);
+                changeLessAdviceStarters.splice(randInt, randInt);
+            }
+            
+            // Remove from arrays (such that advice can't be repeated)
+            allErrors.splice(largestErrorIndex, largestErrorIndex)
+            indexToMacro.splice(largestErrorIndex, largestErrorIndex)
+
+            // console.log(changeLessAdviceStarters[randInt])
+            // console.log(indexToMacro[largestErrorIndex])
+            // console.log(largestErrorIndex)
+        } else {
+            // If absolutely everything is within the macro range
+            setTmrwAdvice1("You're doing wonderfully.");
+            settmrwAdvice1Highlight("Keep up the great work");
+            return
+        }
+
+        // Either "change" or "continue" message
+        largestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) > Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
+        if (Math.abs(allErrors[largestErrorIndex]) > leeway) {
+            if (allErrors[largestErrorIndex] < 0) {
+                let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+                setTmrwAdvice2(changeMoreAdviceStarters[randInt]);
+                settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
+            } else {
+                // Ate too much
+                let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+                setTmrwAdvice2(changeLessAdviceStarters[randInt]);
+                settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
+            }
+        } else {
+            let randInt = getRandomInt(0, continueAdviceStarters.length);
+            setTmrwAdvice2(continueAdviceStarters[randInt]);
+            settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
+            continueAdviceStarters.splice(randInt, randInt);
+        }
+
+        // Guaranteed "continue" message
+        let smallestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) < Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
+        // console.log(smallestErrorIndex)
+        if (Math.abs(allErrors[smallestErrorIndex]) <= leeway) {
+            let randInt = getRandomInt(0, continueAdviceStarters.length)
+            setTmrwAdvice3(continueAdviceStarters[randInt])
+            settmrwAdvice3Highlight(indexToMacro[smallestErrorIndex])
+        }
+
+
+        
+    };
 
     async function handleData() {
         // Get all previous scores
@@ -46,8 +171,13 @@ export default function Feedback({ navigation }) {
             let parsedScores = allScores ? JSON.parse(allScores) : []
 
             // Add today's score to all scores, set displayed scores to last 7 days
-            let position = calculateFoodScore(savedData);
+            let [position, allErrors] = calculateFoodScore(savedData);
             console.log("Position: " + position);
+
+            // Set messages in daily recap
+            setMessages(position, allErrors);
+
+
             parsedScores.push(position);
             setScores(parsedScores.slice(-7));
 
@@ -79,18 +209,24 @@ export default function Feedback({ navigation }) {
         // console.log(eaten)
         let totalError = 0;
 
-        let leeway = 0.5; // Extra 20% leeway for each error
+        let allErrors = [];
+
         let totalLeeway = leeway * optimal.length
 
         optimal.forEach((optimalValue, index) => {
-            let error = Math.abs((eaten[index] - optimalValue) / optimalValue);
+            let error = (eaten[index] - optimalValue) / optimalValue
+
+            // Append total error to list of all errors
+            allErrors.push(error);
             // console.log("Error for " + index + ": " + error)
-            totalError += error;
+            totalError += Math.abs(error);
         })
 
         var position = 2.5 // midpoint
 
         console.log("Total Error: " + totalError)
+
+
         // Calculate position of point on WeeklyGraph
         if (totalError <= totalLeeway) {
             if (data.kcal >= optimalCal) // Error above center
@@ -98,15 +234,13 @@ export default function Feedback({ navigation }) {
             else // Error below center
                 position -= ((totalError / totalLeeway) * 1.5)
         } else {
-            // Curve data
-            // totalError = 0.2
             if (data.kcal >= optimalCal)
                 position += 1.5 + (Math.atan(totalError / totalLeeway) / 2) / (Math.PI / 2)
             else
                 position -= 1.5 + Math.atan(totalError / totalLeeway) / (Math.PI / 2)
         }
 
-        return position
+        return [position, allErrors]
     }
 
 
@@ -117,7 +251,7 @@ export default function Feedback({ navigation }) {
     if (numMeals != 3) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
-                <View style={styles.container}>
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                     <Text style={styles.title}>Enjoy your meal!</Text>
                 </View>
             </SafeAreaView>
@@ -128,53 +262,107 @@ export default function Feedback({ navigation }) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
                 <View style={styles.container}>
-                    <Text style={styles.titleEmoji}>🙌</Text>
-                    <Text style={styles.title}>Let's Recap!</Text>
-                    {/* <View style={styles.progressBarContainer}>
-                        <View style={[styles.progressBar, { height: `${score * 100}%` }]} />
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>Daily Recap</Text>
+                        <View style={{ justifyContent: 'center', alignItems: "center", }}>
+                            <Svg height={10} width={75}>
+                                <Path
+                                    d="M1.01929 4.3045C3.45133 0.413228 5.88338 0.413228 8.31543 4.3045C10.7475 8.19578 13.1795 8.19578 15.6116 4.3045C18.0436 0.413228 20.4757 0.413228 22.9077 4.3045C25.3398 8.19578 27.7718 8.19578 30.2039 4.3045C32.6359 0.413228 35.068 0.413228 37.5 4.3045C39.932 8.19578 42.3641 8.19578 44.7961 4.3045C47.2282 0.413228 49.6602 0.413228 52.0923 4.3045C54.5243 8.19578 56.9564 8.19578 59.3884 4.3045C61.8205 0.413228 64.2525 0.413228 66.6846 4.3045C69.1166 8.19578 71.5487 8.19578 73.9807 4.3045"
+                                    stroke="#FFCC26"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    style={{ justifyContent: "center" }}
+                                />
+                            </Svg>
+                        </View>
                     </View>
-                    <Text>Score: {Math.round(score * 100)}%</Text>
-                    <Text>Average GI index: {avgGI}</Text>
-                    {avgGI <= 55 ? <Text> Your average meal is diabetic friendly</Text> : <Text>Your average meal is not diabetic friendly</Text>} */}
-                    <View style={{ height: 200 }}>
+                    <Animated.Text key={"page0subtitle"} entering={FadeInDown.duration(duration).delay(delay * 0.6)} exiting={FadeOutDown.duration(duration)} style={styles.bigSubtitle}>Today...</Animated.Text>
+                    <Animated.View key={"page0"} entering={FadeInDown.duration(duration).delay(delay * 0.6)} exiting={FadeOutDown.duration(duration)} style={styles.graph}>
                         <WeeklyGraph datapoints={scores} />
-                    </View>
+                    </Animated.View>
 
-                    <View style={{ gap: 10 }}>
-                        <Text style={styles.blurbTitle}>Wonderful job today!</Text>
-                        <Text style={styles.blurbText}>You're continuing your commitment to long-term health and happiness, so pat yourself on the back! </Text>
-                    </View>
+                    <Animated.View style={styles.graphFeedbackContainer} key={"page0.5"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)}>
+                        <Text style={styles.blurbTextHighlighted}>{todayScreenSubtitle}</Text>
+                        <Text style={styles.blurbText}>{todayScreenText}</Text>
+                    </Animated.View>
 
+                    <Pressable onPress={() => setPage(page + 1)} style={styles.nextBtn}>
+                        <ArrowRight size="32" color="#A29CAF" />
+                    </Pressable>
                 </View>
-
-                <Pressable onPress={() => setPage(page + 1)}>
-                    <Text style={styles.feedbackButton} >
-                        Next
-                    </Text>
-                </Pressable>
-                {/* <Button title="Go back home" onPress={() => navigation.navigate("Home")} /> */}
             </SafeAreaView>
         );
+
+    // if (page == 1)
+    //     return (
+    //         <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
+    //             <View style={styles.container}>
+    //                 <View style={styles.titleContainer}>
+    //                     <Text style={styles.title}>Daily Recap</Text>
+    //                     <View style={{ justifyContent: 'center', alignItems: "center", }}>
+    //                         <Svg height={10} width={75}>
+    //                             <Path
+    //                                 d="M1.01929 4.3045C3.45133 0.413228 5.88338 0.413228 8.31543 4.3045C10.7475 8.19578 13.1795 8.19578 15.6116 4.3045C18.0436 0.413228 20.4757 0.413228 22.9077 4.3045C25.3398 8.19578 27.7718 8.19578 30.2039 4.3045C32.6359 0.413228 35.068 0.413228 37.5 4.3045C39.932 8.19578 42.3641 8.19578 44.7961 4.3045C47.2282 0.413228 49.6602 0.413228 52.0923 4.3045C54.5243 8.19578 56.9564 8.19578 59.3884 4.3045C61.8205 0.413228 64.2525 0.413228 66.6846 4.3045C69.1166 8.19578 71.5487 8.19578 73.9807 4.3045"
+    //                                 stroke="#FFCC26"
+    //                                 strokeWidth="2"
+    //                                 fill="none"
+    //                                 style={{ justifyContent: "center" }}
+    //                             />
+    //                         </Svg>
+    //                     </View>
+    //                 </View>
+    //                 <Animated.View key={"page1"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
+    //                     <Text style={styles.blurbText}>
+    //                         <Text style={styles.blurbTextHighlighted}>Today, </Text>
+    //                         you focused on a
+    //                         <Text style={styles.blurbTextHighlighted}> balanced lunch, </Text>
+    //                         maintained
+    //                         <Text style={styles.blurbTextHighlighted}> high energy levels </Text>
+    //                         throughout the day, and ate all
+    //                         <Text style={styles.blurbTextHighlighted}> three meals </Text>
+    //                         -- keep it up!
+    //                     </Text>
+    //                 </Animated.View>
+    //                 <Pressable onPress={() => setPage(page + 1)} style={styles.nextBtn}>
+    //                     <ArrowRight size="32" color="#A29CAF" />
+    //                 </Pressable>
+    //             </View>
+    //         </SafeAreaView>
+    //     );
 
     if (page == 1)
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
                 <View style={styles.container}>
-                    <Text style={styles.title}>Tomorrow...</Text>
-                    <View style={{ rowGap: 20 }}>
-                        <Text style={styles.blurbTitle}>Enjoy yourself.</Text>
-                        <Text style={styles.blurbText}>Try to eat some berries!</Text>
-                        <Text style={styles.blurbText}>Continue eating lots of protein!</Text>
-                        <Text style={styles.blurbText}>Consider drinking a glass of milk.</Text>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>Daily Recap</Text>
+                        <View style={{ justifyContent: 'center', alignItems: "center", }}>
+                            <Svg height={10} width={75}>
+                                <Path
+                                    d="M1.01929 4.3045C3.45133 0.413228 5.88338 0.413228 8.31543 4.3045C10.7475 8.19578 13.1795 8.19578 15.6116 4.3045C18.0436 0.413228 20.4757 0.413228 22.9077 4.3045C25.3398 8.19578 27.7718 8.19578 30.2039 4.3045C32.6359 0.413228 35.068 0.413228 37.5 4.3045C39.932 8.19578 42.3641 8.19578 44.7961 4.3045C47.2282 0.413228 49.6602 0.413228 52.0923 4.3045C54.5243 8.19578 56.9564 8.19578 59.3884 4.3045C61.8205 0.413228 64.2525 0.413228 66.6846 4.3045C69.1166 8.19578 71.5487 8.19578 73.9807 4.3045"
+                                    stroke="#FFCC26"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    style={{ justifyContent: "center" }}
+                                />
+                            </Svg>
+                        </View>
                     </View>
-                </View>
+                    <Animated.Text key={"page2subtitle"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.bigSubtitle}>Tomorrow...</Animated.Text>
+                    <Animated.View key={"page2"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
+                        {/* <Text style={styles.blurbText}>Try to eat some<Text style={styles.blurbTextHighlighted}> berries!</Text></Text>
+                        <Text style={styles.blurbText}>Continue eating lots of<Text style={styles.blurbTextHighlighted}> protein!</Text></Text>
+                        <Text style={styles.blurbText}>Consider drinking a glass of<Text style={styles.blurbTextHighlighted}> milk!</Text></Text> */}
 
-                <Pressable onPress={() => setPage(page + 1)}>
-                    <Text style={styles.feedbackButton} >
-                        Next
-                    </Text>
-                </Pressable>
-                {/* <Button title="Go back home" onPress={() => navigation.navigate("Home")} /> */}
+                        <Text style={styles.blurbText}>{tmrwAdvice1}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice1Highlight}.</Text></Text>
+                        {tmrwAdvice2 ? <Text style={styles.blurbText}>{tmrwAdvice2}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice2Highlight}.</Text></Text> : null}
+                        {tmrwAdvice3 ? <Text style={styles.blurbText}>{tmrwAdvice3}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice3Highlight}!</Text></Text> : null}
+
+                    </Animated.View>
+                    <Pressable onPress={() => setPage(page + 1)} style={styles.nextBtn}>
+                        <ArrowRight size="32" color="#A29CAF" />
+                    </Pressable>
+                </View>
             </SafeAreaView>
         );
 
@@ -182,19 +370,45 @@ export default function Feedback({ navigation }) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
                 <View style={styles.container}>
-                    <Text style={styles.title}>And remember...</Text>
-                    <View style={{ rowGap: 20 }}>
-                        <Text style={styles.blurbText}>Your most important sale in life is to sell yourself to yourself.</Text>
-                        <Text style={styles.blurbText}>- Maxwell Maltz</Text>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>Daily Recap</Text>
+                        <View style={{ justifyContent: 'center', alignItems: "center", }}>
+                            <Svg height={10} width={75}>
+                                <Path
+                                    d="M1.01929 4.3045C3.45133 0.413228 5.88338 0.413228 8.31543 4.3045C10.7475 8.19578 13.1795 8.19578 15.6116 4.3045C18.0436 0.413228 20.4757 0.413228 22.9077 4.3045C25.3398 8.19578 27.7718 8.19578 30.2039 4.3045C32.6359 0.413228 35.068 0.413228 37.5 4.3045C39.932 8.19578 42.3641 8.19578 44.7961 4.3045C47.2282 0.413228 49.6602 0.413228 52.0923 4.3045C54.5243 8.19578 56.9564 8.19578 59.3884 4.3045C61.8205 0.413228 64.2525 0.413228 66.6846 4.3045C69.1166 8.19578 71.5487 8.19578 73.9807 4.3045"
+                                    stroke="#FFCC26"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    style={{ justifyContent: "center" }}
+                                />
+                            </Svg>
+                        </View>
                     </View>
-                </View>
+                    <Animated.Text key={"page3subtitle"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.bigSubtitle}>And remember...</Animated.Text>
+                    <Animated.View key={"page3"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
+                        <Text style={styles.blurbText}>
+                            {finalNote}
+                        </Text>
+                        <Svg
+                            width={50}
+                            height={23}
+                            viewBox="0 0 50 23"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <Path
+                                d="M29.244 20.634c-3.778 1.54-6.535-.728-8.119-3.341-.489-.807-.05-1.816.835-2.144l8.4-3.108c.915-.338 1.935.183 2.126 1.139.573 2.879.49 5.932-3.242 7.454z"
+                                fill="#FFCC26"
+                            />
+                            <Circle cx={3.19076} cy={19.6289} r={3.06454} fill="#FFCC26" />
+                            <Circle cx={46.9355} cy={3.7745} r={3.06454} fill="#FFCC26" />
+                        </Svg>
+                    </Animated.View>
+                    <Pressable onPress={() => navigation.navigate('Home')} style={styles.homeBtn}>
+                        <Text style={styles.blurbText}>G'night!</Text>
+                    </Pressable>
 
-                <Pressable onPress={() => navigation.navigate("Home")}>
-                    <Text style={styles.feedbackButton} >
-                        See you tomorrow!
-                    </Text>
-                </Pressable>
-                {/* <Button title="Go back home" onPress={() => navigation.navigate("Home")} /> */}
+                </View>
             </SafeAreaView>
         );
 
@@ -204,10 +418,7 @@ export default function Feedback({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 50,
-        marginRight: 50,
+        alignItems: "center"
     },
     titleEmoji: {
         fontSize: 80,
@@ -215,48 +426,86 @@ const styles = StyleSheet.create({
         fontFamily: "SF-Rounded",
     },
     title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        fontFamily: "SF-Rounded",
-        color: "#FFCC26"
-    },
-    feedbackButton: {
-        borderColor: "#716694",
-        borderWidth: 2,
         fontSize: 20,
-        color: "white",
-        textAlign: "center",
-        alignSelf: "center",
-        padding: 10,
-        borderRadius: 10,
-        bottom: 100
-    },
-
-    progressBarContainer: {
-        width: 40, // Width of the progress bar
-        height: 200, // Total height of the progress bar container
-        borderColor: '#000',
-        borderWidth: 2,
-        borderRadius: 20, // Optional: if you want rounded corners for the progress bar
-        justifyContent: 'flex-end', // This aligns the progress bar to the bottom of the container
-        marginBottom: 20,
-    },
-    progressBar: {
-        width: '100%',
-        backgroundColor: '#4CAF50', // Progress bar color
-    },
-    blurbTitle: {
-        fontSize: 15,
         fontWeight: 'bold',
-        fontFamily: "SF-Rounded",
-        color: "#A29CAF",
-        textAlign: "center"
+        fontFamily: "SpaceGrotesk-Regular",
+        color: "#FFCC26",
+    },
+    bigSubtitle: {
+        fontFamily: "SpaceGrotesk-Bold",
+        fontSize: 30,
+        color: "#FFCC26",
+        position: 'absolute',
+        top: screenHeight * 0.2
+    },
+    titleContainer: {
+        gap: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'absolute',
+        top: screenHeight * 0.05,
     },
     blurbText: {
-        fontSize: 15,
-        fontFamily: "SF-Text",
+        fontSize: 18,
+        fontFamily: "SpaceGrotesk-Regular",
         color: "#A29CAF",
         textAlign: "center",
     },
+    blurbTextHighlighted: {
+        fontSize: 18,
+        fontFamily: "SpaceGrotesk-Regular",
+        color: "#FFCC26",
+        textAlign: "center",
+    },
+    graph: {
+        height: 200,
+        position: "absolute",
+        top: screenHeight * 0.25
+    },
+    graphFeedbackContainer: {
+        width: "80%",
+        position: 'absolute',
+        top: screenHeight * 0.5,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 20
+    },
+    feedbackContainer: {
+        width: "80%",
+        position: 'absolute',
+        top: screenHeight * 0.3,
+        zIndex: 9999,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 30
+    },
+    finalNoteContainer: {
+        width: "60%",
+        position: 'absolute',
+        top: screenHeight * 0.4,
+    },
+    nextBtn: {
+        height: 50,
+        width: 50,
+        borderRadius: 25,
+        borderColor: "rgba(255, 255, 255, 0.15)",
+        borderWidth: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'absolute',
+        top: screenHeight * 0.8
+    },
+    homeBtn: {
+        paddingLeft: 30,
+        paddingRight: 30,
+        paddingTop: 15,
+        paddingBottom: 15,
+        borderRadius: 25,
+        borderColor: "rgba(255, 255, 255, 0.15)",
+        borderWidth: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'absolute',
+        top: screenHeight * 0.8
+    }
 });

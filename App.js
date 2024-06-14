@@ -5,7 +5,6 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 // Removed the import { Link } from 'expo-router' since it's not used here
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Camera from './components/Camera';
 import HomeScreen from './components/HomeScreen';
 import ShowPhoto from "./components/ShowPhoto";
 import Feedback from "./components/Feedback";
@@ -16,6 +15,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CameraPage from "./components/Camera";
 
 const Stack = createNativeStackNavigator(); // Moved inside the component file, but outside the component function
 const Tab = createBottomTabNavigator();
@@ -24,10 +24,22 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   // AsyncStorage.clear()
 
+  const config = {
+    animation: 'spring',
+    config: {
+      stiffness: 1000,
+      damping: 500,
+      mass: 3,
+      overshootClamping: true,
+      restDisplacementThreshold: 0.01,
+      restSpeedThreshold: 0.01,
+    },
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false, }}>
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: true, }}>
           <Stack.Screen
             name="Start"
             component={Tabs}
@@ -35,6 +47,13 @@ export default function App() {
           <Stack.Screen
             name="ShowPhoto"
             component={ShowPhoto}
+            options={{gestureDirection: "horizontal"}}
+          />
+          <Stack.Screen
+            name="Camera"
+            component={CameraPage}
+            options={{gestureDirection: "vertical"}}
+
           />
           <Stack.Screen
             name="Feedback"
