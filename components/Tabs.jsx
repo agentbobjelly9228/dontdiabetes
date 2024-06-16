@@ -17,7 +17,6 @@ const dayjs = require('dayjs')
 const Tab = createBottomTabNavigator();
 
 const CameraTabButton = ({ children, onPress, selectedCamera }) => {
-  console.log(selectedCamera)
   return (
   <>
   <Pressable
