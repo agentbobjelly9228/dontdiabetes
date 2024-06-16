@@ -97,7 +97,7 @@ export default function ShowPhoto({ route, navigation }) {
     async function sendRequest(imageData, imageLink) {
         const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         setAwaitingResponse(true);
         const result = await model.generateContent([`Here is an image of food. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
                             Consult online sources and be realistic. Return your answer in only a JSON format like this: 
@@ -126,47 +126,47 @@ export default function ShowPhoto({ route, navigation }) {
     }
 
     if (fontsLoaded && angle)
-    return (
-        <SafeAreaView style={styles.container}>
+        return (
+            <SafeAreaView style={styles.container}>
 
-            <View style={styles.commentContainer}>
-                <Text style={styles.comment}>
-                    True home cook!
-                </Text>
-                <Image source={smallGuy} style={styles.smallGuyImg} />
-            </View>
+                <View style={styles.commentContainer}>
+                    <Text style={styles.comment}>
+                        True home cook!
+                    </Text>
+                    <Image source={smallGuy} style={styles.smallGuyImg} />
+                </View>
 
-            <View style={{...styles.imgFrame, transform: [{ rotate: angle }] }}>
-                <Image source={{ uri: data.uri }} style={styles.previewImage} />
-                <Text style={styles.description}>
-                    5/28/24
-                </Text>
-            </View>
+                <View style={{ ...styles.imgFrame, transform: [{ rotate: angle }] }}>
+                    <Image source={{ uri: data.uri }} style={styles.previewImage} />
+                    <Text style={styles.description}>
+                        5/28/24
+                    </Text>
+                </View>
 
-            <View style={styles.buttonContainer}>
-                <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
-                    {!awaitingResponse
-                        // ? <SweetSFSymbol name="arrow.uturn.backward" size={24} />
-                        ? <Back size="32" color="#000" />
-                        : <ActivityIndicator />
-                    }
-                </Pressable>
-                <Pressable style={styles.submitBtn} onPress={() => sendRequest(data.base64, data.uri)}>
-                    {!awaitingResponse
-                        // ? <SweetSFSymbol name="checkmark" size={48} />
-                        ? <Like1 size="64" color="#000" />
-                        : <ActivityIndicator />
-                    }
-                </Pressable>
-            </View>
+                <View style={styles.buttonContainer}>
+                    <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
+                        {!awaitingResponse
+                            // ? <SweetSFSymbol name="arrow.uturn.backward" size={24} />
+                            ? <Back size="32" color="#000" />
+                            : <ActivityIndicator />
+                        }
+                    </Pressable>
+                    <Pressable style={styles.submitBtn} onPress={() => sendRequest(data.base64, data.uri)}>
+                        {!awaitingResponse
+                            // ? <SweetSFSymbol name="checkmark" size={48} />
+                            ? <Like1 size="64" color="#000" />
+                            : <ActivityIndicator />
+                        }
+                    </Pressable>
+                </View>
 
-            {/* <Button title="print data" onPress={async () => {
+                {/* <Button title="print data" onPress={async () => {
                 let savedData = await AsyncStorage.getItem('@allFoods');
                 console.log(savedData)
             }}></Button> */}
 
-        </SafeAreaView >
-    )
+            </SafeAreaView >
+        )
 }
 
 

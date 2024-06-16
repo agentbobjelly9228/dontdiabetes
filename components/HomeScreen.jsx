@@ -13,7 +13,7 @@ import redGuy from '../assets/mascots/redGuy.png';
 import ProgressBar from "./ProgressBar";
 
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ route, navigation }) {
     const [loading, setLoading] = useState(true)
     const [emojis, setEmojis] = useState([])
     const [numMeals, setNumMeals] = useState(0)
@@ -22,7 +22,8 @@ export default function HomeScreen({ navigation }) {
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("")
 
-
+    const { logOut } = route.params;
+    console.log("thing" + logOut)
     // AsyncStorage.clear()
     // Change to logic include time of day
     const setMessages = (numMeals) => {
@@ -109,7 +110,7 @@ export default function HomeScreen({ navigation }) {
                 />
 
                 <Button title="Thing" onPress={() => navigation.navigate("Feedback")} />
-
+                <Button title="Log out" onPress={logOut}></Button>
             </ScrollView>
         );
 }
@@ -140,5 +141,5 @@ const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         alignItems: 'center',
-      },
+    },
 });

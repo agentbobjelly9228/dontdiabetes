@@ -10,11 +10,13 @@ import CameraPage from "./Camera";
 import GalleryPage from "./Gallery";
 import DebugPage from "./Debug"
 import Feedback from "./Feedback";
+import LoginScreen from "./login";
 
 const Tab = createBottomTabNavigator();
 
-export default function Tabs() {
-
+export default function Tabs({ route }) {
+  const { logOut } = route.params;
+  console.log(logOut)
   const isTabBarVisible = (route) => {
     const routeName = route.state
       ? route.state.routes[route.state.index].name
@@ -32,7 +34,7 @@ export default function Tabs() {
   }
 
   return (
-  
+
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
@@ -49,7 +51,7 @@ export default function Tabs() {
               ? <Home2 variant="Bold" size={24} style={{ color: "black" }} />
               : <Home2 size={24} style={{ color: "black" }} />
           } else if (route.name === "Camera") {
-            return(
+            return (
               <View style={{
                 height: 60,
                 width: 60,
@@ -84,13 +86,14 @@ export default function Tabs() {
         tabBarInactiveTintColor: 'black',
       })}>
 
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} initialParams={{ logOut }} />
       <Tab.Screen
         name="Camera"
         component={CameraPage}
         options={{ tabBarStyle: { display: 'none' } }}
       />
       <Tab.Screen name="Gallery" component={GalleryPage} />
+      <Tab.Screen name="loginScreen" component={LoginScreen} />
 
       {/* <Tab.Screen name="Feedback" component={Feedback} />  */}
       {/* <Tab.Screen name="DailyMacros" component={DailyMacros} /> */}
@@ -102,21 +105,21 @@ export default function Tabs() {
 
 const styles = StyleSheet.create({
   title: {
-      fontSize: 30,
-      fontWeight: "bold",
-      marginTop: 10,
-      marginBottom: 10
+    fontSize: 30,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 10
   },
   sfcompact: {
-  fontSize: 20,
-  fontFamily: "SF-Compact",
-      },
+    fontSize: 20,
+    fontFamily: "SF-Compact",
+  },
   sfrounded: {
-  fontSize: 30,
-  fontFamily: "SF-Rounded",
-      },
+    fontSize: 30,
+    fontFamily: "SF-Rounded",
+  },
   sftext: {
-  fontSize: 15,
-  fontFamily: "SF-Text",
+    fontSize: 15,
+    fontFamily: "SF-Text",
   },
 });

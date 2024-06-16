@@ -25,6 +25,7 @@
     "expo-linking": "~6.3.1",
     "expo-router": "~3.5.14",
     "expo-status-bar": "~1.12.1",
+    "firebase": "^10.12.2",
     "google-auth-library": "^9.7.0",
     "iconsax-react-native": "^0.0.8",
     "react": "18.2.0",
