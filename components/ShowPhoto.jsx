@@ -5,16 +5,24 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import smallGuy from '../assets/mascots/smallGuy.png';
 import { Like1, Back } from 'iconsax-react-native';
+
+
 // import SweetSFSymbol from "sweet-sfsymbols";
 
 const windowHeight = Dimensions.get('window').height;
 
+const dayjs = require('dayjs')
 
 export default function ShowPhoto({ route, navigation }) {
-    const { data } = route.params;
+    const { data, mealKey } = route.params;
+    // console.log(mealKey)
 
     const [angle, setAngle] = useState(null);
     const [awaitingResponse, setAwaitingResponse] = useState(false);
+    const [hour, setHour] = useState(null)
+
+    // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
+    const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -26,11 +34,13 @@ export default function ShowPhoto({ route, navigation }) {
         "Caveat-SemiBold": require("../assets/fonts/Caveat-SemiBold.ttf"),
     });
 
-    // Get random angle of photo (between -5 and 5)
     useEffect(() => {
+        // Get random angle of photo (between -5 and 5)
         let number = Math.round(Math.random() * 5) * (Math.random() > 0.5 ? 1 : -1)
         setAngle(number + "deg")
 
+        // Get current hour
+        setHour(dayjs().hour())
     }, [])
 
 
@@ -42,7 +52,6 @@ export default function ShowPhoto({ route, navigation }) {
     async function storeData(value, imageLink) {
         return new Promise(async (resolve) => {
             value = JSON.parse(value)
-            console.log(value)
             let savedData = await AsyncStorage.getItem('@todayMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
 
@@ -58,8 +67,8 @@ export default function ShowPhoto({ route, navigation }) {
                 macros.numMeals = 0;
                 macros.images = [];
                 macros.GIs = [];
-                macros.emojis = [];
-                macros.foods = [];
+                macros.emojis = {};
+                macros.foods = {};
 
             }
 
@@ -73,12 +82,29 @@ export default function ShowPhoto({ route, navigation }) {
             macros.numMeals += 1;
             macros.images.push(imageLink)
             macros.GIs.push(value.GIindex)
-            macros.emojis.push(value.emoji)
             value.image = imageLink
             value.protein = value.protein;
             value.description = value.food
-            macros.foods.push(value)
 
+            // // Get meals already registered for today
+            // const meals = Object.keys(macros.foods)
+
+            // // Logic for which meal it should be
+            // let currentMeal = null;
+            // if (!meals.includes('breakfast') && hour <= preferredMealTimes["lunch"] - 1)
+            //     currentMeal = 'breakfast'
+            // else if (!meals.includes('lunch') && hour <= preferredMealTimes["dinner"] - 1)
+            //     currentMeal = 'lunch'
+            // else
+            //     currentMeal = 'dinner'
+
+            macros.foods[mealKey] = value
+            macros.emojis[mealKey] = value.emoji
+
+            console.log(mealKey)
+
+
+            console.log(macros)
             // Save the updated macros back to AsyncStorage
             await AsyncStorage.setItem('@todayMacros', JSON.stringify(macros));
 

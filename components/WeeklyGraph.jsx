@@ -7,17 +7,6 @@ import { LineChart, } from 'react-native-chart-kit';
 
 
 
-
-function Dot() {
-    return (
-        <View style={{ backgroundColor: "white", width: 25, height: 25, position: "absolute", top: 80, borderRadius: 15, justifyContent: "center", alignItems: "center" }} >
-            <View style={{ backgroundColor: "black", width: 15, height: 15, zIndex: 1, borderRadius: 10, }} />
-        </View>
-    )
-}
-
-
-
 export default function WeeklyGraph({ navigation, datapoints }) {
     const screenWidth = Dimensions.get("window").width * 0.9;
     const [fontsLoaded] = useFonts({
@@ -31,18 +20,26 @@ export default function WeeklyGraph({ navigation, datapoints }) {
     const chartConfig = {
         backgroundGradientFromOpacity: 0,
         backgroundGradientToOpacity: 0,
-        color: () => `rgba(0, 0, 0, 0)`,
+        strokeWidth: 2, // optional, default 3
+        useShadowColorFromDataset: false, // optional
+        color: () => `rgba(0, 0, 0, 1)`,
+        propsForLabels: {
+            fontFamily: "SF-Compact",
+            fontSize: 9
+
+        }
     };
 
     return (
         <View>
-            <View style={{ backgroundColor: "white", height: 100, borderRadius: 45, alignItems: "center", position: "absolute", width: screenWidth, top: 55 }} />
+            <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 45, alignItems: "center", position: "absolute", width: screenWidth, top: 55 }} />
             <LineChart
                 data={{
+                    labels: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
                     datasets: [
                         {
                             data: datapoints,
-                            color: () => `rgba(255, 255, 255, 1)`,
+                            color: () => `rgba(255, 204, 38, 1)`,
                             strokeWidth: 11
                         }
                     ],
@@ -50,11 +47,14 @@ export default function WeeklyGraph({ navigation, datapoints }) {
                 width={screenWidth}
                 height={235}
                 chartConfig={chartConfig}
-                withVerticalLabels={false}
+                withHorizontalLabels={false}
                 withShadow={false}
                 fromNumber={5}
                 fromZero={true}
+                withHorizontalLines={false}
+                withVerticalLines={false}
                 segments={5}
+                xLabelsOffset={7}
                 getDotProps={(dataPoint, dataPointIndex) => {
                     return {
                         r: "13",
@@ -62,12 +62,13 @@ export default function WeeklyGraph({ navigation, datapoints }) {
                 }}
 
                 // withHorizontalLabels={false}
-                style={{position: "absolute"}}
-                
-                
+                style={{ position: "absolute" }}
+
+
             />
             <LineChart
                 data={{
+                    labels: ["27", "28", "29", "30", "31", "1", "2"],
                     datasets: [
                         {
                             data: datapoints,
@@ -79,11 +80,15 @@ export default function WeeklyGraph({ navigation, datapoints }) {
                 width={screenWidth}
                 height={235}
                 chartConfig={chartConfig}
-                withVerticalLabels={false}
+                withHorizontalLabels={false}
                 withShadow={false}
                 fromNumber={5}
                 fromZero={true}
                 segments={5}
+                withHorizontalLines={false}
+                withVerticalLines={false}
+                xLabelsOffset={18}
+
                 getDotProps={(dataPoint, dataPointIndex) => {
                     // if (dataPointIndex == 6) {
                     //     return {
@@ -99,10 +104,10 @@ export default function WeeklyGraph({ navigation, datapoints }) {
                     }
                 }}
 
-                // withHorizontalLabels={false}
-                // style={{backgroundColor: "red", opacity: 0}}
-                
-                
+            // withHorizontalLabels={false}
+            // style={{backgroundColor: "red", opacity: 0}}
+
+
             />
 
         </View>
