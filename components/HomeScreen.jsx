@@ -27,13 +27,9 @@ export default function HomeScreen({ route, navigation }) {
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
 
-<<<<<<< HEAD
     const { logOut } = route.params;
     console.log("thing" + logOut)
     // AsyncStorage.clear()
-=======
-
->>>>>>> 35bdd9296759f38a7570ce9a5f561481187022bb
     // Change to logic include time of day
     const setMessages = (hour, meals) => {
         if (meals.length === 3) {
@@ -42,13 +38,13 @@ export default function HomeScreen({ route, navigation }) {
             setTheme("#A8C84C");
             setSubtitle("You've done it! Enjoy the rest of your day.");
             setCurrentMeal(2);
-        } else if (meals.includes('dinner')){
+        } else if (meals.includes('dinner')) {
             setTitle("What a Good Day!")
             setMascot(greenGuy);
             setTheme("#A8C84C");
             setSubtitle("And that's the end of the today! But it looks like you haven't logged your entire day yet. What'd you eat? We're curious!")
             setCurrentMeal(2);
-        } else if (hour >= preferredMealTimes["dinner"] - 1)  {
+        } else if (hour >= preferredMealTimes["dinner"] - 1) {
             setTitle("Time for Dinner!");
             setSubtitle("Take some time to relax. Enjoy your meal, savor those veggies, and know that you are valuable just the way you are. Go you!");
             setMascot(redGuy);
@@ -60,13 +56,13 @@ export default function HomeScreen({ route, navigation }) {
             setMascot(yellowGuy);
             setTheme("#F1CF48");
             setCurrentMeal(1);
-        } else  {
+        } else {
             setTitle("BREAKFAST TIME!!!!");
             setSubtitle("Let's go! Kick today off with a great start by enjoying your meal. Scan your breakfast to get started!");
             setMascot(greenGuy);
             setTheme("#A8C84C");
             setCurrentMeal(0);
-        } 
+        }
     }
 
 
@@ -85,7 +81,7 @@ export default function HomeScreen({ route, navigation }) {
 
                 setMessages(hour, meals)
                 setEmojis(macros?.emojis);
-                
+
                 setLoading(false)
             }
             getAsyncData()
@@ -108,7 +104,7 @@ export default function HomeScreen({ route, navigation }) {
 
     if (!loading)
         return (
-            <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5"}}>
+            <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5" }}>
 
                 <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
                 <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
@@ -126,7 +122,7 @@ export default function HomeScreen({ route, navigation }) {
                 </View>
                 <View style={{ height: 300, alignItems: "center", }}>
                     <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute" }} />
-                    <View style={{position: "absolute"}}>
+                    <View style={{ position: "absolute" }}>
                         <WeeklyGraph datapoints={[1, 2, 2.3, 1.4, 2.5, 3.6, 1.7]} />
                     </View>
                     <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute", top: 205 }} />
@@ -166,7 +162,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         alignItems: 'center',
-      },
+    },
     dottedLine: {
         borderColor: "red",
         borderWidth: 1,
