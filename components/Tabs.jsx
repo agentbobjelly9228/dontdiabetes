@@ -10,6 +10,7 @@ import CameraPage from "./Camera";
 import GalleryPage from "./Gallery";
 import DebugPage from "./Debug"
 import Feedback from "./Feedback";
+import LoginScreen from "./login";
 import { useFocusEffect } from "@react-navigation/native";
 
 const dayjs = require('dayjs')
@@ -18,37 +19,45 @@ const Tab = createBottomTabNavigator();
 
 const CameraTabButton = ({ children, onPress, selectedCamera }) => {
   return (
-  <>
-  <Pressable
-    style={{
-      height: 60,
-      width: 60,
-      borderRadius: 20,
-      backgroundColor: '#FFFFFF',
-      padding: 10,
-      alignItems: "center",
-      shadowOpacity: 0.5,
-      shadowOffset: 5,
-      marginBottom: 50,
-      justifyContent: "center",
-      alignItems: "center",
-      bottom: 30
-    }}
-    onPress={onPress}
-  >
-      <CameraIcon size={32} color="black" variant={selectedCamera ? "Bold" : null}/>
-  </Pressable>
-  </>
-)};
+    <>
+      <Pressable
+        style={{
+          height: 60,
+          width: 60,
+          borderRadius: 20,
+          backgroundColor: '#FFFFFF',
+          padding: 10,
+          alignItems: "center",
+          shadowOpacity: 0.5,
+          shadowOffset: 5,
+          marginBottom: 50,
+          justifyContent: "center",
+          alignItems: "center",
+          bottom: 30
+        }}
+        onPress={onPress}
+      >
+        <CameraIcon size={32} color="black" variant={selectedCamera ? "Bold" : null} />
+      </Pressable>
+    </>
+  )
+};
 
 
-export default function Tabs({ navigation }) {
-
+export default function Tabs({ route, navigation }) {
+  const { logOut } = route.params;
+  console.log(logOut)
+  const isTabBarVisible = (route) => {
+    const routeName = route.state
+      ? route.state.routes[route.state.index].name
+      : (route.params ? route.params.screen : 'HomeScreen');
+    return !['Camera'].includes(routeName);
+  };
   useFocusEffect(
     useCallback(() => {
       setSelected(false)
     }, [selected])
-);
+  );
 
   const [selected, setSelected] = useState(false)
 
@@ -129,7 +138,7 @@ export default function Tabs({ navigation }) {
         tabBarInactiveTintColor: 'black',
       })}>
 
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} initialParams={{ logOut }} />
       <Tab.Screen
         name="CameraButton"
         component={HomeScreen}
@@ -143,7 +152,7 @@ export default function Tabs({ navigation }) {
               onPress={() => {
                 setSelected(true)
                 let meal = getMeal()
-                navigation.navigate('Camera',  {mealIndex: meal})
+                navigation.navigate('Camera', { mealIndex: meal })
               }}
               selectedCamera={selected}
             />
@@ -151,6 +160,7 @@ export default function Tabs({ navigation }) {
         }}
       />
       <Tab.Screen name="Gallery" component={GalleryPage} />
+      {/* <Tab.Screen name="loginScreen" component={LoginScreen} /> */}
 
       {/* <Tab.Screen name="Feedback" component={Feedback} />  */}
       {/* <Tab.Screen name="DailyMacros" component={DailyMacros} /> */}

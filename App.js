@@ -1,6 +1,7 @@
 import { useFonts } from "expo-font";
-import React from 'react';
+import { React, useState, useCallback, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, Text, View, Image } from 'react-native';
 // Removed the import { Link } from 'expo-router' since it's not used here
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,6 +10,7 @@ import HomeScreen from './components/HomeScreen';
 import ShowPhoto from "./components/ShowPhoto";
 import Feedback from "./components/Feedback";
 import MacroPage from "./components/macroPage";
+import LoginScreen from "./components/login";
 import Tabs from './components/Tabs';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -23,6 +25,23 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   // AsyncStorage.clear()
+  [loggedIn, setLoggedIn] = useState(false);
+  async function getLoggedIn() {
+    let savedData = await AsyncStorage.getItem('@loggedIn');
+    console.log(savedData)
+    setLoggedIn(savedData)
+  }
+  useEffect(() => {
+    // logOut();
+    getLoggedIn();
+  }, [loggedIn]);
+  // getLoggedIn();
+  async function logOut() {
+    await AsyncStorage.setItem("@loggedIn", "false");
+    getLoggedIn();
+  }
+
+  // reset()
 
   const config = {
     animation: 'spring',
@@ -38,21 +57,22 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: true, }}>
+      {loggedIn === "true" ? <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false, }}>
           <Stack.Screen
             name="Start"
             component={Tabs}
+            initialParams={{ logOut }}
           />
           <Stack.Screen
             name="ShowPhoto"
             component={ShowPhoto}
-            options={{gestureDirection: "horizontal"}}
+            options={{ gestureDirection: "horizontal" }}
           />
           <Stack.Screen
             name="Camera"
             component={CameraPage}
-            options={{gestureDirection: "vertical"}}
+            options={{ gestureDirection: "vertical" }}
 
           />
           <Stack.Screen
@@ -65,8 +85,15 @@ export default function App() {
             component={MacroPage}
           // options={{ animation: 'none' }}
           />
+          <Stack.Screen
+            name="loginScreen"
+            component={LoginScreen}
+          // options={{ animation: 'none' }}
+          />
         </Stack.Navigator>
-      </NavigationContainer>
+      </NavigationContainer> :
+        <LoginScreen onLogin={setLoggedIn}></LoginScreen>}
+
     </GestureHandlerRootView>
   );
 }
