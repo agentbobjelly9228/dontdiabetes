@@ -28,7 +28,7 @@ export default function EnterInformation({ navigation }) {
 
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-    
+
 
     const ref = useRef();
 
@@ -77,7 +77,7 @@ export default function EnterInformation({ navigation }) {
         {
             id: "5",
             title: "Fabulous!",
-            text: "We've saved all of your answers. Now before you head along, consider making an account to sync Big Guy on all your other devices."
+            text: "We've saved all of your answers. Now before you head along, make an account to sync Big Guy on all your other devices."
         },
     ];
 
@@ -86,12 +86,15 @@ export default function EnterInformation({ navigation }) {
 
     const animatedBigGuy = useAnimatedStyle(() => {
         return {
-            transform: [{ rotate: offset.value + "deg" }]
+            transform: [{ rotate: offset.value + "deg" }],
+            position: "absolute",
+            top: -20,
+            alignSelf: "center",
         }
     })
 
     if (!fontsLoaded) {
-        return null; 
+        return null;
     }
 
     const updateCurrentSlideIndex = e => {
@@ -104,7 +107,7 @@ export default function EnterInformation({ navigation }) {
         const nextSlideIndex = currentSlideIndex + 1;
         if (nextSlideIndex != data.length) {
             const offset = nextSlideIndex * screenWidth;
-            ref?.current?.scrollToOffset({offset});
+            ref?.current?.scrollToOffset({ offset });
             setCurrentSlideIndex(nextSlideIndex);
         }
     }
@@ -113,7 +116,7 @@ export default function EnterInformation({ navigation }) {
         const backSlideIndex = currentSlideIndex - 1;
         if (backSlideIndex >= 0) {
             const offset = backSlideIndex * screenWidth;
-            ref?.current?.scrollToOffset({offset});
+            ref?.current?.scrollToOffset({ offset });
             setCurrentSlideIndex(backSlideIndex);
         }
     }
@@ -126,15 +129,15 @@ export default function EnterInformation({ navigation }) {
 
         console.log("answers stored")
         goNextSlide();
-        offset.value = withTiming(offset.value + 360, {duration: 1500});
+        offset.value = withTiming(offset.value + 360, { duration: 1500 });
 
 
     }
 
     return (
-        <View style={{ backgroundColor: "#FFFBEE", flex: 1,  }}>
+        <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
             <Animated.View style={animatedBigGuy}>
-                <Image source={onboardingguy} style={{ alignSelf: "center", height: 450 }} />
+                <Image source={onboardingguy} style={{ height: 470, resizeMode: "contain", }} />
             </Animated.View>
 
             <FlatList
@@ -146,23 +149,33 @@ export default function EnterInformation({ navigation }) {
                 renderItem={({ item }) => <Item question={item.question} type={item.type} units={item.units} placeholder={item.placeholder} increment={item.increment} value={item.value} onChange={item.onChange} max={item.max} title={item.title} text={item.text} />}
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
-                style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.45 }}  
+                style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.45 }}
                 keyExtractor={(item) => item.id}
             />
-            <View style={{zIndex: 100, justifyContent: "space-evenly", gap: 50, alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.8, alignSelf: "center", flex: 1, }}>
-                {currentSlideIndex != 0
-                    ? <Pressable onPress={goBackSlide}>
-                        <ArrowLeft2 style={styles.backButton} size={28} color="black" />
+            <View style={{ zIndex: 100, justifyContent: "space-evenly", gap: 50, alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.8, alignSelf: "center", flex: 1, }}>
+                {currentSlideIndex === data.length - 1
+                    ? <Pressable onPress={() => navigation.navigate("LoginScreen")} style={styles.infoButton}>
+                        <Text style={styles.infoButtonText}>Let's go!</Text>
                     </Pressable>
-                    : null
+                    : <>
+                        {currentSlideIndex != 0
+                            ? <Pressable onPress={goBackSlide}>
+                                <ArrowLeft2 style={styles.backButton} size={28} color="black" />
+                            </Pressable>
+                            : null
+                        }
+                        <Pressable onPress={currentSlideIndex === data.length - 2 ? storeAnswers : goNextSlide} style={styles.infoButton}>
+                            <Text style={styles.infoButtonText}>{currentSlideIndex === data.length - 2 ? "Done!" : "Next"}</Text>
+                        </Pressable>
+                        {currentSlideIndex != 0
+                            ? <Pressable>
+                                <ArrowLeft2 style={{ ...styles.backButton, opacity: 0 }} size={28} color="black" />
+                            </Pressable>
+                            : null
+                        }
+                    </>
                 }
-                <Pressable onPress={currentSlideIndex === data.length - 2 ? storeAnswers : goNextSlide} style={styles.infoButton}><Text style={styles.infoButtonText}>{currentSlideIndex === data.length - 2 ? "Done!" : "Next"}</Text></Pressable>
-                {currentSlideIndex != 0
-                    ? <Pressable>
-                        <ArrowLeft2 style={{...styles.backButton, opacity: 0}} size={28} color="black" />
-                    </Pressable>
-                    : null
-                }
+
             </View>
         </View>
     );
@@ -171,7 +184,7 @@ export default function EnterInformation({ navigation }) {
 function NumberInput({ placeholder, increment, value, onChange, max }) {
     return (
         <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: "space-evenly" }}>
-            <Pressable onPress={() => {if (value > 0) onChange(value - increment)}}>
+            <Pressable onPress={() => { if (value > 0) onChange(value - increment) }}>
                 <MinusCirlce size={32} color="black" variant="Bold" />
             </Pressable>
             <TextInput
@@ -186,14 +199,14 @@ function NumberInput({ placeholder, increment, value, onChange, max }) {
                         onChange(0)
                     else if (number > max)
                         onChange(max)
-                    else 
+                    else
                         onChange(number)
                 }}
                 textAlign='center'
                 keyboardType="number-pad"
                 placeholderTextColor={"#ffe07c"}
                 style={styles.numberInput} />
-            <Pressable onPress={() => {if (value < max ) onChange(value + increment)}}>
+            <Pressable onPress={() => { if (value < max) onChange(value + increment) }}>
                 <AddCircle size={32} color="black" variant="Bold" />
             </Pressable>
         </View>
@@ -203,7 +216,7 @@ function NumberInput({ placeholder, increment, value, onChange, max }) {
 function Item({ question, type, placeholder, units, increment, value, onChange, max, title, text }) {
     if (question)
         return (
-            <View style={{ width: screenWidth, height: screenWidth, alignItems: "center",}}>
+            <View style={{ width: screenWidth, height: screenWidth, alignItems: "center", }}>
                 <View>
                     <Text style={styles.infoTitle}>{question}</Text>
                     {type === "alphabet"
@@ -216,10 +229,10 @@ function Item({ question, type, placeholder, units, increment, value, onChange, 
                     }
                 </View>
             </View>
-    );
+        );
 
     return (
-        <View style={{ width: screenWidth, height: screenWidth, alignItems: "center",}}>
+        <View style={{ width: screenWidth, height: screenWidth, alignItems: "center", }}>
             <Text style={styles.infoTitle}>{title}</Text>
             <Text style={styles.infoText}>{text}</Text>
         </View>
@@ -320,7 +333,7 @@ const styles = StyleSheet.create({
         borderColor: "#FFCC26",
     },
     backButton: {
-        
+
     }
 });
 

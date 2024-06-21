@@ -73,7 +73,7 @@ export default function App() {
             component={MacroPage}
           />
           <Stack.Screen
-            name="loginScreen"
+            name="LoginScreen"
             component={LoginScreen}
           />
           <Stack.Screen

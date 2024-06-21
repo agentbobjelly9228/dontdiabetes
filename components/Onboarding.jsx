@@ -40,7 +40,7 @@ export default function Onboarding({ navigation }) {
 
     return (
         <View style={{backgroundColor: "#FFFBEE", flex: 1,}}>
-        <Image source={onboardingguy} style={{ alignSelf: "center", height: 450, }}/>
+        <Image source={onboardingguy} style={{ alignSelf: "center", height: 470, resizeMode: "contain", position: "absolute", top: -20  }} />
         
         <FlatList 
             data={data}
