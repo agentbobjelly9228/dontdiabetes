@@ -30,7 +30,7 @@ data = [
 
 ]
 
-export default function LoginScreen({ navigation }) {
+export default function Onboarding({ navigation }) {
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -49,6 +49,8 @@ export default function LoginScreen({ navigation }) {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             style={{position: "absolute", zIndex: 100, top: screenHeight * 0.45}}
+            // initialScrollIndex={-1}
+
         />
         
         </View>
@@ -66,7 +68,7 @@ function Item({text, title, navigation}) {
                     <Pressable style={styles.infoButton}>
                         <Text style={styles.infoButtonText}>Learn the basics by swiping right!</Text>
                     </Pressable>
-                    <Pressable style={{position: "absolute", top: screenWidth * 0.9}}>
+                    <Pressable style={{position: "absolute", top: screenWidth * 0.9,}}>
                         <Text style={styles.infoButtonTextSmall}>Or, sign in</Text>
                     </Pressable>
                 </>

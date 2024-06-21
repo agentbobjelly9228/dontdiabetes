@@ -12,6 +12,8 @@ import Feedback from "./components/Feedback";
 import MacroPage from "./components/macroPage";
 import LoginScreen from "./components/login";
 import Tabs from './components/Tabs';
+import EnterInformation from "./components/EnterInformation";
+import Onboarding from "./components/Onboarding";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -41,24 +43,11 @@ export default function App() {
     getLoggedIn();
   }
 
-  // reset()
-
-  const config = {
-    animation: 'spring',
-    config: {
-      stiffness: 1000,
-      damping: 500,
-      mass: 3,
-      overshootClamping: true,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
-    },
-  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      {loggedIn === "true" ? <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, gestureEnabled: false, }}>
+    <NavigationContainer>
+        <Stack.Navigator initialRouteName={true ? "Onboarding" : "Home"} screenOptions={{ headerShown: false, gestureEnabled: false, }}>
           <Stack.Screen
             name="Start"
             component={Tabs}
@@ -78,21 +67,26 @@ export default function App() {
           <Stack.Screen
             name="Feedback"
             component={Feedback}
-          // options={{ animation: 'none' }}
           />
           <Stack.Screen
             name="macroPage"
             component={MacroPage}
-          // options={{ animation: 'none' }}
           />
           <Stack.Screen
             name="loginScreen"
             component={LoginScreen}
-          // options={{ animation: 'none' }}
+          />
+          <Stack.Screen
+            name="EnterInformation"
+            component={EnterInformation}
+          />
+          <Stack.Screen
+            name="Onboarding"
+            component={Onboarding}
           />
         </Stack.Navigator>
-      </NavigationContainer> :
-        <LoginScreen onLogin={setLoggedIn}></LoginScreen>}
+        
+      </NavigationContainer>
 
     </GestureHandlerRootView>
   );
