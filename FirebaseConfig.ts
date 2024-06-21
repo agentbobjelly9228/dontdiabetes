@@ -35,3 +35,5 @@ try {
 export const FIREBASE_AUTH = auth;
 export const FIREBASE_DATABASE = getDatabase(FIREBASE_APP)
 export const FIREBASE_STORAGE = getStorage(FIREBASE_APP)
+// export const auth = getAuth(FIREBASE_APP);
+// export const db = getDatabase(FIREBASE_APP)
