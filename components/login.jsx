@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
+
 
 export default function LoginScreen({ navigation, onLogin }) {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [action, setAction] = useState("login");
     const auth = FIREBASE_AUTH;
     const [loggedIn, setLoggedIn] = useState(false);
+
 
     const signIn = async () => {
         setLoading(true);
@@ -19,7 +23,19 @@ export default function LoginScreen({ navigation, onLogin }) {
             console.log(response);
             setLoggedIn(true);
             onLogin();
+            // import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+            // import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+            // const auth = initializeAuth(app, {
+            //     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+            // });
             await AsyncStorage.setItem('@loggedIn', "true");
+            await AsyncStorage.setItem("@uid", auth.currentUser.uid);
+            const localPersistence = getReactNativePersistence(AsyncStorage)
+            setPersistence(auth, localPersistence).then(() => {
+                // Your code to handle user authentication
+            }).catch((error) => {
+                console.error("Error setting persistence:", error);
+            });
         } catch (error) {
             console.log("sup")
             setLoggedIn(false);

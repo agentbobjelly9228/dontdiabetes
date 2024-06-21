@@ -5,6 +5,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import smallGuy from '../assets/mascots/smallGuy.png';
 import { Like1, Back } from 'iconsax-react-native';
+import { FIREBASE_STORAGE } from '../FirebaseConfig';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 
 // import SweetSFSymbol from "sweet-sfsymbols";
@@ -16,7 +18,7 @@ const dayjs = require('dayjs')
 export default function ShowPhoto({ route, navigation }) {
     const { data, mealKey } = route.params;
     // console.log(mealKey)
-
+    const storage = FIREBASE_STORAGE;
     const [angle, setAngle] = useState(null);
     const [awaitingResponse, setAwaitingResponse] = useState(false);
     const [hour, setHour] = useState(null)
@@ -33,7 +35,22 @@ export default function ShowPhoto({ route, navigation }) {
         "Caveat-Regular": require("../assets/fonts/Caveat-Regular.ttf"),
         "Caveat-SemiBold": require("../assets/fonts/Caveat-SemiBold.ttf"),
     });
+    const getBlobFroUri = async (uri) => {
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                resolve(xhr.response);
+            };
+            xhr.onerror = function (e) {
+                reject(new TypeError("Network request failed"));
+            };
+            xhr.responseType = "blob";
+            xhr.open("GET", uri, true);
+            xhr.send(null);
+        });
 
+        return blob;
+    };
     useEffect(() => {
         // Get random angle of photo (between -5 and 5)
         let number = Math.round(Math.random() * 5) * (Math.random() > 0.5 ? 1 : -1)
@@ -121,6 +138,31 @@ export default function ShowPhoto({ route, navigation }) {
     }
 
     async function sendRequest(imageData, imageLink) {
+        //store stuff in firebase
+        // const imageBlob = await getBlobFroUri(imageLink)
+        // const uid = await AsyncStorage.getItem("@uid");
+        // const timestamp = Date.now();
+        // const storageRef = ref(storage, `${uid}/${timestamp}.jpg`);
+
+        // const uploadTask = uploadBytesResumable(storageRef, imageBlob);
+
+        // uploadTask.on(
+        //     'state_changed',
+        //     (snapshot) => {
+        //         // Progress function
+        //         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        //         console.log(`Upload is ${progress}% done`);
+        //     },
+        //     (error) => {
+        //         // Error function
+        //         console.error("Upload failed:", error);
+        //     },
+        //     () => {
+        //         // Complete function
+        //         console.log("Upload successful!");
+        //     }
+        // );
+        //actual requesting stuff
         const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });

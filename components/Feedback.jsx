@@ -6,10 +6,16 @@ import WeeklyGraph from './WeeklyGraph';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { ArrowRight } from 'iconsax-react-native';
 import Animated, { FadeInDown, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
+import { FIREBASE_AUTH } from '../FirebaseConfig';
+import { FIREBASE_DATABASE } from '../FirebaseConfig';
+import { ref, set, get } from 'firebase/database';
 
 const screenHeight = Dimensions.get('window').height;
 
 export default function Feedback({ navigation }) {
+    const auth = FIREBASE_AUTH;
+    const database = FIREBASE_DATABASE;
+
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
         "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
@@ -75,7 +81,7 @@ export default function Feedback({ navigation }) {
         // Final Note
         let randInt = getRandomInt(0, finalNotes.length);
         setFinalNote(finalNotes[randInt])
-    
+
 
         // Today Screen: good or bad job
         if (position >= 1 && position <= 4) {
@@ -107,7 +113,7 @@ export default function Feedback({ navigation }) {
                 settmrwAdvice1Highlight(indexToMacro[largestErrorIndex]);
                 changeLessAdviceStarters.splice(randInt, randInt);
             }
-            
+
             // Remove from arrays (such that advice can't be repeated)
             allErrors.splice(largestErrorIndex, largestErrorIndex)
             indexToMacro.splice(largestErrorIndex, largestErrorIndex)
@@ -152,7 +158,7 @@ export default function Feedback({ navigation }) {
         }
 
 
-        
+
     };
 
     async function handleData() {
@@ -166,9 +172,20 @@ export default function Feedback({ navigation }) {
         setNumMeals(savedData.numMeals)
 
         if (savedData.numMeals >= 3) {
-            let allScores = await AsyncStorage.getItem('@allScores');
-            // console.log(allScores)
-            let parsedScores = allScores ? JSON.parse(allScores) : []
+
+            // let allScores = await AsyncStorage.getItem('@allScores');
+            let snapshot = await get(ref(database, auth.currentUser.uid))
+            let allScores = [];
+            if (snapshot.exists()) {
+                allScores = snapshot.val();
+            } else {
+                console.log("No data available");
+            }
+            // console.log(ref(database))
+            console.log(allScores)
+            console.log("sup")
+            let parsedScores = allScores
+            // let tempScore = [];
 
             // Add today's score to all scores, set displayed scores to last 7 days
             let [position, allErrors] = calculateFoodScore(savedData);
@@ -183,7 +200,7 @@ export default function Feedback({ navigation }) {
 
             // Update AsyncStorage
             await AsyncStorage.setItem('@allScores', JSON.stringify(parsedScores));
-
+            set(ref(database, auth.currentUser.uid), parsedScores)
 
             console.log(savedData.GIs)
             var temp = 0;

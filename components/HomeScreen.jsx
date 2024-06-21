@@ -4,11 +4,12 @@ import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, Pressabl
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
 import DashedLine from 'react-native-dashed-line';
-
+import { FIREBASE_DATABASE } from '../FirebaseConfig';
+import { ref, set, get } from 'firebase/database';
 import greenGuy from '../assets/mascots/greenGuy.png';
 import yellowGuy from '../assets/mascots/yellowGuy.png';
 import redGuy from '../assets/mascots/redGuy.png';
-
+import { FIREBASE_AUTH } from '../FirebaseConfig';
 import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
 
@@ -16,12 +17,16 @@ const dayjs = require('dayjs')
 
 
 export default function HomeScreen({ route, navigation }) {
-    const [loading, setLoading] = useState(true)
-    const [emojis, setEmojis] = useState([])
+    const auth = FIREBASE_AUTH;
+    const database = FIREBASE_DATABASE;
+    const [loading, setLoading] = useState(true);
+    const [emojis, setEmojis] = useState([]);
+    const [graphData, setGraphData] = useState([]);
     const [mascot, setMascot] = useState("");
     const [themeColor, setTheme] = useState("");
     const [title, setTitle] = useState("");
-    const [subtitle, setSubtitle] = useState("")
+    const [subtitle, setSubtitle] = useState("");
+    // const [uid, setUID] = useState("");
     const [currentMeal, setCurrentMeal] = useState(0)
 
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
@@ -31,6 +36,17 @@ export default function HomeScreen({ route, navigation }) {
     console.log("thing" + logOut)
     // AsyncStorage.clear()
     // Change to logic include time of day
+    async function getGraphData(uid) {
+        console.log(uid + "sup")
+        let snapshot = await get(ref(database, uid))
+
+        if (snapshot.exists()) {
+            const allScores = snapshot.val();
+            setGraphData(allScores);
+        } else {
+            console.log("No data available");
+        }
+    }
     const setMessages = (hour, meals) => {
         if (meals.length === 3) {
             setTitle("What a Good Day!");
@@ -71,6 +87,11 @@ export default function HomeScreen({ route, navigation }) {
         React.useCallback(() => {
             const getAsyncData = async () => {
                 let savedData = await AsyncStorage.getItem('@todayMacros');
+                AsyncStorage.getItem("@uid").then((savedUID) => {
+
+                    getGraphData(savedUID);
+
+                });
                 let macros = savedData ? JSON.parse(savedData) : null;
 
                 // Set title, subtitle, mascot, and theme
@@ -81,11 +102,12 @@ export default function HomeScreen({ route, navigation }) {
 
                 setMessages(hour, meals)
                 setEmojis(macros?.emojis);
-
                 setLoading(false)
             }
-            getAsyncData()
+            getAsyncData();
+            // getGraphData();
         }, [])
+
 
     );
 
@@ -123,14 +145,20 @@ export default function HomeScreen({ route, navigation }) {
                 <View style={{ height: 300, alignItems: "center", }}>
                     <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute" }} />
                     <View style={{ position: "absolute" }}>
-                        <WeeklyGraph datapoints={[1, 2, 2.3, 1.4, 2.5, 3.6, 1.7]} />
+                        <WeeklyGraph datapoints={graphData} />
                     </View>
                     <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute", top: 205 }} />
                 </View>
 
                 {/* <Button title="Thing" onPress={() => navigation.navigate("Feedback")} /> */}
-                <Button title="Log out" onPress={logOut}></Button>
-                <Pressable onPress={() => navigation.navigate("Feedback")} style={{ paddingBottom: 100, }}><Text>Thing</Text></Pressable>
+                <Button title="Log out" onPress={async () => {
+                    logOut()
+
+                }
+                }></Button>
+                <Pressable onPress={() => {
+                    // navigation.navigate("Feedback")
+                }} style={{ padding: 100, }}><Text>Thing</Text></Pressable>
 
             </ScrollView>
         );
