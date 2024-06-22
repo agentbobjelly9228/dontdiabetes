@@ -10,10 +10,13 @@ import HomeScreen from './components/HomeScreen';
 import ShowPhoto from "./components/ShowPhoto";
 import Feedback from "./components/Feedback";
 import MacroPage from "./components/macroPage";
-import LoginScreen from "./components/login";
+import LoginScreen from "./components/LoginScreen";
 import Tabs from './components/Tabs';
 import EnterInformation from "./components/EnterInformation";
 import Onboarding from "./components/Onboarding";
+// import { onAuthStateChanged } from "firebase/auth";
+import { FIREBASE_AUTH } from './FirebaseConfig';
+
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -21,98 +24,97 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CameraPage from "./components/Camera";
 
-const Stack = createNativeStackNavigator(); // Moved inside the component file, but outside the component function
-const Tab = createBottomTabNavigator();
-
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const auth = FIREBASE_AUTH;
+
   // AsyncStorage.clear()
-  [loggedIn, setLoggedIn] = useState(false);
-  async function getLoggedIn() {
-    let savedData = await AsyncStorage.getItem('@loggedIn');
-    console.log(savedData)
-    setLoggedIn(savedData)
+
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(null);
+  const [user, setUser] = useState(null);
+
+  function onAuthStateChanged(user) {
+    setUser(user);
+    getOnboarding();
+    console.log(user)
+    // if (initializing) setInitializing(false);
   }
+
   useEffect(() => {
-    // logOut();
-    getLoggedIn();
-  }, [loggedIn]);
-  // getLoggedIn();
-  async function logOut() {
-    await AsyncStorage.setItem("@loggedIn", "false");
-    getLoggedIn();
+    const subscriber = auth.onAuthStateChanged(onAuthStateChanged);
+    getOnboarding();
+    return subscriber;
+
+  }, [])
+
+  async function getOnboarding() {
+    let onboardingDone = await AsyncStorage.getItem("@onboardingDone");
+    if (onboardingDone == "true")
+      setOnboardingDone(true);
+    else
+      setOnboardingDone(false);
   }
 
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <NavigationContainer>
-        <Stack.Navigator initialRouteName={true ? "Onboarding" : "Home"} screenOptions={{ headerShown: false, gestureEnabled: false, }}>
-          <Stack.Screen
-            name="Start"
-            component={Tabs}
-            initialParams={{ logOut }}
-          />
-          <Stack.Screen
-            name="ShowPhoto"
-            component={ShowPhoto}
-            options={{ gestureDirection: "horizontal" }}
-          />
-          <Stack.Screen
-            name="Camera"
-            component={CameraPage}
-            options={{ gestureDirection: "vertical" }}
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false, }}>
+          {user
+            ? <>
+              <Stack.Screen
+                name="Start"
+                component={Tabs}
+              />
+              <Stack.Screen
+                name="ShowPhoto"
+                component={ShowPhoto}
+                options={{ gestureDirection: "horizontal" }}
+              />
+              <Stack.Screen
+                name="Camera"
+                component={CameraPage}
+                options={{ gestureDirection: "vertical" }}
 
-          />
-          <Stack.Screen
-            name="Feedback"
-            component={Feedback}
-          />
-          <Stack.Screen
-            name="macroPage"
-            component={MacroPage}
-          />
-          <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-          />
-          <Stack.Screen
-            name="EnterInformation"
-            component={EnterInformation}
-          />
-          <Stack.Screen
-            name="Onboarding"
-            component={Onboarding}
-          />
+              />
+              <Stack.Screen
+                name="Feedback"
+                component={Feedback}
+              />
+              <Stack.Screen
+                name="macroPage"
+                component={MacroPage}
+              />
+            </>
+            : <>
+              {
+                !onboardingDone &&
+                  <>
+                    <Stack.Screen
+                      name="Onboarding"
+                      component={Onboarding}
+                    />
+                    <Stack.Screen
+                      name="EnterInformation"
+                      component={EnterInformation}
+                    />
+                  </>
+              }
+              <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+                initialParams={{ onLogin: setLoggedIn }}
+              />
+            </>
+
+
+          }
         </Stack.Navigator>
-        
       </NavigationContainer>
-
     </GestureHandlerRootView>
   );
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  default: {
-    fontSize: 20,
-  },
-  sfcompact: {
-    fontSize: 20,
-    fontFamily: "SF-Compact",
-  },
-  sfrounded: {
-    fontSize: 70,
-    fontFamily: "SF-Rounded",
-  },
-  sftext: {
-    fontSize: 20,
-    fontFamily: "SF-Text",
-  },
-});

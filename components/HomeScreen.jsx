@@ -32,14 +32,11 @@ export default function HomeScreen({ route, navigation }) {
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
 
-    const { logOut } = route.params;
-    console.log("thing" + logOut)
+    // console.log("thing" + logOut)
     // AsyncStorage.clear()
     // Change to logic include time of day
     async function getGraphData(uid) {
-        console.log(uid + "sup")
         let snapshot = await get(ref(database, uid))
-
         if (snapshot.exists()) {
             const allScores = snapshot.val();
             setGraphData(allScores);
@@ -47,6 +44,7 @@ export default function HomeScreen({ route, navigation }) {
             console.log("No data available");
         }
     }
+
     const setMessages = (hour, meals) => {
         if (meals.length === 3) {
             setTitle("What a Good Day!");
@@ -87,11 +85,10 @@ export default function HomeScreen({ route, navigation }) {
         React.useCallback(() => {
             const getAsyncData = async () => {
                 let savedData = await AsyncStorage.getItem('@todayMacros');
-                AsyncStorage.getItem("@uid").then((savedUID) => {
 
-                    getGraphData(savedUID);
+                let uid = auth.currentUser.uid;
+                getGraphData(uid);
 
-                });
                 let macros = savedData ? JSON.parse(savedData) : null;
 
                 // Set title, subtitle, mascot, and theme
@@ -151,9 +148,9 @@ export default function HomeScreen({ route, navigation }) {
                 </View>
 
                 {/* <Button title="Thing" onPress={() => navigation.navigate("Feedback")} /> */}
-                <Button title="Log out" onPress={async () => {
-                    logOut()
-
+                <Button title="Log out" onPress={() => {
+                    auth.signOut()
+                    
                 }
                 }></Button>
                 <Pressable onPress={() => {

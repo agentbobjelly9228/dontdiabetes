@@ -10,7 +10,7 @@ import CameraPage from "./Camera";
 import GalleryPage from "./Gallery";
 import DebugPage from "./Debug"
 import Feedback from "./Feedback";
-import LoginScreen from "./login";
+import LoginScreen from "./LoginScreen";
 import { useFocusEffect } from "@react-navigation/native";
 
 const dayjs = require('dayjs')
@@ -45,8 +45,6 @@ const CameraTabButton = ({ children, onPress, selectedCamera }) => {
 
 
 export default function Tabs({ route, navigation }) {
-  const { logOut } = route.params;
-  console.log(logOut)
   const isTabBarVisible = (route) => {
     const routeName = route.state
       ? route.state.routes[route.state.index].name
@@ -138,7 +136,7 @@ export default function Tabs({ route, navigation }) {
         tabBarInactiveTintColor: 'black',
       })}>
 
-      <Tab.Screen name="Home" component={HomeScreen} initialParams={{ logOut }} />
+      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen
         name="CameraButton"
         component={HomeScreen}
