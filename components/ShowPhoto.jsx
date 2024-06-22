@@ -161,7 +161,6 @@ export default function ShowPhoto({ route, navigation }) {
 
         const response = await result.response;
         var text = response.text().toString();
-        console.log("sup" + text);
         text = trimForJson(text)
         console.log(text)
         console.log("hi")
@@ -215,7 +214,9 @@ export default function ShowPhoto({ route, navigation }) {
                                     "dairy": amount of dairy in cups,
                                     "GIindex": estimated GI index of the food,
                                     
-                                }.`, { inlineData: { data: imageData, mimeType: 'image/png' } }]);
+                                }.
+                                However, if no food is present, simply return "no food".
+                                `, { inlineData: { data: imageData, mimeType: 'image/png' } }]);
 
         const response = await result.response;
         var text = response.text().toString();

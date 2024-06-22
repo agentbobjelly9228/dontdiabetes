@@ -49,6 +49,7 @@ export default function CameraPage({ route, navigation }) {
     const [mealKey, setMealKey] = useState(null)
     const [showMealList, setShowMealList] = useState(null)
     const [awaitingResponse, setAwaitingResponse] = useState(false)
+    const [error, setError] =useState(null)
 
     const [text, setText] = useState(null);
 
@@ -147,8 +148,8 @@ export default function CameraPage({ route, navigation }) {
 
     // Not sure if we want to show preview screen when just text is submitted. logic is in ShowPhoto if we choose to do so
     async function storeData(value, imageLink) {
+        value = JSON.parse(value)
         return new Promise(async (resolve) => {
-            value = JSON.parse(value)
             let savedData = await AsyncStorage.getItem('@todayMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
 
@@ -170,18 +171,18 @@ export default function CameraPage({ route, navigation }) {
             }
 
             // Assuming `value` is already an object with the correct structure
-            macros.fruit += value.fruit;
-            macros.vegetables += value.vegetables;
-            macros.grains += value.grains;
-            macros.kcal += value.kcal;
-            macros.protein += value.protein;
-            macros.dairy += value.dairy;
+            macros.fruit += value?.fruit;
+            macros.vegetables += value?.vegetables;
+            macros.grains += value?.grains;
+            macros.kcal += value?.kcal;
+            macros.protein += value?.protein;
+            macros.dairy += value?.dairy;
             macros.numMeals += 1;
             macros.images.push(imageLink)
-            macros.GIs.push(value.GIindex)
+            macros.GIs.push(value?.GIindex)
             value.image = imageLink
-            value.protein = value.protein;
-            value.description = value.food
+            value.protein = value?.protein;
+            value.description = value?.food
 
             // // Get meals already registered for today
             // const meals = Object.keys(macros.foods)
@@ -240,14 +241,23 @@ export default function CameraPage({ route, navigation }) {
 
         const response = await result.response;
         var text = response.text().toString();
-        console.log("sup" + text);
-        text = trimForJson(text)
         console.log(text)
-        console.log("hi")
-        storeData(text, null).then(response => {
-            console.log("hi")
-            navigation.navigate("Feedback");
-        })
+        text = trimForJson(text);
+        console.log(text)
+        
+
+        if (text)
+            storeData(text, null).then(response => {
+                console.log("hi")
+                navigation.navigate("Feedback");
+            })
+        else {
+            // not food!
+            console.log("WHOOPSIES")
+            setError("Please describe your food better!")
+            
+            
+        }
     }
 
     if (!permission) {
@@ -418,6 +428,7 @@ export default function CameraPage({ route, navigation }) {
                                         onChangeText={setText}
                                         value={text}
                                     />
+                                    <Text style={styles.error}>{error}</Text>
                                     <Pressable 
                                         onPress={() => sendTextRequest(text)} 
                                         style={styles.submitTextBtn}

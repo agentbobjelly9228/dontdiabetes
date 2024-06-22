@@ -80,7 +80,10 @@ export default function Gallery({ navigation }) {
                             onPress={() => {
                                 prepareBottomSheet(item)
                             }}>
-                            <Image resizeMode="cover" source={{ uri: item.image }} style={styles.image} />
+                            { item.image 
+                                ? <Image resizeMode="cover" source={{ uri: item.image }} style={styles.image} />
+                                : <View style={styles.image}><Text style={{ fontSize: 75 }}>{item.emoji}</Text></View>
+                            }
                             <Text style={styles.sfrounded} numberOfLines={2} ellipsizeMode='tail'>
                                 {item.description}
                             </Text>
@@ -111,7 +114,11 @@ export default function Gallery({ navigation }) {
                         </Svg>
                     </View>
                     <View style={{ ...styles.imgFrame, transform: [{ rotate: angle }] }}>
-                        <Image source={{ uri: selectedItem?.image }} style={styles.previewImage} />
+                        { selectedItem?.image
+                            ? <Image source={{ uri: selectedItem?.image }} style={styles.previewImage} />
+                            : <View style={styles.previewImage}><Text style={{ fontSize: 200 }}>{selectedItem?.emoji}</Text></View>
+
+                        }
                         <Text style={styles.description}>
                             {selectedItem?.food}
                         </Text>
@@ -181,7 +188,9 @@ const styles = StyleSheet.create({
     },
     image: {
         aspectRatio: 1,
-        height: "65%"
+        height: "65%",
+        justifyContent: "center",
+        alignItems: "center"
     },
     bottomSheetBg: {
         backgroundColor: "#FFCC26"
@@ -195,6 +204,8 @@ const styles = StyleSheet.create({
         width: 300,
         height: 300,
         borderRadius: 3,
+        alignItems: "center",
+        justifyContent: "center",
     },
     imgFrame: {
         backgroundColor: "white",
