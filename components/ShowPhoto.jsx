@@ -16,7 +16,7 @@ const windowHeight = Dimensions.get('window').height;
 const dayjs = require('dayjs')
 
 export default function ShowPhoto({ route, navigation }) {
-    const { data, mealKey } = route.params;
+    const { imageData, textData, mealKey } = route.params;
     // console.log(mealKey)
     const storage = FIREBASE_STORAGE;
     const [angle, setAngle] = useState(null);
@@ -137,6 +137,40 @@ export default function ShowPhoto({ route, navigation }) {
 
     }
 
+
+    async function sendTextRequest(text) {
+        const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        setAwaitingResponse(true);
+
+        const result = await model.generateContent([`Here is a description of food: ${text}. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
+            Consult online sources and be realistic. Return your answer in only a JSON format like this: 
+            {
+                "food": food title in 7 words or less (capitalize each word),
+                "emoji": ONE SINGLE food emoji that best represents the food,
+                "kcal": amount of kilocalories,
+                "fruit": amount of fruit in cups,
+                "vegetables": amount of vegetables in cups,
+                "grains": amount of grains in ounces,
+                "protein": amount of protein in ounces,
+                "dairy": amount of dairy in cups,
+                "GIindex": estimated GI index of the food,
+                
+            }.`]);
+
+        const response = await result.response;
+        var text = response.text().toString();
+        console.log("sup" + text);
+        text = trimForJson(text)
+        console.log(text)
+        console.log("hi")
+        storeData(text, null).then(response => {
+            console.log("hi")
+            navigation.navigate("Feedback");
+        })
+    }
+
     async function sendRequest(imageData, imageLink) {
         //store stuff in firebase
         // const imageBlob = await getBlobFroUri(imageLink)
@@ -167,20 +201,22 @@ export default function ShowPhoto({ route, navigation }) {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         setAwaitingResponse(true);
+
         const result = await model.generateContent([`Here is an image of food. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
-                            Consult online sources and be realistic. Return your answer in only a JSON format like this: 
-                            {
-                                "food": food title in 7 words or less (capitalize each word),
-                                "emoji": ONE SINGLE food emoji that best represents the food,
-                                "kcal": amount of kilocalories,
-                                "fruit": amount of fruit in cups,
-                                "vegetables": amount of vegetables in cups,
-                                "grains": amount of grains in ounces,
-                                "protein": amount of protein in ounces,
-                                "dairy": amount of dairy in cups,
-                                "GIindex": estimated GI index of the food,
-                                
-                            }.`, { inlineData: { data: imageData, mimeType: 'image/png' } }]);
+                                Consult online sources and be realistic. Return your answer in only a JSON format like this: 
+                                {
+                                    "food": food title in 7 words or less (capitalize each word),
+                                    "emoji": ONE SINGLE food emoji that best represents the food,
+                                    "kcal": amount of kilocalories,
+                                    "fruit": amount of fruit in cups,
+                                    "vegetables": amount of vegetables in cups,
+                                    "grains": amount of grains in ounces,
+                                    "protein": amount of protein in ounces,
+                                    "dairy": amount of dairy in cups,
+                                    "GIindex": estimated GI index of the food,
+                                    
+                                }.`, { inlineData: { data: imageData, mimeType: 'image/png' } }]);
+
         const response = await result.response;
         var text = response.text().toString();
         console.log("sup" + text);
@@ -205,7 +241,11 @@ export default function ShowPhoto({ route, navigation }) {
                 </View>
 
                 <View style={{ ...styles.imgFrame, transform: [{ rotate: angle }] }}>
-                    <Image source={{ uri: data.uri }} style={styles.previewImage} />
+
+                    {imageData 
+                        ? <Image source={{ uri: imageData.uri }} style={styles.previewImage} />
+                        : <Text>{textData}</Text>
+                    }
                     <Text style={styles.description}>
                         5/28/24
                     </Text>
@@ -219,7 +259,16 @@ export default function ShowPhoto({ route, navigation }) {
                             : <ActivityIndicator />
                         }
                     </Pressable>
-                    <Pressable style={styles.submitBtn} onPress={() => sendRequest(data.base64, data.uri)}>
+                    <Pressable style={styles.submitBtn} 
+                        onPress={() => {
+                            if (imageData)
+                                sendRequest(imageData.base64, imageData.uri)
+                            else
+                                sendTextRequest(textData)
+
+                            
+                        }}
+                    >
                         {!awaitingResponse
                             // ? <SweetSFSymbol name="checkmark" size={48} />
                             ? <Like1 size="64" color="#000" />

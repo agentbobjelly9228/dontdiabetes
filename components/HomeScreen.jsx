@@ -127,7 +127,7 @@ export default function HomeScreen({ route, navigation }) {
 
                 <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
                 <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
-                    <Text style={styles.blurb}>Hi Teddy,</Text>
+                    <Text style={styles.blurb}>Hi there,</Text>
                     <Text style={styles.title}>{title}</Text>
                     <Text style={styles.blurb}>{subtitle}</Text>
                 </View>

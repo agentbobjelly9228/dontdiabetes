@@ -8,7 +8,7 @@ import Animated, { FadeIn, FadeInUp, FadeOut, FadeOutUp, SlideInDown, SlideOutDo
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import Svg, { Path } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // import SweetSFSymbol from "sweet-sfsymbols";
 
@@ -22,6 +22,8 @@ const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
 export default function CameraPage({ route, navigation }) {
+
+    
     const { mealIndex } = route.params;
 
     const [fontsLoaded] = useFonts({
@@ -46,6 +48,7 @@ export default function CameraPage({ route, navigation }) {
     const meals = ['breakfast', 'lunch', 'dinner']
     const [mealKey, setMealKey] = useState(null)
     const [showMealList, setShowMealList] = useState(null)
+    const [awaitingResponse, setAwaitingResponse] = useState(false)
 
     const [text, setText] = useState(null);
 
@@ -95,7 +98,7 @@ export default function CameraPage({ route, navigation }) {
 
                 const options = { quality: 0.5, base64: true };
                 const data = await cameraRef.current.takePictureAsync(options);
-                navigation.navigate("ShowPhoto", { data: data, mealKey: mealKey })
+                navigation.navigate("ShowPhoto", { imageData: data, textData: null, mealKey: mealKey, })
                 setTimeout(() => setOpen(false), 400)
 
             } catch (error) {
@@ -119,7 +122,7 @@ export default function CameraPage({ route, navigation }) {
         });
 
         if (!result.canceled) {
-            navigation.navigate("ShowPhoto", { data: { "base64": result.assets[0].base64, "uri": result.assets[0].uri } })
+            navigation.navigate("ShowPhoto", { imageData: { "base64": result.assets[0].base64, "uri": result.assets[0].uri }, textData: null, mealKey: mealKey })
             setTimeout(() => setOpen(false), 400)
         }
     };
@@ -141,6 +144,111 @@ export default function CameraPage({ route, navigation }) {
         }
     })
 
+
+    // Not sure if we want to show preview screen when just text is submitted. logic is in ShowPhoto if we choose to do so
+    async function storeData(value, imageLink) {
+        return new Promise(async (resolve) => {
+            value = JSON.parse(value)
+            let savedData = await AsyncStorage.getItem('@todayMacros');
+            var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
+
+            // Initialize macros properties if they don't exist
+            if (!macros.foods) {
+                console.log("null")
+                macros.fruit = 0;
+                macros.vegetables = 0;
+                macros.grains = 0;
+                macros.protein = 0;
+                macros.dairy = 0;
+                macros.kcal = 0;
+                macros.numMeals = 0;
+                macros.images = [];
+                macros.GIs = [];
+                macros.emojis = {};
+                macros.foods = {};
+
+            }
+
+            // Assuming `value` is already an object with the correct structure
+            macros.fruit += value.fruit;
+            macros.vegetables += value.vegetables;
+            macros.grains += value.grains;
+            macros.kcal += value.kcal;
+            macros.protein += value.protein;
+            macros.dairy += value.dairy;
+            macros.numMeals += 1;
+            macros.images.push(imageLink)
+            macros.GIs.push(value.GIindex)
+            value.image = imageLink
+            value.protein = value.protein;
+            value.description = value.food
+
+            // // Get meals already registered for today
+            // const meals = Object.keys(macros.foods)
+
+            // // Logic for which meal it should be
+            // let currentMeal = null;
+            // if (!meals.includes('breakfast') && hour <= preferredMealTimes["lunch"] - 1)
+            //     currentMeal = 'breakfast'
+            // else if (!meals.includes('lunch') && hour <= preferredMealTimes["dinner"] - 1)
+            //     currentMeal = 'lunch'
+            // else
+            //     currentMeal = 'dinner'
+
+            macros.foods[mealKey] = value
+            macros.emojis[mealKey] = value.emoji
+
+            console.log(mealKey)
+
+
+            console.log(macros)
+            // Save the updated macros back to AsyncStorage
+            await AsyncStorage.setItem('@todayMacros', JSON.stringify(macros));
+
+            // Save food to allFoods (for gallery view)
+            let currentFoods = await AsyncStorage.getItem("@allFoods")
+            let parsedFoods = currentFoods ? JSON.parse(currentFoods) : []
+            parsedFoods.push(value)
+            await AsyncStorage.setItem('@allFoods', JSON.stringify(parsedFoods));
+
+
+            resolve(0)
+        })
+
+    }
+
+    async function sendTextRequest(text) {
+        const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        setAwaitingResponse(true);
+
+        const result = await model.generateContent([`Here is a description of food: ${text}. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
+            Consult online sources and be realistic. Return your answer in only a JSON format like this: 
+            {
+                "food": food title in 7 words or less (capitalize each word),
+                "emoji": ONE SINGLE food emoji that best represents the food,
+                "kcal": amount of kilocalories,
+                "fruit": amount of fruit in cups,
+                "vegetables": amount of vegetables in cups,
+                "grains": amount of grains in ounces,
+                "protein": amount of protein in ounces,
+                "dairy": amount of dairy in cups,
+                "GIindex": estimated GI index of the food,
+                
+            }.`]);
+
+        const response = await result.response;
+        var text = response.text().toString();
+        console.log("sup" + text);
+        text = trimForJson(text)
+        console.log(text)
+        console.log("hi")
+        storeData(text, null).then(response => {
+            console.log("hi")
+            navigation.navigate("Feedback");
+        })
+    }
 
     if (!permission) {
         // Camera permissions are still loading
@@ -251,7 +359,7 @@ export default function CameraPage({ route, navigation }) {
                                                         )}
                                                     </Pressable>
                                                 }
-                                                {mealKey === 'snack'
+                                                {/* {mealKey === 'snack'
                                                     ? null
                                                     : <Pressable onPress={() => changeMeal('snack')} style={styles.mealTextContainer}>
                                                         {({ pressed }) => (
@@ -261,7 +369,7 @@ export default function CameraPage({ route, navigation }) {
                                                             </>
                                                         )}
                                                     </Pressable>
-                                                }
+                                                } */}
                                             </Animated.View>
                                             : null
 
@@ -310,7 +418,10 @@ export default function CameraPage({ route, navigation }) {
                                         onChangeText={setText}
                                         value={text}
                                     />
-                                    <Pressable onPress={takePicture} style={styles.submitTextBtn}>
+                                    <Pressable 
+                                        onPress={() => sendTextRequest(text)} 
+                                        style={styles.submitTextBtn}
+                                    >
                                         <Text style={styles.submitText}>Submit!</Text>
                                     </Pressable>
                                 </Pressable>

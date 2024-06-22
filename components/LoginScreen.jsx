@@ -35,10 +35,9 @@ export default function LoginScreen({ navigation, route }) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [action, setAction] = useState("login");
-    const [loggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(null)
+
     const auth = FIREBASE_AUTH;
 
 
@@ -46,9 +45,6 @@ export default function LoginScreen({ navigation, route }) {
         setLoading(true);
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
-            setLoggedIn(true);
-            await AsyncStorage.setItem('@loggedIn', "true");
-            await AsyncStorage.setItem("@uid", auth.currentUser.uid);
             const localPersistence = getReactNativePersistence(AsyncStorage)
             setPersistence(auth, localPersistence).then(() => {
                 // Your code to handle user authentication
@@ -56,27 +52,11 @@ export default function LoginScreen({ navigation, route }) {
                 console.error("Error setting persistence:", error);
             });
         } catch (error) {
-            setLoggedIn(false);
-            console.log(JSON.stringify(error));
             setError(errors[error.code] ? errors[error.code] : "Something went wrong!");
-            await AsyncStorage.setItem('@loggedIn', "false");
         } finally {
             setLoading(false);
         }
     }
-
-    async function register() {
-        setLoading(true);
-        try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(response);
-            setLoggedIn(true);
-            await AsyncStorage.setItem('@loggedIn', "true");
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
 
 
     return (
@@ -121,45 +101,10 @@ export default function LoginScreen({ navigation, route }) {
             </View>
 
             <View style={{ justifyContent: "center", alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.9, alignSelf: "center" }}>
-                <Text style={styles.swapPage}>No account? </Text>
-                <Pressable onPress={() => {navigation.navigate("SignUpScreen")}}><Text style={styles.swapPage}>Sign up here!</Text></Pressable>
+                <Text style={styles.swapPage}>Don't have an account? </Text>
+                <Pressable onPress={() => {navigation.navigate("SignUpScreen")}}><Text style={{...styles.swapPage, textDecorationLine: "underline" }}>Sign up here!</Text></Pressable>
             </View>
         </SafeAreaView>
-
-        // <SafeAreaView>
-        //     <View style={styles.container}>
-        //         <Text style={styles.title}>{action === "login" ? "Login" : "Register"}</Text>
-        //         <TextInput value={email} style={styles.input} placeholder='email' onChangeText={(text) => setEmail(text)} autoCapitalize='none' />
-        //         <TextInput value={password} style={styles.input} placeholder='password' secureTextEntry={true} onChangeText={(text) => setPassword(text)} autoCapitalize='none' />
-        //         {action === "login"
-        //             ? <Button title="Don't have an account? Register here" onPress={() => { setAction("register") }} />
-        //             : <Button title="Already have an account? Login here" onPress={() => { setAction("login") }} />
-        //         }
-        //         {loading
-        //             ? <Text>Loading...</Text>
-        //             : <Pressable title='login' style={styles.loginBtn} onPress={ async () => {
-        //                 await AsyncStorage.setItem("@onboardingDone", "true")
-        //                 console.log(auth)
-        //                 console.log(email)
-        //                 console.log(password)
-        //                 if (action === "login") {
-        //                     signIn();
-        //                 } else {
-        //                     register();
-        //                 }
-        //             }}>
-        //                 {action === "login"
-        //                     ? <Text>Login</Text>
-        //                     : <Text>Register</Text>
-        //                 }
-        //             </Pressable>
-        //         }
-        //         {loggedIn
-        //             ? <Text>Logged In</Text>
-        //             : <Text>Invalid Credentials</Text>
-        //         }
-        //     </View>
-        // </SafeAreaView>
     );
 }
 
