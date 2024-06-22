@@ -16,6 +16,7 @@ import EnterInformation from "./components/EnterInformation";
 import Onboarding from "./components/Onboarding";
 // import { onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from './FirebaseConfig';
+import SignUpScreen from "./components/SignUpScreen";
 
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -105,7 +106,10 @@ export default function App() {
               <Stack.Screen
                 name="LoginScreen"
                 component={LoginScreen}
-                initialParams={{ onLogin: setLoggedIn }}
+              />
+              <Stack.Screen
+                name="SignUpScreen"
+                component={SignUpScreen}
               />
             </>
 

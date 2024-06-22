@@ -19,13 +19,13 @@ const screenHeight = Dimensions.get("screen").height
 const errors = {
     "auth/invalid-email": "Please enter a valid email.",
     "auth/email-already-in-use": "This email is already associated with an account.",
-    "auth/weak-password": "Please ensure your password includes at least 6 characters.",
+    "auth/weak-password": "Your password must include at least 6 characters.",
     "auth/user-not-found": "Your email or password is incorrect.",
     "auth/wrong-password": "Your email or password is incorrect.",
     "auth/invalid-credential": "Your email or password is incorrect."
 }
 
-export default function LoginScreen({ navigation, route }) {
+export default function SignUpScreen({ navigation, route }) {
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -73,6 +73,8 @@ export default function LoginScreen({ navigation, route }) {
             setLoggedIn(true);
             await AsyncStorage.setItem('@loggedIn', "true");
         } catch (error) {
+            setError(errors[error.code] ? errors[error.code] : "Something went wrong!");
+
             console.log(error)
         }
     }
@@ -82,7 +84,7 @@ export default function LoginScreen({ navigation, route }) {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFBEE", }}>
             <View style={styles.container}>
-                <Text style={styles.title}>Login</Text>
+                <Text style={styles.title}>Sign Up</Text>
 
                 <View style={{ position: "absolute", top: screenHeight * 0.15, width: "100%" }}>
                     <View style={{ ...styles.inputContainer, borderColor: error ? "#D41111" : "rgba(60, 60, 67, 0.4)" }}>
@@ -102,11 +104,11 @@ export default function LoginScreen({ navigation, route }) {
                     <Text style={styles.error}>{error}</Text>
                 </View>
                 <Pressable onPress={async () => {
-                    signIn();
+                    register();
                     await AsyncStorage.setItem("@onboardingDone", "true")
                 }}
                     style={styles.infoButton}>
-                    <Text style={styles.infoButtonText}>Let's go!</Text>
+                    <Text style={styles.infoButtonText}>Create Account!</Text>
                 </Pressable>
 
                 <Text style={styles.infoText}>Or continue with</Text>
@@ -121,8 +123,8 @@ export default function LoginScreen({ navigation, route }) {
             </View>
 
             <View style={{ justifyContent: "center", alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.9, alignSelf: "center" }}>
-                <Text style={styles.swapPage}>No account? </Text>
-                <Pressable onPress={() => {navigation.navigate("SignUpScreen")}}><Text style={styles.swapPage}>Sign up here!</Text></Pressable>
+                <Text style={styles.swapPage}>Already have an account? </Text>
+                <Pressable onPress={() => {navigation.navigate("SignUpScreen")}}><Text style={styles.swapPage}>Log in here!</Text></Pressable>
             </View>
         </SafeAreaView>
 
@@ -249,7 +251,8 @@ const styles = StyleSheet.create({
     error: {
         color: "#D41111",
         alignSelf: "center",
-        marginTop: 10
+        marginTop: 10,
+        textAlign: "center"
     },
     swapPage: {
         fontFamily: "SF-Pro",
