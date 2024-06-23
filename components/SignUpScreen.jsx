@@ -47,8 +47,6 @@ export default function SignUpScreen({ navigation, route }) {
     async function register() {
         setLoading(true);
         try {
-            await AsyncStorage.setItem("@onboardingDone", "true")
-
             // await AsyncStorage.setItem("@name", name);
             // await AsyncStorage.setItem("@age", JSON.stringify(age));
             // await AsyncStorage.setItem("@weight", JSON.stringify(weight));
@@ -61,13 +59,18 @@ export default function SignUpScreen({ navigation, route }) {
 
             let profile = {profile: {age: age, weight: weight, exercise: exercise}}
 
-            await createUserWithEmailAndPassword(auth, email, password).then((result) => {
-                let currentUser = auth.currentUser
-                updateProfile(currentUser, {displayName: displayName})
-                
-            })
+            await createUserWithEmailAndPassword(auth, email, password)
+
             // Store in firebase data collected via onboarding
             await set(ref(db, auth.currentUser.uid), profile)
+            let currentUser = auth.currentUser
+            updateProfile(currentUser, {displayName: displayName})
+            .then(async () => {
+
+                await AsyncStorage.setItem("@onboardingDone", "true")
+            })
+
+
         } catch (error) {
             setError(errors[error.code] ? errors[error.code] : "Something went wrong!");
             console.log(error)

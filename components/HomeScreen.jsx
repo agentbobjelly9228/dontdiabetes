@@ -28,6 +28,7 @@ export default function HomeScreen({ route, navigation }) {
     const [subtitle, setSubtitle] = useState("");
     // const [uid, setUID] = useState("");
     const [currentMeal, setCurrentMeal] = useState(0)
+    const [name, setName] = useState(null)
 
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
@@ -88,6 +89,9 @@ export default function HomeScreen({ route, navigation }) {
                 let uid = auth.currentUser.uid;
                 getGraphData(uid);
 
+                let displayName = auth.currentUser.displayName || await AsyncStorage.getItem("@name")
+                setName(displayName);
+                
                 let macros = savedData ? JSON.parse(savedData) : null;
 
                 // Set title, subtitle, mascot, and theme
@@ -107,6 +111,7 @@ export default function HomeScreen({ route, navigation }) {
 
     );
 
+
     const handleSheetChanges = React.useCallback((index) => {
         console.log('handleSheetChanges', index);
     }, []);
@@ -120,13 +125,13 @@ export default function HomeScreen({ route, navigation }) {
         "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
     });
 
-    if (!loading)
+    if (!loading && name)
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5" }}>
 
                 <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
                 <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
-                    <Text style={styles.blurb}>Hi {auth?.currentUser?.displayName},</Text>
+                    <Text style={styles.blurb}>Hi {name},</Text>
                     <Text style={styles.title}>{title}</Text>
                     <Text style={styles.blurb}>{subtitle}</Text>
                 </View>
