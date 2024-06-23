@@ -49,7 +49,7 @@ export default function ProgressBar({ stage, color, emojis }) {
                     ? <View style={{ alignItems: "center", width: 75, justifyContent: "center" }}>
                         <Text style={styles.emoji}>{[...emojis.breakfast].slice(0, 1).join('')}</Text>
                     </View>
-                    : <Pressable onPress={() => navigation.navigate("Camera", {mealIndex: 0})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
+                    : <Pressable onPress={() => navigation.navigate("Camera", {mealKey: "breakfast", alertBadPhoto: false})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
                         {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
                         <Add size={40} color="black" />
                     </Pressable>
@@ -58,7 +58,7 @@ export default function ProgressBar({ stage, color, emojis }) {
                     ? <View style={{ alignItems: "center", width: 75, justifyContent: "center" }}>
                         <Text style={styles.emoji}>{[...emojis.lunch].slice(0, 1).join('')}</Text>
                     </View>
-                    : <Pressable onPress={() => navigation.navigate("Camera", {mealIndex: 1})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
+                    : <Pressable onPress={() => navigation.navigate("Camera", {mealKey: "lunch", alertBadPhoto: false})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
                     {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
                     <Add size={40} color="black" />
                 </Pressable>
@@ -67,7 +67,7 @@ export default function ProgressBar({ stage, color, emojis }) {
                     ? <View style={{ alignItems: "center", width: 75, justifyContent: "center" }}>
                         <Text style={styles.emoji}>{[...emojis.dinner].slice(0, 1).join('')}</Text>
                     </View>
-                    : <Pressable onPress={() => navigation.navigate("Camera", {mealIndex: 2})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
+                    : <Pressable onPress={() => navigation.navigate("Camera", {mealKey: "dinner", alertBadPhoto: false})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
                     {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
                     <Add size={40} color="black" />
                 </Pressable>

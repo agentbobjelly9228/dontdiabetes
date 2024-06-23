@@ -64,11 +64,11 @@ export default function Tabs({ route, navigation }) {
   const getMeal = () => {
     let hour = dayjs().hour();
     if (hour >= preferredMealTimes["dinner"] - 1) {
-      return 2
+      return "dinner"
     } else if (hour >= preferredMealTimes["lunch"] - 1) {
-      return 1
+      return "lunch"
     } else {
-      return 0
+      return "breakfast"
     }
   }
 
@@ -150,7 +150,7 @@ export default function Tabs({ route, navigation }) {
               onPress={() => {
                 setSelected(true)
                 let meal = getMeal()
-                navigation.navigate('Camera', { mealIndex: meal })
+                navigation.navigate('Camera', { mealKey: meal, alertBadPhoto: false })
               }}
               selectedCamera={selected}
             />

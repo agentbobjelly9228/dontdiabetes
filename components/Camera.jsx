@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Image, Pressable, Dimensions, SafeAreaView, TextInput, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, Pressable, Dimensions, TextInput, Keyboard, Alert } from 'react-native';
 import { Link } from 'expo-router';
 import { AutoFocus, Camera, CameraType } from 'expo-camera/legacy';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -16,15 +16,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lifebuoy, GalleryAdd, ArrowRotateRight, Back, Text as TextIcon, ArrowDown2, Sun1, Moon, Coffee, Grammerly } from 'iconsax-react-native';
 
-import SegmentedControl from '@react-native-segmented-control/segmented-control'
-
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
 export default function CameraPage({ route, navigation }) {
 
     
-    const { mealIndex } = route.params;
+    const { mealKey, alertBadPhoto } = route.params;
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -46,12 +44,19 @@ export default function CameraPage({ route, navigation }) {
     const [bounceValue, setBounceValue] = useState(true);
 
     const meals = ['breakfast', 'lunch', 'dinner']
-    const [mealKey, setMealKey] = useState(null)
+    const [currentMealKey, setMealKey] = useState(null)
     const [showMealList, setShowMealList] = useState(null)
     const [awaitingResponse, setAwaitingResponse] = useState(false)
     const [error, setError] =useState(null)
 
     const [text, setText] = useState(null);
+
+    
+    function createAlert() {
+        Alert.alert('Retake Your Photo', "We couldn't detect any food in the photo you took. Please try again!", [
+            {text: 'OK'},
+          ]);
+    }
 
     async function clearAsyncStorageIfFull() {
         try {
@@ -83,9 +88,12 @@ export default function CameraPage({ route, navigation }) {
         useCallback(() => {
             // Set cameraOpen to true whenever this screen is focused
             setOpen(true);
-            setMealKey(meals[mealIndex])
+            setMealKey(mealKey)
             clearAsyncStorageIfFull()
-        }, [mealIndex])
+            
+            if (alertBadPhoto)
+                createAlert()
+        }, [mealKey, alertBadPhoto])
     );
 
     const handleSheetChanges = useCallback((i) => {
@@ -148,7 +156,6 @@ export default function CameraPage({ route, navigation }) {
 
     // Not sure if we want to show preview screen when just text is submitted. logic is in ShowPhoto if we choose to do so
     async function storeData(value, imageLink) {
-        value = JSON.parse(value)
         return new Promise(async (resolve) => {
             let savedData = await AsyncStorage.getItem('@todayMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
@@ -224,20 +231,26 @@ export default function CameraPage({ route, navigation }) {
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         setAwaitingResponse(true);
 
-        const result = await model.generateContent([`Here is a description of food: ${text}. Considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
+        const result = await model.generateContent([`Here is a description of food: ${text}.
+            The description must describe a specific food or meal. If the description does not describe a food, is vague, or specifies nothing, return only the string "error" and NO JSON. 
+            Examples of descriptions that do not describe a specific food or meal: nothing, something tasty, food, meal with food.
+            Do not make up what food was eaten. For instance, if the text is "slice of something", do not attempt to make a specific food (ex. "slice of pizza")
+
+            If the description does describe a specific food or meal, considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
             Consult online sources and be realistic. Return your answer in only a JSON format like this: 
-            {
-                "food": food title in 7 words or less (capitalize each word),
-                "emoji": ONE SINGLE food emoji that best represents the food,
-                "kcal": amount of kilocalories,
-                "fruit": amount of fruit in cups,
-                "vegetables": amount of vegetables in cups,
-                "grains": amount of grains in ounces,
-                "protein": amount of protein in ounces,
-                "dairy": amount of dairy in cups,
-                "GIindex": estimated GI index of the food,
-                
-            }.`]);
+
+            {"food": food title in 7 words or less (capitalize each word),
+            "emoji": ONE SINGLE food emoji that best represents the food,
+            "kcal": amount of kilocalories,
+            "fruit": amount of fruit in cups,
+            "vegetables": amount of vegetables in cups,
+            "grains": amount of grains in ounces,
+            "protein": amount of protein in ounces,
+            "dairy": amount of dairy in cups,
+            "GIindex": estimated GI index of the food,}
+            
+            If the food has 0 of anything, return the string "error" and nothing else.
+            `]);
 
         const response = await result.response;
         var text = response.text().toString();
@@ -245,18 +258,19 @@ export default function CameraPage({ route, navigation }) {
         text = trimForJson(text);
         console.log(text)
         
-
-        if (text)
-            storeData(text, null).then(response => {
+        
+        let parsedText = JSON.parse(text);
+        
+        // check if JSON is formatted correctly
+        if (parsedText?.fruit != null)
+            storeData(parsedText, null).then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");
+
             })
         else {
             // not food!
-            console.log("WHOOPSIES")
-            setError("Please describe your food better!")
-            
-            
+            setError("Please describe your food better!") 
         }
     }
 
@@ -418,7 +432,7 @@ export default function CameraPage({ route, navigation }) {
                                 <Pressable onPress={() => Keyboard.dismiss()} style={styles.bottomSheetContent}>
                                     <Text style={styles.bigText}>No photo? No problem!</Text>
                                     <TextInput
-                                        style={styles.textField}
+                                        style={{...styles.textField, borderColor: error ? "#D41111" : "#130630",}}
                                         placeholder='Type your meal...'
                                         multiline={true}
                                         onSubmitEditing={() => console.log(text)}
@@ -443,134 +457,6 @@ export default function CameraPage({ route, navigation }) {
 
             </>
         )
-
-    // if (cameraOpen)
-    //     return (<>
-    // <Animated.View entering={FadeIn} style={{ height: Dimensions.get('window').height, backgroundColor: "#FFCC26", position: "absolute", width: "100%" }}>
-    // </Animated.View>
-    //         <Animated.View entering={SlideInDown.duration(200)} exiting={SlideOutLeft} style={{ flex: 1, backgroundColor: "#FFCC26", }}>
-    // <SafeAreaView style={styles.topContainer}>
-    //     <Pressable onPress={() => {
-    //         navigation.navigate('Home')
-    //         setOpen(false)
-    //     }} style={styles.backBtn}>
-    //         {/* <SweetSFSymbol name="arrow.uturn.backward" size={24} colors={["white"]} /> */}
-    //         <Back size="24" color="#000" style={{ alignSelf: "center" }} />
-    //     </Pressable>
-    //     <SegmentedControl
-    //         values={['Breakfast', 'Lunch', 'Dinner']}
-    //         selectedIndex={mealIndex}
-    //         onValueChange={(value) => {
-    //             setMealKey(value.toLowerCase());
-    //         }}
-    //         fontStyle={{ fontFamily: "SpaceGrotesk-Regular", fontSize: 18 }}
-    //         backgroundColor={'#FFE89D'}
-    //         tintColor={'#F7B600'}
-    //         style={styles.segmentedControl}
-    //     />
-    // </SafeAreaView>
-
-    //             <View style={styles.container}>
-    // <Camera style={styles.camera} type={type} ref={cameraRef} autoFocus={AutoFocus.off}>
-    //     <View style={styles.buttonContainer}>
-    //         <Pressable onPress={changeCameraType} style={styles.actionBtn}>
-    //             {/* <SweetSFSymbol name="arrow.triangle.2.circlepath" size={24} colors={["white"]} /> */}
-    //             <ArrowRotateRight size="24" color="#FFF" style={{ alignSelf: "center" }} />
-    //         </Pressable>
-    //         <Pressable onPress={takePicture} style={styles.pictureBtn}>
-    //             {/* <SweetSFSymbol name="camera.aperture" size={48} colors={["white"]} symbolEffect={{
-    //         type: "bounce",
-    //         value: bounceValue,
-    //         direction: "down",
-    //     }}/> */}
-    //             <Lifebuoy size="48" color="#000" style={{ alignSelf: "center" }} />
-    //         </Pressable>
-    //         <Pressable onPress={pickImage} style={styles.actionBtn}>
-    //             {/* <SweetSFSymbol name="photo.on.rectangle.angled" size={24} colors={["white"]} /> */}
-    //             <GalleryAdd size="24" color="#FFF" style={{ alignSelf: "center", }} />
-    //         </Pressable>
-    //     </View>
-    // </Camera>
-    //             </View >
-
-    //         </Animated.View>
-    //     </>)
-
-    // if (cameraOpen)
-    //     return (
-    //         <>
-    //             <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
-    //                 <View style={styles.container}>
-    //                     <Camera style={styles.camera} type={type} ref={cameraRef} autoFocus={AutoFocus.off}>
-    //                         <Pressable onPress={() => {
-    //                             navigation.navigate('Home')
-    //                             setOpen(false)
-    //                         }} style={styles.backBtn}>
-    //                             {/* <SweetSFSymbol name="arrow.uturn.backward" size={24} colors={["white"]} /> */}
-    //                             <Back size="32" color="white" style={{ alignSelf: "center" }} />
-    //                         </Pressable>
-    //                         <View style={styles.buttonContainer}>
-    //                             <Pressable onPress={takePicture} style={styles.pictureBtn}>
-    //                                 {/* <SweetSFSymbol name="camera.aperture" size={48} colors={["white"]} symbolEffect={{
-    //                     type: "bounce",
-    //                     value: bounceValue,
-    //                     direction: "down",
-    //                 }}/> */}
-    //                                 <Lifebuoy size="48" color="#000" style={{ alignSelf: "center" }} />
-    //                             </Pressable>
-    //                         </View>
-    //                     </Camera>
-    //                 </View>
-    //                 <View style={styles.bottomButtons}>
-    // <Pressable onPress={openTextSheet} style={styles.actionBtn}>
-    //     {/* <SweetSFSymbol name="photo.on.rectangle.angled" size={24} colors={["white"]} /> */}
-    //     <TextIcon size="24" color="#130630" style={{ alignSelf: "center", }} />
-    // </Pressable>
-    //                     <SegmentedControl
-    //                         values={['Breakfast', 'Lunch', 'Dinner']}
-    //                         selectedIndex={mealIndex}
-    //                         onValueChange={(value) => {
-    //                             setMealKey(value.toLowerCase());
-    //                         }}
-    //                         fontStyle={{ fontFamily: "SpaceGrotesk-Regular", fontSize: 15 }}
-    //                         backgroundColor={'#FFE89D'}
-    //                         tintColor={'#F7B600'}
-    //                         style={styles.segmentedControl}
-    //                     />
-    //                     <Pressable onPress={pickImage} style={styles.actionBtn}>
-    //                         {/* <SweetSFSymbol name="photo.on.rectangle.angled" size={24} colors={["white"]} /> */}
-    //                         <GalleryAdd size="24" color="#130630" style={{ alignSelf: "center", }} />
-    //                     </Pressable>
-    //                 </View>
-    //                 <BottomSheet
-    //                     ref={bottomSheetRef}
-    //                     snapPoints={['75%', '95%']}
-    //                     enablePanDownToClose={true}
-    //                     backgroundStyle={styles.bottomSheetBg}
-    //                     index={-1}
-    //                     onChange={handleSheetChanges}
-    //                 >
-    //                     <BottomSheetView style={styles.bottomSheetContent}>
-    //                         <Text style={styles.bigText}>No photo? No problem!</Text>
-    //                         <TextInput
-    //                             style={styles.textField}
-    //                             placeholder='Type your meal...'
-    //                             multiline={true}
-    //                             onSubmitEditing={() => console.log(text)}
-    //                             enterKeyHint='done'
-    //                             maxLength={100}
-    //                             blurOnSubmit={true}
-    //                             onChangeText={setText}
-    //                             value={text}
-    //                         />
-    //                         <Pressable onPress={takePicture} style={styles.submitTextBtn}>
-    //                             <Text style={styles.submitText}>Submit!</Text>
-    //                         </Pressable>
-    //                     </BottomSheetView>
-    //                 </BottomSheet>
-    //             </SafeAreaView>
-    //         </>
-    //     );
 }
 
 
@@ -678,7 +564,6 @@ const styles = StyleSheet.create({
         width: "95%",
         fontFamily: "SpaceGrotesk-Regular",
         fontSize: 18,
-        borderColor: "#130630",
         borderWidth: 2,
         borderRadius: 25,
         padding: 10,
@@ -731,5 +616,10 @@ const styles = StyleSheet.create({
     },
     mealListContainer: {
         alignItems: "flex-end",
+    },
+    error: {
+        color: "#D41111",
+        fontSize: 15,
+        fontFamily: "SpaceGrotesk-Regular",
     },
 });
