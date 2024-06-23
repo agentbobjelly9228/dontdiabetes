@@ -177,7 +177,7 @@ export default function Feedback({ navigation }) {
             let snapshot = await get(ref(database, auth.currentUser.uid))
             let allScores = [];
             if (snapshot.exists()) {
-                allScores = snapshot.val();
+                allScores = snapshot.val().scores;
             } else {
                 console.log("No data available");
             }
@@ -200,7 +200,7 @@ export default function Feedback({ navigation }) {
 
             // Update AsyncStorage
             await AsyncStorage.setItem('@allScores', JSON.stringify(parsedScores));
-            set(ref(database, auth.currentUser.uid), parsedScores)
+            set(ref(database, auth.currentUser.uid), {scores: parsedScores})
 
             console.log(savedData.GIs)
             var temp = 0;

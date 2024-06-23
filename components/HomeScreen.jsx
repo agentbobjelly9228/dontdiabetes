@@ -32,13 +32,12 @@ export default function HomeScreen({ route, navigation }) {
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
 
-    // console.log("thing" + logOut)
     // AsyncStorage.clear()
     // Change to logic include time of day
     async function getGraphData(uid) {
         let snapshot = await get(ref(database, uid))
         if (snapshot.exists()) {
-            const allScores = snapshot.val();
+            const allScores = snapshot.val()?.scores || []; 
             setGraphData(allScores);
         } else {
             console.log("No data available");
@@ -127,7 +126,7 @@ export default function HomeScreen({ route, navigation }) {
 
                 <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
                 <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
-                    <Text style={styles.blurb}>Hi there,</Text>
+                    <Text style={styles.blurb}>Hi {auth?.currentUser?.displayName},</Text>
                     <Text style={styles.title}>{title}</Text>
                     <Text style={styles.blurb}>{subtitle}</Text>
                 </View>

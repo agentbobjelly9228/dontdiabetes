@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 // import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
-import { FIREBASE_AUTH } from '../FirebaseConfig';
+import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
 
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, SafeAreaView, } from 'react-native';
-
+import { ref, set, get } from 'firebase/database';
 
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
 import { Apple, Google } from 'iconsax-react-native';
+import { updateProfile } from "firebase/auth";
+
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
@@ -38,14 +40,37 @@ export default function SignUpScreen({ navigation, route }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const auth = FIREBASE_AUTH;
+    const db = FIREBASE_DATABASE;
+
 
 
     async function register() {
         setLoading(true);
         try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
+            await AsyncStorage.setItem("@onboardingDone", "true")
+
+            // await AsyncStorage.setItem("@name", name);
+            // await AsyncStorage.setItem("@age", JSON.stringify(age));
+            // await AsyncStorage.setItem("@weight", JSON.stringify(weight));
+            // await AsyncStorage.setItem("@exercise", JSON.stringify(exercise));
+
+            const displayName = await AsyncStorage.getItem("@name")
+            const age = await AsyncStorage.getItem("@age")
+            const weight = await AsyncStorage.getItem("@weight")           
+            const exercise = await AsyncStorage.getItem("@exercise")
+
+            let profile = {profile: {age: age, weight: weight, exercise: exercise}}
+
+            await createUserWithEmailAndPassword(auth, email, password).then((result) => {
+                let currentUser = auth.currentUser
+                updateProfile(currentUser, {displayName: displayName})
+                
+            })
+            // Store in firebase data collected via onboarding
+            await set(ref(db, auth.currentUser.uid), profile)
         } catch (error) {
             setError(errors[error.code] ? errors[error.code] : "Something went wrong!");
+            console.log(error)
         }
     }
 
@@ -74,7 +99,6 @@ export default function SignUpScreen({ navigation, route }) {
                 </View>
                 <Pressable onPress={async () => {
                     register();
-                    await AsyncStorage.setItem("@onboardingDone", "true")
                 }}
                     style={styles.infoButton}>
                     <Text style={styles.infoButtonText}>Create Account!</Text>

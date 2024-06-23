@@ -154,7 +154,7 @@ export default function EnterInformation({ navigation }) {
             />
             <View style={{ zIndex: 100, justifyContent: "space-evenly", gap: 50, alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.8, alignSelf: "center", flex: 1, }}>
                 {currentSlideIndex === data.length - 1
-                    ? <Pressable onPress={ () => navigation.navigate("LoginScreen")} style={styles.infoButton}>
+                    ? <Pressable onPress={ () => navigation.navigate("SignUpScreen")} style={styles.infoButton}>
                         <Text style={styles.infoButtonText}>Let's go!</Text>
                     </Pressable>
                     : <>

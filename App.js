@@ -14,7 +14,6 @@ import LoginScreen from "./components/LoginScreen";
 import Tabs from './components/Tabs';
 import EnterInformation from "./components/EnterInformation";
 import Onboarding from "./components/Onboarding";
-// import { onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import SignUpScreen from "./components/SignUpScreen";
 
