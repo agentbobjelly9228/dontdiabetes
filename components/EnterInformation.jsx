@@ -87,9 +87,10 @@ export default function EnterInformation({ navigation }) {
     const animatedBigGuy = useAnimatedStyle(() => {
         return {
             transform: [{ rotate: offset.value + "deg" }],
-            position: "absolute",
-            top: -20,
-            alignSelf: "center",
+            position: "absolute", 
+            top: screenHeight * -0.1, 
+            alignSelf: "center", 
+            
         }
     })
 
@@ -137,7 +138,7 @@ export default function EnterInformation({ navigation }) {
     return (
         <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
             <Animated.View style={animatedBigGuy}>
-                <Image source={onboardingguy} style={{ height: 470, resizeMode: "contain", }} />
+                <Image source={onboardingguy} style={{ height: screenHeight * 0.7  }} />
             </Animated.View>
 
             <FlatList
@@ -334,7 +335,7 @@ const styles = StyleSheet.create({
     },
     backButton: {
 
-    }
+    },
 });
 
 

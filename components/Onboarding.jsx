@@ -40,7 +40,7 @@ export default function Onboarding({ navigation }) {
 
     return (
         <View style={{backgroundColor: "#FFFBEE", flex: 1,}}>
-        <Image source={onboardingguy} style={{ alignSelf: "center", height: 470, resizeMode: "contain", position: "absolute", top: -20  }} />
+        <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.7, position: "absolute",  top: screenHeight * -0.1, }} />
         
         <FlatList 
             data={data}
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
         fontFamily: "SF-Pro",
         textAlign: "center",
         fontSize: 22,
-        textDecorationLine: "underline"
+        textDecorationLine: "underline",
     }
 });
 
