@@ -4,7 +4,7 @@ import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
-
+// import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, SafeAreaView, } from 'react-native';
 import { ref, set, get } from 'firebase/database';
@@ -26,7 +26,14 @@ const errors = {
     "auth/wrong-password": "Your email or password is incorrect.",
     "auth/invalid-credential": "Your email or password is incorrect."
 }
+async function loginWithGoogle() {
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
+    const { idToken } = await GoogleSignin.signIn();
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    return auth().signInWithCredential(googleCredential);
+}
 export default function SignUpScreen({ navigation, route }) {
 
     const [fontsLoaded] = useFonts({
@@ -54,21 +61,21 @@ export default function SignUpScreen({ navigation, route }) {
 
             const displayName = await AsyncStorage.getItem("@name")
             const age = await AsyncStorage.getItem("@age")
-            const weight = await AsyncStorage.getItem("@weight")           
+            const weight = await AsyncStorage.getItem("@weight")
             const exercise = await AsyncStorage.getItem("@exercise")
 
-            let profile = {profile: {age: age, weight: weight, exercise: exercise}}
+            let profile = { profile: { age: age, weight: weight, exercise: exercise } }
 
             await createUserWithEmailAndPassword(auth, email, password)
 
             // Store in firebase data collected via onboarding
             await set(ref(db, auth.currentUser.uid), profile)
             let currentUser = auth.currentUser
-            updateProfile(currentUser, {displayName: displayName})
-            .then(async () => {
+            updateProfile(currentUser, { displayName: displayName })
+                .then(async () => {
 
-                await AsyncStorage.setItem("@onboardingDone", "true")
-            })
+                    await AsyncStorage.setItem("@onboardingDone", "true")
+                })
 
 
         } catch (error) {
@@ -112,7 +119,9 @@ export default function SignUpScreen({ navigation, route }) {
                     <Pressable style={styles.iconButton}>
                         <Apple size={32} color="black" variant="Bold" />
                     </Pressable>
-                    <Pressable style={styles.iconButton}>
+                    <Pressable style={styles.iconButton} onPress={() => {
+                        console.log("hi")
+                    }}>
                         <Google size={32} color="black" variant="Bold" />
                     </Pressable>
                 </View>
@@ -120,7 +129,7 @@ export default function SignUpScreen({ navigation, route }) {
 
             <View style={{ justifyContent: "center", alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.9, alignSelf: "center" }}>
                 <Text style={styles.swapPage}>Already have an account? </Text>
-                <Pressable onPress={() => {navigation.navigate("LoginScreen")}}><Text style={{...styles.swapPage, textDecorationLine: "underline" }}>Log in here!</Text></Pressable>
+                <Pressable onPress={() => { navigation.navigate("LoginScreen") }}><Text style={{ ...styles.swapPage, textDecorationLine: "underline" }}>Log in here!</Text></Pressable>
             </View>
         </SafeAreaView>
     );
