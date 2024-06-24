@@ -261,7 +261,7 @@ export default function ShowPhoto({ route, navigation }) {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
+                    <Pressable style={styles.backBtn} onPress={() => {if (!awaitingResponse) navigation.goBack()}}>
                         {!awaitingResponse
                             // ? <SweetSFSymbol name="arrow.uturn.backward" size={24} />
                             ? <Back size="32" color="#000" />
@@ -270,7 +270,7 @@ export default function ShowPhoto({ route, navigation }) {
                     </Pressable>
                     <Pressable style={styles.submitBtn} 
                         onPress={() => {
-                            if (imageData)
+                            if (imageData && !awaitingResponse)
                                 sendRequest(imageData.base64, imageData.uri)
                             else
                                 sendTextRequest(textData)

@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native"
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home2, Camera as CameraIcon, Gallery, Camera, } from "iconsax-react-native";
+import { Home2, Camera as CameraIcon, Gallery, Camera, Check, TickSquare, } from "iconsax-react-native";
 // import SweetSFSymbol from "sweet-sfsymbols";
 import { useFonts } from "expo-font";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import HomeScreen from "./HomeScreen";
 import CameraPage from "./Camera";
@@ -43,6 +45,32 @@ const CameraTabButton = ({ children, onPress, selectedCamera }) => {
   )
 };
 
+const AllMealsEatenCameraTabButton = ({ children, onPress, selectedCamera }) => {
+  return (
+    <>
+      <Pressable
+        style={{
+          height: 60,
+          width: 60,
+          borderRadius: 20,
+          backgroundColor: '#FFFFFF',
+          padding: 10,
+          alignItems: "center",
+          shadowOpacity: 0.5,
+          shadowOffset: 5,
+          marginBottom: 50,
+          justifyContent: "center",
+          alignItems: "center",
+          bottom: 30
+        }}
+        onPress={onPress}
+      >
+        <TickSquare size={32} color="black" variant={selectedCamera ? "Bold" : null} />
+      </Pressable>
+    </>
+  )
+};
+
 
 export default function Tabs({ route, navigation }) {
   const isTabBarVisible = (route) => {
@@ -53,22 +81,38 @@ export default function Tabs({ route, navigation }) {
   };
   useFocusEffect(
     useCallback(() => {
-      setSelected(false)
+      const getAndSetMealsEaten = async () => {
+        let macros = await AsyncStorage.getItem('@todayMacros');
+        macros = JSON.parse(macros)
+        let asyncMeals = macros ? Object.keys(macros?.foods) : []
+        console.log(asyncMeals)
+        setMealsEaten(asyncMeals)
+      }
+
+      setSelected(false);
+      getAndSetMealsEaten();
     }, [selected])
   );
 
   const [selected, setSelected] = useState(false)
+  const [mealsEaten, setMealsEaten] = useState(null)
 
   const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
 
-  const getMeal = () => {
+
+
+  const getMeal = async () => {
     let hour = dayjs().hour();
-    if (hour >= preferredMealTimes["dinner"] - 1) {
+
+    // Will continue being dinner until 3 AM
+    if ((hour >= preferredMealTimes["dinner"] - 1 || hour <= 3) && !mealsEaten.includes("dinner")) {
       return "dinner"
-    } else if (hour >= preferredMealTimes["lunch"] - 1) {
+    } else if (hour >= preferredMealTimes["lunch"] - 1 && !mealsEaten.includes("lunch")) {
       return "lunch"
-    } else {
+    } else if (!mealsEaten.includes("breakfast")) {
       return "breakfast"
+    } else {
+      return null
     }
   }
 
@@ -144,17 +188,31 @@ export default function Tabs({ route, navigation }) {
           tabBarIcon: ({ focused }) => (
             <CameraIcon size={32} color="black" />
           ),
-          tabBarButton: (props) => (
-            <CameraTabButton
-              {...props}
-              onPress={() => {
-                setSelected(true)
-                let meal = getMeal()
-                navigation.navigate('Camera', { mealKey: meal, alertBadPhoto: false })
-              }}
-              selectedCamera={selected}
-            />
-          )
+          tabBarButton: (props) => {
+            if (mealsEaten?.length !== 3)
+              return (
+                <CameraTabButton
+                  {...props}
+                  onPress={async () => {
+                    setSelected(true)
+                    let meal = await getMeal();
+                    console.log(meal)
+                    if (meal)
+                      navigation.navigate('Camera', { mealKey: meal, alertBadPhoto: false })
+                    else
+                      console.log("ERROR")
+                  }}
+                  selectedCamera={selected}
+                />
+              )
+            else
+              return (
+                <AllMealsEatenCameraTabButton
+                {...props}
+                onPress={null}
+              />
+            )
+          }
         }}
       />
       <Tab.Screen name="Gallery" component={GalleryPage} />

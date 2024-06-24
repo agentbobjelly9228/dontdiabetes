@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Image, Pressable, Dimensions, TextInput, Keyboard, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, Pressable, Dimensions, TextInput, Keyboard, Alert, ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
 import { AutoFocus, Camera, CameraType } from 'expo-camera/legacy';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -21,7 +21,7 @@ const windowWidth = Dimensions.get('window').width;
 
 export default function CameraPage({ route, navigation }) {
 
-    
+
     const { mealKey, alertBadPhoto } = route.params;
 
     const [fontsLoaded] = useFonts({
@@ -47,17 +47,17 @@ export default function CameraPage({ route, navigation }) {
     const [currentMealKey, setMealKey] = useState(null)
     const [showMealList, setShowMealList] = useState(null)
     const [awaitingResponse, setAwaitingResponse] = useState(false)
-    const [error, setError] =useState(null)
+    const [error, setError] = useState(null)
 
     const [mealsEaten, setMealsEaten] = useState(null)
 
     const [text, setText] = useState(null);
 
-    
+
     function createAlert() {
         Alert.alert('Retake Your Photo', "We couldn't detect any food in the photo you took. Please try again!", [
-            {text: 'OK'},
-          ]);
+            { text: 'OK' },
+        ]);
     }
 
     async function clearAsyncStorageIfFull() {
@@ -90,14 +90,13 @@ export default function CameraPage({ route, navigation }) {
 
 
 
-    
+
     useFocusEffect(
         useCallback(() => {
             async function getAndSetMealsEaten() {
                 let macros = await AsyncStorage.getItem('@todayMacros');
-                macros = macros ? JSON.parse(macros) : {}
-                let asyncMeals = Object.keys(macros?.foods);
-                console.log("ME" + asyncMeals)
+                macros = JSON.parse(macros)
+                let asyncMeals = macros ? Object.keys(macros?.foods) : []
                 setMealsEaten(asyncMeals);
             }
 
@@ -105,12 +104,12 @@ export default function CameraPage({ route, navigation }) {
             setOpen(true);
             setMealKey(mealKey)
             clearAsyncStorageIfFull()
-            
+
             if (alertBadPhoto)
                 createAlert()
 
             getAndSetMealsEaten();
-        
+
 
         }, [mealKey, alertBadPhoto])
     );
@@ -149,7 +148,7 @@ export default function CameraPage({ route, navigation }) {
         });
 
         if (!result.canceled) {
-            navigation.navigate("ShowPhoto", { imageData: { "base64": result.assets[0].base64, "uri": result.assets[0].uri }, textData: null, mealKey: mealKey })
+            navigation.navigate("ShowPhoto", { imageData: { "base64": result.assets[0].base64, "uri": result.assets[0].uri }, textData: null, mealKey: currentMealKey })
         }
     };
 
@@ -208,22 +207,11 @@ export default function CameraPage({ route, navigation }) {
             value.protein = value?.protein;
             value.description = value?.food
 
-            // // Get meals already registered for today
-            // const meals = Object.keys(macros.foods)
 
-            // // Logic for which meal it should be
-            // let currentMeal = null;
-            // if (!meals.includes('breakfast') && hour <= preferredMealTimes["lunch"] - 1)
-            //     currentMeal = 'breakfast'
-            // else if (!meals.includes('lunch') && hour <= preferredMealTimes["dinner"] - 1)
-            //     currentMeal = 'lunch'
-            // else
-            //     currentMeal = 'dinner'
+            macros.foods[currentMealKey] = value
+            macros.emojis[currentMealKey] = value.emoji
 
-            macros.foods[mealKey] = value
-            macros.emojis[mealKey] = value.emoji
-
-            console.log(mealKey)
+            console.log(currentMealKey)
 
 
             console.log(macros)
@@ -274,10 +262,15 @@ export default function CameraPage({ route, navigation }) {
         console.log(text)
         text = trimForJson(text);
         console.log(text)
-        
-        
-        let parsedText = JSON.parse(text);
-        
+
+
+        let parsedText = null
+        try {
+            parsedText = JSON.parse(text)
+        } catch {
+            console.log("result didn't parse")
+        }
+
         // check if JSON is formatted correctly
         if (!isNaN(parsedText?.fruit))
             storeData(parsedText, null).then(response => {
@@ -287,7 +280,8 @@ export default function CameraPage({ route, navigation }) {
             })
         else {
             // not food!
-            setError("Please describe your food better!") 
+            setError("Please describe your food better!")
+            setAwaitingResponse(false)
         }
     }
 
@@ -310,7 +304,7 @@ export default function CameraPage({ route, navigation }) {
         );
     }
 
-    if (cameraOpen)
+    if (cameraOpen && mealsEaten)
         return (
             <>
                 {cameraOpen
@@ -357,9 +351,12 @@ export default function CameraPage({ route, navigation }) {
                                             {({ pressed }) => (
                                                 <>
                                                     <Text style={[{ backgroundColor: pressed ? null : null }, styles.chosenMealText]}>{currentMealKey.charAt(0).toUpperCase() + currentMealKey.slice(1)}</Text>
-                                                    <Animated.View style={animatedCarat}>
-                                                        <ArrowDown2 size={32} color="#FFF" />
-                                                    </Animated.View>
+                                                    {mealsEaten.length !== meals.length - 1
+                                                        ? <Animated.View style={animatedCarat}>
+                                                            <ArrowDown2 size={32} color="#FFF" />
+                                                        </Animated.View>
+                                                        : null
+                                                    }
                                                 </>
                                             )}
 
@@ -449,7 +446,7 @@ export default function CameraPage({ route, navigation }) {
                                 <Pressable onPress={() => Keyboard.dismiss()} style={styles.bottomSheetContent}>
                                     <Text style={styles.bigText}>No photo? No problem!</Text>
                                     <TextInput
-                                        style={{...styles.textField, borderColor: error ? "#D41111" : "#130630",}}
+                                        style={{ ...styles.textField, borderColor: error ? "#D41111" : "#130630", }}
                                         placeholder='Type your meal...'
                                         multiline={true}
                                         onSubmitEditing={() => console.log(text)}
@@ -460,11 +457,15 @@ export default function CameraPage({ route, navigation }) {
                                         value={text}
                                     />
                                     <Text style={styles.error}>{error}</Text>
-                                    <Pressable 
-                                        onPress={() => sendTextRequest(text)} 
+                                    <Pressable
+                                        onPress={() => {if (!awaitingResponse) sendTextRequest(text)}}
                                         style={styles.submitTextBtn}
                                     >
-                                        <Text style={styles.submitText}>Submit!</Text>
+                                    {!awaitingResponse
+                                        ? <Text style={styles.submitText}>Submit!</Text>
+                                        : <ActivityIndicator />
+                                    }
+                                        
                                     </Pressable>
                                 </Pressable>
                             </BottomSheetView>
@@ -590,11 +591,11 @@ const styles = StyleSheet.create({
     },
     submitTextBtn: {
         backgroundColor: "#130630",
-        paddingLeft: 15,
-        paddingRight: 15,
-        paddingTop: 10,
-        paddingBottom: 10,
         borderRadius: 5,
+        width: 120,
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center"
 
     },
     submitText: {
