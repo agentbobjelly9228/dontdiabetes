@@ -364,7 +364,7 @@ export default function CameraPage({ route, navigation }) {
 
                                         {showMealList
                                             ? <Animated.View entering={FadeInUp} exiting={FadeOutUp} style={{ alignItems: "flex-end" }}>
-                                                {currentMealKey === 'breakfast'
+                                                {currentMealKey === 'breakfast' || mealsEaten.includes('breakfast')
                                                     ? null
                                                     : <Pressable onPress={() => changeMeal('breakfast')} style={styles.mealTextContainer}>
                                                         {({ pressed }) => (

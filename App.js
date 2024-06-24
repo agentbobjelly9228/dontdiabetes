@@ -24,27 +24,68 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CameraPage from "./components/Camera";
 
+const dayjs = require('dayjs')
+
 const Stack = createNativeStackNavigator();
+
+// App resets at 3 am or later
+const resetHour = 3
 
 export default function App() {
   const auth = FIREBASE_AUTH;
 
   // AsyncStorage.clear()
 
-  const [loggedIn, setLoggedIn] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(null);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   function onAuthStateChanged(user) {
-    setUser(user);
+    if (user)
+      setUser(user);
+    else 
+      setUser(false)
+    console.log("USER" + user)
     getOnboarding();
-    console.log(user)
+    // console.log(user)
     // if (initializing) setInitializing(false);
   }
 
   useEffect(() => {
+    const checkIfReset = async () => {
+
+      // Get last logged day
+      let loggedDay = await AsyncStorage.getItem("@loggedDay");
+      loggedDay = loggedDay ? dayjs(JSON.parse(loggedDay)) : null
+  
+      // Get current date
+      // let now = dayjs().set('date', 25)
+      let now = dayjs()
+  
+      let difference = now.diff(loggedDay, 'hour')  
+      
+      // If it's been a day + 3 hours or longer, reset & add new day to Async
+      if (difference >= 24 + resetHour) {
+        await AsyncStorage.removeItem('@todayMacros')
+        let newDate = dayjs().set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0)
+        await AsyncStorage.setItem("@loggedDay", JSON.stringify(newDate))
+
+        console.log("Reset")
+      }
+
+
+      setLoading(false)
+
+      }
+
     const subscriber = auth.onAuthStateChanged(onAuthStateChanged);
     getOnboarding();
+    
+
+    checkIfReset();
+
+    
+
     return subscriber;
 
   }, [])
@@ -57,7 +98,7 @@ export default function App() {
       setOnboardingDone(false);
   }
 
-
+  if (onboardingDone !== null && !loading && user !== null)
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>

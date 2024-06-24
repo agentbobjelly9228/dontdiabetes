@@ -68,8 +68,8 @@ function Item({text, title, navigation}) {
                     <Pressable style={styles.infoButton}>
                         <Text style={styles.infoButtonText}>Learn the basics by swiping right!</Text>
                     </Pressable>
-                    <Pressable style={{position: "absolute", top: screenWidth * 0.9,}}>
-                        <Text style={styles.infoButtonTextSmall}>Or, sign in</Text>
+                    <Pressable onPress={() => {navigation.navigate("LoginScreen")}} style={{position: "absolute", top: screenWidth * 0.9,}}>
+                        <Text style={styles.infoButtonTextSmall}>Or, log in</Text>
                     </Pressable>
                 </>
                 : null
