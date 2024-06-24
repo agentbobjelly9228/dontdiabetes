@@ -8,7 +8,7 @@ import { ArrowRight } from 'iconsax-react-native';
 import Animated, { FadeInDown, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { FIREBASE_DATABASE } from '../FirebaseConfig';
-import { ref, set, get } from 'firebase/database';
+import { ref, update, get } from 'firebase/database';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -177,7 +177,7 @@ export default function Feedback({ navigation }) {
             let snapshot = await get(ref(database, auth.currentUser.uid))
             let allScores = [];
             if (snapshot.exists()) {
-                allScores = snapshot.val().scores;
+                allScores = snapshot.val()?.scores || [];
             } else {
                 console.log("No data available");
             }
@@ -200,7 +200,7 @@ export default function Feedback({ navigation }) {
 
             // Update AsyncStorage
             await AsyncStorage.setItem('@allScores', JSON.stringify(parsedScores));
-            set(ref(database, auth.currentUser.uid), {scores: parsedScores})
+            update(ref(database, auth.currentUser.uid), {scores: parsedScores})
 
             console.log(savedData.GIs)
             var temp = 0;

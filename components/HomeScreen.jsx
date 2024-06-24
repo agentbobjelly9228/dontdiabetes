@@ -158,7 +158,7 @@ export default function HomeScreen({ route, navigation }) {
                 }
                 }></Button>
                 <Pressable onPress={() => {
-                    // navigation.navigate("Feedback")
+                    navigation.navigate("Feedback")
                 }} style={{ padding: 100, }}><Text>Thing</Text></Pressable>
 
             </ScrollView>

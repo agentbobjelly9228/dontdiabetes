@@ -225,7 +225,7 @@ export default function ShowPhoto({ route, navigation }) {
         let parsedText = JSON.parse(text);
         
         // check if JSON is formatted correctly
-        if (parsedText?.fruit != null)
+        if (!isNaN(parsedText?.fruit))
             storeData(parsedText, null).then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");

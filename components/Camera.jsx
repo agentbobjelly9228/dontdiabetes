@@ -49,6 +49,8 @@ export default function CameraPage({ route, navigation }) {
     const [awaitingResponse, setAwaitingResponse] = useState(false)
     const [error, setError] =useState(null)
 
+    const [mealsEaten, setMealsEaten] = useState(null)
+
     const [text, setText] = useState(null);
 
     
@@ -84,8 +86,21 @@ export default function CameraPage({ route, navigation }) {
         const match = input.match(/\{.*\}/s);
         return match ? match[0] : null; // Return the matched group or null if not found
     }
+
+
+
+
+    
     useFocusEffect(
         useCallback(() => {
+            async function getAndSetMealsEaten() {
+                let macros = await AsyncStorage.getItem('@todayMacros');
+                macros = macros ? JSON.parse(macros) : {}
+                let asyncMeals = Object.keys(macros?.foods);
+                console.log("ME" + asyncMeals)
+                setMealsEaten(asyncMeals);
+            }
+
             // Set cameraOpen to true whenever this screen is focused
             setOpen(true);
             setMealKey(mealKey)
@@ -93,6 +108,10 @@ export default function CameraPage({ route, navigation }) {
             
             if (alertBadPhoto)
                 createAlert()
+
+            getAndSetMealsEaten();
+        
+
         }, [mealKey, alertBadPhoto])
     );
 
@@ -107,8 +126,7 @@ export default function CameraPage({ route, navigation }) {
 
                 const options = { quality: 0.5, base64: true };
                 const data = await cameraRef.current.takePictureAsync(options);
-                navigation.navigate("ShowPhoto", { imageData: data, textData: null, mealKey: mealKey, })
-                setTimeout(() => setOpen(false), 400)
+                navigation.navigate("ShowPhoto", { imageData: data, textData: null, mealKey: currentMealKey, })
 
             } catch (error) {
                 console.log(error);
@@ -132,7 +150,6 @@ export default function CameraPage({ route, navigation }) {
 
         if (!result.canceled) {
             navigation.navigate("ShowPhoto", { imageData: { "base64": result.assets[0].base64, "uri": result.assets[0].uri }, textData: null, mealKey: mealKey })
-            setTimeout(() => setOpen(false), 400)
         }
     };
 
@@ -262,7 +279,7 @@ export default function CameraPage({ route, navigation }) {
         let parsedText = JSON.parse(text);
         
         // check if JSON is formatted correctly
-        if (parsedText?.fruit != null)
+        if (!isNaN(parsedText?.fruit))
             storeData(parsedText, null).then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");
@@ -339,7 +356,7 @@ export default function CameraPage({ route, navigation }) {
                                             style={{ ...styles.mealTextContainer }}>
                                             {({ pressed }) => (
                                                 <>
-                                                    <Text style={[{ backgroundColor: pressed ? null : null }, styles.chosenMealText]}>{mealKey.charAt(0).toUpperCase() + mealKey.slice(1)}</Text>
+                                                    <Text style={[{ backgroundColor: pressed ? null : null }, styles.chosenMealText]}>{currentMealKey.charAt(0).toUpperCase() + currentMealKey.slice(1)}</Text>
                                                     <Animated.View style={animatedCarat}>
                                                         <ArrowDown2 size={32} color="#FFF" />
                                                     </Animated.View>
@@ -350,7 +367,7 @@ export default function CameraPage({ route, navigation }) {
 
                                         {showMealList
                                             ? <Animated.View entering={FadeInUp} exiting={FadeOutUp} style={{ alignItems: "flex-end" }}>
-                                                {mealKey === 'breakfast'
+                                                {currentMealKey === 'breakfast'
                                                     ? null
                                                     : <Pressable onPress={() => changeMeal('breakfast')} style={styles.mealTextContainer}>
                                                         {({ pressed }) => (
@@ -361,7 +378,7 @@ export default function CameraPage({ route, navigation }) {
                                                         )}
                                                     </Pressable>
                                                 }
-                                                {mealKey === 'lunch'
+                                                {currentMealKey === 'lunch' || mealsEaten.includes('lunch')
                                                     ? null
                                                     : <Pressable onPress={() => changeMeal('lunch')} style={styles.mealTextContainer}>
                                                         {({ pressed }) => (
@@ -372,7 +389,7 @@ export default function CameraPage({ route, navigation }) {
                                                         )}
                                                     </Pressable>
                                                 }
-                                                {mealKey === 'dinner'
+                                                {currentMealKey === 'dinner' || mealsEaten.includes('dinner')
                                                     ? null
                                                     : <Pressable onPress={() => changeMeal('dinner')} style={styles.mealTextContainer}>
                                                         {({ pressed }) => (
