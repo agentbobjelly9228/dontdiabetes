@@ -12,7 +12,7 @@ import redGuy from '../assets/mascots/redGuy.png';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
-import { revokeAccessToken } from "firebase/auth";
+import { revokeAccessToken, OAuthProvider, signInWithCredential } from "firebase/auth";
 import * as AppleAuthentication from 'expo-apple-authentication';
 
 
@@ -45,9 +45,27 @@ export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
 
     const deleteAppleAccount = async () => {
-        const { authorizationCode } = await AppleAuthentication.refreshAsync()
-        console.log(auth.currentUser)
-        console.log(authorizationCode.authorizationCode)
+        try {
+            const appleCredential = await AppleAuthentication.refreshAsync()
+            
+            // Revokes token
+            await revokeAccessToken(auth, appleCredential.authorizationCode)
+    
+
+            // Signs user out
+            const provider = new OAuthProvider('apple.com');
+            const { identityToken } = appleCredential;
+            const credential = provider.credential({
+                 idToken: identityToken,
+                 rawNonce: appleCredential.authorizationCode
+                })
+            const { user } = await signInWithCredential(auth, credential);
+            user.delete()
+        } catch (e) { 
+            console.log(e)
+        }
+
+        
     }
 
     async function getGraphData(uid) {
@@ -99,7 +117,6 @@ export default function HomeScreen({ route, navigation }) {
     useFocusEffect(
         React.useCallback(() => {
             const getAsyncData = async () => {
-                await deleteAppleAccount();
                 let savedData = await AsyncStorage.getItem('@todayMacros');
 
                 let uid = auth.currentUser.uid;
@@ -122,7 +139,7 @@ export default function HomeScreen({ route, navigation }) {
                 setLoading(false)
             }
             getAsyncData();
-            console.log("WHAT")
+            // deleteAppleAccount();
             // getGraphData();
         }, [])
 
@@ -168,9 +185,10 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
                     <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute", top: 205 }} />
                 </View>
+                {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
                 <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
-                    <Pressable style={styles.settingsButton} onPress={createNoSettingsAlert}>
-                        <Text style={styles.settingsText}>Settings</Text>
+                    <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
+                        <Text style={styles.settingsText}>Delete Account</Text>
                     </Pressable>
                     <Pressable style={styles.logOutButton} onPress={() => auth.signOut()}>
                         <Text style={styles.logOutText}>Log Out</Text>

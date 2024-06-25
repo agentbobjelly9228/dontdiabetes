@@ -131,6 +131,8 @@ export default function LoginScreen({ navigation, route }) {
                                 // handle other errors
                             }
                             console.log(e)
+                            setError("Something went wrong!")
+
                         }
                     }}
                 />

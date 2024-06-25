@@ -6,27 +6,33 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
+import smallguy from "../assets/mascots/smallGuy.png"
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
 
 data = [
     {
-        title: "Welcome!",
-        text: "This is Big Guy. He's been waiting for you to join him on a neat, new, nutrition journey. And now that you're here, he can't wait to get started!",
+        index: 0,
+        title: "This is Big Guy.",
+        image: smallguy,
+        text: "He's been waiting for you to join him on a neat, new, nutrition journey.",
     },
     {
-        title: "1/3",
+        index: 1,
+        title: "Here's what you do.",
         text: "With Nutrivision, you just have to snap a photo of your food whenever you eat something. That's it! No calorie tracking, no barcode scanning, no stress."
     },
     {
-        title: "2/3",
+        index: 2,
+        title: "Here's what we do.",
         text: "In return, we'll give you daily, actionable advice each evening that will help you eat happier and healthier. We will never tell you to restrict, diet, or push."
     },
-    // {
-    //     title: "3/3",
-    //     text: "This is still a very early release, so please feel free to submit any feedback on how to make the app better and more helpful. Now, let's introduce you to Big Guy!"
-    // },
+    {
+        index: 3,
+        title: "Please note...",
+        text: "This is still a very early release, so please feel free to submit any feedback on how to make the app better and more helpful. Now, let's introduce you to Big Guy!"
+    },
 
 ]
 
@@ -39,56 +45,73 @@ export default function Onboarding({ navigation }) {
     });
 
     return (
-        <View style={{backgroundColor: "#FFFBEE", flex: 1,}}>
-        <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.7, position: "absolute",  top: screenHeight * -0.1, }} />
-        
-        <FlatList 
-            data={data}
-            horizontal
-            renderItem={({item}) => <Item text={item.text} title={item.title} navigation={navigation}/>}
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            style={{position: "absolute", zIndex: 100, top: screenHeight * 0.45}}
+        <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
+            <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.6, position: "absolute", top: screenHeight * -0.1, }} />
+            <Text style={styles.infoTitle}>All about Nutrivision</Text>
+            <FlatList
+                data={data}
+                horizontal
+                renderItem={({ item }) => <Item text={item.text} title={item.title} image={item.image} navigation={navigation} />}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.4 }}
             // initialScrollIndex={-1}
 
-        />
-        
+            />
+            <View style={{ position: "absolute", top: screenHeight * 0.85, justifyContent: "center", alignSelf: "center", gap: 10 }}>
+                <Pressable style={styles.infoButton}><Text style={styles.infoButtonText}>Let's Begin!</Text></Pressable>
+                <Pressable onPress={() => { navigation.navigate("LoginScreen") }}>
+                    <Text style={styles.infoButtonTextSmall}>Already have an account? Log In</Text>
+                </Pressable>
+            </View>
         </View>
     );
 }
 
 
-function Item({text, title, navigation}) {
+function Item({ text, title, image, navigation }) {
     return (
-        <View style={{width: screenWidth, height: screenWidth, alignItems: "center", }}>
-            <Text style={title == "Welcome!" ? styles.infoTitle : {display: "none"}}>{title}</Text>
-            <Text style={styles.infoText}>{text}</Text>
-            {title == "Welcome!" 
-                ? <>
-                    <Pressable style={styles.infoButton}>
-                        <Text style={styles.infoButtonText}>Learn the basics by swiping right!</Text>
-                    </Pressable>
-                    <Pressable onPress={() => {navigation.navigate("LoginScreen")}} style={{position: "absolute", top: screenWidth * 0.9,}}>
-                        <Text style={styles.infoButtonTextSmall}>Or, log in</Text>
-                    </Pressable>
-                </>
-                : null
-            }
-            {title == "2/3" 
-                ? <Pressable onPress={() => navigation.navigate("EnterInformation")} style={styles.infoButton}><Text style={styles.infoButtonText}>Ok!</Text></Pressable>
-                : null
-            }
+        <View style={{ width: screenWidth, height: screenWidth, alignItems: "center", }}>
+            <View style={{ ...styles.infoCard }}>
+                <View style={{gap: 20, justifyContent: "center", alignItems: "center"}}>
+                    <Text style={styles.title}>{title}</Text>
+                    {image && <Image source={smallguy} />}
+                    <Text style={{ ...styles.cardText }}>{text}</Text>
+                </View>
+            </View>
         </View>
     )
 }
+
+// <View style={{width: screenWidth, height: screenWidth, alignItems: "center", }}>
+//     <Text style={title == "Welcome!" ? styles.infoTitle : {display: "none"}}>{title}</Text>
+//     <Text style={styles.infoText}>{text}</Text>
+//     {title == "Welcome!" 
+//         ? <>
+//             <Pressable style={styles.infoButton}>
+//                 <Text style={styles.infoButtonText}>Learn the basics by swiping right!</Text>
+//             </Pressable>
+//             <Pressable onPress={() => {navigation.navigate("LoginScreen")}} style={{position: "absolute", top: screenWidth * 0.9,}}>
+//                 <Text style={styles.infoButtonTextSmall}>Or, log in</Text>
+//             </Pressable>
+//         </>
+//         : null
+//     }
+//     {title == "2/3" 
+//         ? <Pressable onPress={() => navigation.navigate("EnterInformation")} style={styles.infoButton}><Text style={styles.infoButtonText}>Ok!</Text></Pressable>
+//         : null
+//     }
+// </View>
 
 const styles = StyleSheet.create({
     background: {
         padding: 50,
     },
     title: {
-        fontSize: 50,
-        alignSelf: "center"
+        fontSize: 30,
+        alignSelf: "center",
+        fontFamily: "SF-Compact",
+
     },
     input: {
         fontSize: 20,
@@ -114,8 +137,11 @@ const styles = StyleSheet.create({
     infoTitle: {
         fontFamily: "SF-Rounded",
         textAlign: "center",
-        fontSize: 50,
+        fontSize: 35,
         position: "absolute",
+        top: screenHeight * 0.35,
+        textAlign: "center",
+        alignSelf: "center"
 
     },
     infoText: {
@@ -132,15 +158,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         shadowColor: "#FFDE70",
-        shadowOpacity: 0.5,
-        shadowRadius: 10,
+        shadowOpacity: 1,
+        shadowRadius: 20,
         elevation: 2,
         paddingLeft: 15,
         paddingRight: 15,
         paddingTop: 10,
         paddingBottom: 10,
-        position: "absolute",
-        top: screenHeight * 0.35
     },
     infoButtonText: {
         fontFamily: "SF-Rounded",
@@ -150,9 +174,27 @@ const styles = StyleSheet.create({
     infoButtonTextSmall: {
         fontFamily: "SF-Pro",
         textAlign: "center",
-        fontSize: 22,
+        fontSize: 20,
         textDecorationLine: "underline",
-    }
+    },
+    infoCard: {
+        height: screenHeight * 0.4,
+        width: screenHeight * 0.4,
+        backgroundColor: "white",
+        shadowColor: "#000000",
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        top: 20,
+        borderRadius: 20,
+        padding: 20,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    cardText: {
+        fontFamily: "SF-Pro",
+        textAlign: "center",
+        fontSize: 20,
+    },
 });
 
 
