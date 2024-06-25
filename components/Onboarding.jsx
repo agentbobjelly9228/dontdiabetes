@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, } from 'react-native';
 import { auth } from '../FirebaseConfig';
@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
 import smallguy from "../assets/mascots/smallGuy.png"
+import { Camera, Clipboard, Code, Flag, MenuBoard, Moon, Tether } from 'iconsax-react-native';
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
@@ -20,23 +21,33 @@ data = [
     },
     {
         index: 1,
-        title: "Here's what you do.",
+        title: "Here's what you do:",
         text: "With Nutrivision, you just have to snap a photo of your food whenever you eat something. That's it! No calorie tracking, no barcode scanning, no stress."
     },
     {
         index: 2,
-        title: "Here's what we do.",
+        title: "Here's what you get:",
         text: "In return, we'll give you daily, actionable advice each evening that will help you eat happier and healthier. We will never tell you to restrict, diet, or push."
     },
     {
         index: 3,
-        title: "Please note...",
-        text: "This is still a very early release, so please feel free to submit any feedback on how to make the app better and more helpful. Now, let's introduce you to Big Guy!"
+        title: "Please note:",
+        text: "This is still a very early release. Feel free to submit any feedback!"
     },
 
 ]
 
 export default function Onboarding({ navigation }) {
+
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+    const ref = useRef();
+
+    const updateCurrentSlideIndex = e => {
+        const contentOffsetX = e.nativeEvent.contentOffset.x;
+        const currentIndex = Math.round(contentOffsetX / screenWidth);
+        setCurrentSlideIndex(currentIndex)
+        console.log(currentIndex)
+    }
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -44,14 +55,34 @@ export default function Onboarding({ navigation }) {
         "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
     });
 
+    const goNextSlide = () => {
+        const nextSlideIndex = currentSlideIndex + 1;
+        if (nextSlideIndex != data.length) {
+            const offset = nextSlideIndex * screenWidth;
+            ref?.current?.scrollToOffset({ offset });
+            setCurrentSlideIndex(nextSlideIndex);
+        }
+    }
+
+    const goBackSlide = () => {
+        const backSlideIndex = currentSlideIndex - 1;
+        if (backSlideIndex >= 0) {
+            const offset = backSlideIndex * screenWidth;
+            ref?.current?.scrollToOffset({ offset });
+            setCurrentSlideIndex(backSlideIndex);
+        }
+    }
+
     return (
         <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
             <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.6, position: "absolute", top: screenHeight * -0.1, }} />
             <Text style={styles.infoTitle}>All about Nutrivision</Text>
             <FlatList
                 data={data}
+                ref={ref}
+                onMomentumScrollEnd={updateCurrentSlideIndex}
                 horizontal
-                renderItem={({ item }) => <Item text={item.text} title={item.title} image={item.image} navigation={navigation} />}
+                renderItem={({ item }) => <Item index={item.index} text={item.text} title={item.title} image={item.image} navigation={navigation} />}
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.4 }}
@@ -59,51 +90,99 @@ export default function Onboarding({ navigation }) {
 
             />
             <View style={{ position: "absolute", top: screenHeight * 0.85, justifyContent: "center", alignSelf: "center", gap: 10 }}>
-                <Pressable style={styles.infoButton}><Text style={styles.infoButtonText}>Let's Begin!</Text></Pressable>
+                <DotProgress />
+                <Pressable onPress={() => navigation.navigate("EnterInformation")} style={styles.infoButton}><Text style={styles.infoButtonText}>Let's Begin!</Text></Pressable>
                 <Pressable onPress={() => { navigation.navigate("LoginScreen") }}>
                     <Text style={styles.infoButtonTextSmall}>Already have an account? Log In</Text>
                 </Pressable>
             </View>
+            
         </View>
     );
 }
 
 
-function Item({ text, title, image, navigation }) {
+function Item({ index, text, title, image, navigation }) {
     return (
         <View style={{ width: screenWidth, height: screenWidth, alignItems: "center", }}>
             <View style={{ ...styles.infoCard }}>
-                <View style={{gap: 20, justifyContent: "center", alignItems: "center"}}>
+                <View style={{ gap: 20, justifyContent: "center", alignItems: "center" }}>
                     <Text style={styles.title}>{title}</Text>
-                    {image && <Image source={smallguy} />}
-                    <Text style={{ ...styles.cardText }}>{text}</Text>
+                    {index === 0 &&
+                        <>
+                            {image && <Image source={smallguy} />}
+                            <Text style={{ ...styles.cardText }}>{text}</Text>
+                        </>
+                    }
+                    {index === 1 &&
+                        <View style={{ justifyContent: "center", alignItems: "center", }}>
+                            <View style={{ gap: 10 }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+                                    <MenuBoard size={48} variant="Bold" color="#FFCC26" />
+                                    <Text style={styles.listText}>Eat food.</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+                                    <Camera size={48} variant="Bold" color="#FFCC26" />
+                                    <Text style={styles.listText}>Scan it.</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+                                    <Flag size={48} variant="Bold" color="#FFCC26" />
+                                    <Text style={styles.listText}>That's it!</Text>
+                                </View>
+                            </View>
+                            <Text style={{ ...styles.cardText, fontStyle: "italic" }}>No calorie counting, no stress.</Text>
+                        </View>
+                    }
+                    {index === 2 &&
+                        <View style={{ justifyContent: "center", alignItems: "center", }}>
+                            <View style={{ gap: 10 }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+                                    <Clipboard size={48} variant="Bold" color="#ffcc32" />
+                                    <Text style={styles.listText}>Daily advice.</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+                                    <Moon size={48} variant="Bold" color="#ffcc32" />
+                                    <Text style={styles.listText}>Nightly recaps.</Text>
+                                </View>
+                            </View>
+                            <Text style={{ ...styles.cardText, fontStyle: "italic" }}>We will never tell you to diet or push.</Text>
+                        </View>
+                    }
+                    {index === 3 &&
+                        <>
+                            <Code size={48} variant="Bold" color="#130630" />
+                            <Text style={{ ...styles.cardText }}>{text}</Text>
+                        </>
+                    }
                 </View>
             </View>
         </View>
     )
 }
 
-// <View style={{width: screenWidth, height: screenWidth, alignItems: "center", }}>
-//     <Text style={title == "Welcome!" ? styles.infoTitle : {display: "none"}}>{title}</Text>
-//     <Text style={styles.infoText}>{text}</Text>
-//     {title == "Welcome!" 
-//         ? <>
-//             <Pressable style={styles.infoButton}>
-//                 <Text style={styles.infoButtonText}>Learn the basics by swiping right!</Text>
-//             </Pressable>
-//             <Pressable onPress={() => {navigation.navigate("LoginScreen")}} style={{position: "absolute", top: screenWidth * 0.9,}}>
-//                 <Text style={styles.infoButtonTextSmall}>Or, log in</Text>
-//             </Pressable>
-//         </>
-//         : null
-//     }
-//     {title == "2/3" 
-//         ? <Pressable onPress={() => navigation.navigate("EnterInformation")} style={styles.infoButton}><Text style={styles.infoButtonText}>Ok!</Text></Pressable>
-//         : null
-//     }
-// </View>
+function DotProgress() {
+    
+    return (
+        <View style={{gap: 10, flexDirection: "row", alignSelf: "center"}}>
+            {
+                
+            }
+            <View style={styles.unselectedDot} />
+            <View style={styles.unselectedDot} />
+            <View style={styles.unselectedDot} />
+            <View style={styles.unselectedDot} />
+        </View>
+    );
+}
 
 const styles = StyleSheet.create({
+    unselectedDot: {
+        height: 10,
+        width: 10,
+        borderRadius: 5,
+        backgroundColor: "black",
+        opacity: 0.4
+    },
     background: {
         padding: 50,
     },
@@ -123,16 +202,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingLeft: 10,
         margin: 10
-    },
-    loginBtn: {
-        backgroundColor: "green",
-        borderWidth: 1,
-        borderColor: "green",
-        width: 100,
-        height: 30,
-        borderRadius: 20,
-        alignSelf: "center",
-        alignItems: "center"
     },
     infoTitle: {
         fontFamily: "SF-Rounded",
@@ -191,6 +260,13 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     cardText: {
+        // fontFamily: "SF-Pro",
+        textAlign: "center",
+        fontSize: 20,
+        paddingTop: 15,
+        // fontStyle: "italic"
+    },
+    listText: {
         fontFamily: "SF-Pro",
         textAlign: "center",
         fontSize: 20,
