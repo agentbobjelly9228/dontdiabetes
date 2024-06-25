@@ -12,6 +12,9 @@ import redGuy from '../assets/mascots/redGuy.png';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
+import { revokeAccessToken } from "firebase/auth";
+import * as AppleAuthentication from 'expo-apple-authentication';
+
 
 const dayjs = require('dayjs')
 
@@ -40,7 +43,13 @@ export default function HomeScreen({ route, navigation }) {
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
 
     // AsyncStorage.clear()
-    // Change to logic include time of day
+
+    const deleteAppleAccount = async () => {
+        const { authorizationCode } = await AppleAuthentication.refreshAsync()
+        console.log(auth.currentUser)
+        console.log(authorizationCode.authorizationCode)
+    }
+
     async function getGraphData(uid) {
         let snapshot = await get(ref(database, uid))
         if (snapshot.exists()) {
@@ -90,6 +99,7 @@ export default function HomeScreen({ route, navigation }) {
     useFocusEffect(
         React.useCallback(() => {
             const getAsyncData = async () => {
+                await deleteAppleAccount();
                 let savedData = await AsyncStorage.getItem('@todayMacros');
 
                 let uid = auth.currentUser.uid;
@@ -112,6 +122,7 @@ export default function HomeScreen({ route, navigation }) {
                 setLoading(false)
             }
             getAsyncData();
+            console.log("WHAT")
             // getGraphData();
         }, [])
 

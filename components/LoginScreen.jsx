@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 // import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, OAuthProvider } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
 
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, SafeAreaView, } from 'react-native';
-
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
@@ -98,14 +98,42 @@ export default function LoginScreen({ navigation, route }) {
 
 
 
-                <Text style={styles.infoText}>Or continue with</Text>
-                <View style={styles.iconButtonContainer}>
-                    <Pressable style={styles.iconButton}>
-                        <Apple size={32} color="black" variant="Bold" />
-                    </Pressable>
-                    <Pressable style={styles.iconButton}>
-                        <Google size={32} color="black" variant="Bold" />
-                    </Pressable>
+                {/* <Text style={styles.infoText}>Or continue with</Text> */}
+                <View style={styles.thirdPartyButtonContainer}>
+                <AppleAuthentication.AppleAuthenticationButton
+                    buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+                    buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                    cornerRadius={5}
+                    style={styles.appleButton}
+                    onPress={async () => {
+                        try {
+                            const appleCredential = await AppleAuthentication.signInAsync({
+                                requestedScopes: [
+                                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                                ],
+                            });
+                            const { identityToken } = appleCredential;
+                            if (identityToken) {
+                                const provider = new OAuthProvider('apple.com');
+                                const credential = provider.credential({
+                                     idToken: identityToken,
+                                     rawNonce: appleCredential.authorizationCode
+                                    })
+                                await signInWithCredential(auth, credential);
+                            }
+                            else
+                                setError("Something went wrong!")
+                        } catch (e) {
+                            if (e.code === 'ERR_REQUEST_CANCELED') {
+                                // handle that the user canceled the sign-in flow
+                            } else {
+                                // handle other errors
+                            }
+                            console.log(e)
+                        }
+                    }}
+                />
                 </View>
             </View>
 
@@ -195,11 +223,13 @@ const styles = StyleSheet.create({
         fontSize: 22,
         color: "rgba(0, 0, 0, 0.4)"
     },
-    iconButtonContainer: {
+    thirdPartyButtonContainer: {
         top: screenHeight * 0.5,
         position: "absolute",
         flexDirection: "row",
-        gap: 20
+        gap: 20,
+        alignItems: "center",
+        justifyContent: "center"
     },
     iconButton: {
         padding: 10,
@@ -214,6 +244,10 @@ const styles = StyleSheet.create({
     swapPage: {
         fontFamily: "SF-Pro",
         fontSize: 15
+    },
+    appleButton: {
+        width: "100%",
+        height: 50
     }
 
 });
