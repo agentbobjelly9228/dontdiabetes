@@ -118,12 +118,16 @@ export default function SignUpScreen({ navigation, route }) {
                     </View>
                     <Text style={styles.error}>{error}</Text>
                 </View>
-                <Pressable onPress={async () => {
-                    register();
-                }}
-                    style={styles.infoButton}>
-                    <Text style={styles.infoButtonText}>Create Account!</Text>
-                </Pressable>
+
+                {email && password
+                    ? <Pressable onPress={async () => { register() }}
+                        style={styles.infoButton}>
+                        <Text style={styles.infoButtonText}>Create Account!</Text>
+                    </Pressable>
+                    : <Pressable style={styles.infoButton}>
+                        <Text style={styles.infoButtonDisabledText}>Create Account!</Text>
+                    </Pressable>
+                }
 
                 <Text style={styles.infoText}>Or continue with</Text>
                 <View style={styles.iconButtonContainer}>
@@ -218,6 +222,12 @@ const styles = StyleSheet.create({
         fontFamily: "SF-Rounded",
         textAlign: "center",
         fontSize: 22,
+    },
+    infoButtonDisabledText: {
+        fontFamily: "SF-Rounded",
+        textAlign: "center",
+        fontSize: 22,
+        color: "rgba(0, 0, 0, 0.4)"
     },
     iconButtonContainer: {
         top: screenHeight * 0.5,

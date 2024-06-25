@@ -13,7 +13,9 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 
 const windowHeight = Dimensions.get('window').height;
 
-const dayjs = require('dayjs')
+const dayjs = require('dayjs');
+
+
 
 export default function ShowPhoto({ route, navigation }) {
     const { imageData, textData, mealKey } = route.params;

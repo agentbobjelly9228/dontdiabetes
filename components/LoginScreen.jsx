@@ -81,13 +81,22 @@ export default function LoginScreen({ navigation, route }) {
                     </View>
                     <Text style={styles.error}>{error}</Text>
                 </View>
-                <Pressable onPress={async () => {
-                    signIn();
-                    await AsyncStorage.setItem("@onboardingDone", "true")
-                }}
-                    style={styles.infoButton}>
-                    <Text style={styles.infoButtonText}>Let's go!</Text>
-                </Pressable>
+
+                {email && password
+                    ? <Pressable onPress={async () => {
+                        signIn();
+                        await AsyncStorage.setItem("@onboardingDone", "true")
+                    }}
+                        style={styles.infoButton}>
+                        <Text style={styles.infoButtonText}>Let's go!</Text>
+                    </Pressable>
+                    : <Pressable
+                        style={styles.infoButton}>
+                        <Text style={styles.infoButtonDisabledText}>Let's go!</Text>
+                    </Pressable>
+                }
+
+
 
                 <Text style={styles.infoText}>Or continue with</Text>
                 <View style={styles.iconButtonContainer}>
@@ -102,7 +111,7 @@ export default function LoginScreen({ navigation, route }) {
 
             <View style={{ justifyContent: "center", alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.9, alignSelf: "center" }}>
                 <Text style={styles.swapPage}>Don't have an account? </Text>
-                <Pressable onPress={() => {navigation.navigate("SignUpScreen")}}><Text style={{...styles.swapPage, textDecorationLine: "underline" }}>Sign up here!</Text></Pressable>
+                <Pressable onPress={() => { navigation.navigate("SignUpScreen") }}><Text style={{ ...styles.swapPage, textDecorationLine: "underline" }}>Sign up here!</Text></Pressable>
             </View>
         </SafeAreaView>
     );
@@ -179,6 +188,12 @@ const styles = StyleSheet.create({
         fontFamily: "SF-Rounded",
         textAlign: "center",
         fontSize: 22,
+    },
+    infoButtonDisabledText: {
+        fontFamily: "SF-Rounded",
+        textAlign: "center",
+        fontSize: 22,
+        color: "rgba(0, 0, 0, 0.4)"
     },
     iconButtonContainer: {
         top: screenHeight * 0.5,

@@ -45,6 +45,32 @@ const CameraTabButton = ({ children, onPress, selectedCamera }) => {
   )
 };
 
+const ReadyCameraTabButton = ({ children, onPress, selectedCamera }) => {
+  return (
+    <>
+      <Pressable
+        style={{
+          height: 70,
+          width: 120,
+          borderRadius: 40,
+          backgroundColor: '#FFCC26',
+          padding: 10,
+          alignItems: "center",
+          shadowOpacity: 0.5,
+          shadowOffset: 5,
+          marginBottom: 50,
+          justifyContent: "center",
+          alignItems: "center",
+          bottom: 30
+        }}
+        onPress={onPress}
+      >
+        <CameraIcon size={40} color="black" variant={selectedCamera ? "Bold" : null} />
+      </Pressable>
+    </>
+  )
+};
+
 const AllMealsEatenCameraTabButton = ({ children, onPress, selectedCamera }) => {
   return (
     <>
@@ -103,17 +129,20 @@ export default function Tabs({ route, navigation }) {
 
   const getMeal = async () => {
     let hour = dayjs().hour();
+    hour = 5
+
 
     // Will continue being dinner until 3 AM
-    if ((hour >= preferredMealTimes["dinner"] - 1 || hour <= 3) && !mealsEaten.includes("dinner")) {
+    if (((hour >= preferredMealTimes["dinner"] - 1 || hour <= 3) && !mealsEaten.includes("dinner")) || mealsEaten.includes("lunch")) {
       return "dinner"
-    } else if (hour >= preferredMealTimes["lunch"] - 1 && !mealsEaten.includes("lunch")) {
+    } else if ((hour >= preferredMealTimes["lunch"] - 1 && !mealsEaten.includes("lunch")) || mealsEaten.includes("breakfast")) {
       return "lunch"
     } else if (!mealsEaten.includes("breakfast")) {
       return "breakfast"
     } else {
       return null
     }
+
   }
 
   const [fontsLoaded] = useFonts({

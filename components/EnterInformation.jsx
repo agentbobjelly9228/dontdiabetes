@@ -6,6 +6,9 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
+import thoughtguy from "../assets/mascots/thoughtguy.png"
+import bighappyguy from "../assets/mascots/bighappyguy.png"
+
 import { AddCircle, ArrowLeft2, MinusCirlce } from 'iconsax-react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -87,10 +90,10 @@ export default function EnterInformation({ navigation }) {
     const animatedBigGuy = useAnimatedStyle(() => {
         return {
             transform: [{ rotate: offset.value + "deg" }],
-            position: "absolute", 
-            top: screenHeight * -0.1, 
-            alignSelf: "center", 
-            
+            position: "absolute",
+            top: screenHeight * -0.1,
+            alignSelf: "center",
+
         }
     })
 
@@ -135,10 +138,18 @@ export default function EnterInformation({ navigation }) {
 
     }
 
+
+    const indexToValue = {
+        0: name,
+        1: age,
+        2: weight,
+        3: exercise,
+    }
+
     return (
         <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
             <Animated.View style={animatedBigGuy}>
-                <Image source={onboardingguy} style={{ height: screenHeight * 0.7  }} />
+                <Image source={thoughtguy} style={{ height: screenHeight * 0.7 }} />
             </Animated.View>
 
             <FlatList
@@ -155,7 +166,7 @@ export default function EnterInformation({ navigation }) {
             />
             <View style={{ zIndex: 100, justifyContent: "space-evenly", gap: 50, alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.8, alignSelf: "center", flex: 1, }}>
                 {currentSlideIndex === data.length - 1
-                    ? <Pressable onPress={ () => navigation.navigate("SignUpScreen")} style={styles.infoButton}>
+                    ? <Pressable onPress={() => navigation.navigate("SignUpScreen")} style={styles.infoButton}>
                         <Text style={styles.infoButtonText}>Let's go!</Text>
                     </Pressable>
                     : <>
@@ -165,9 +176,20 @@ export default function EnterInformation({ navigation }) {
                             </Pressable>
                             : null
                         }
-                        <Pressable onPress={currentSlideIndex === data.length - 2 ? storeAnswers : goNextSlide} style={styles.infoButton}>
-                            <Text style={styles.infoButtonText}>{currentSlideIndex === data.length - 2 ? "Done!" : "Next"}</Text>
-                        </Pressable>
+
+                        {
+                            indexToValue[currentSlideIndex]
+                                ? <Pressable
+                                    onPress={currentSlideIndex === data.length - 2 ? storeAnswers : goNextSlide}
+                                    style={styles.infoButton}>
+                                    <Text style={styles.infoButtonText}>{currentSlideIndex === data.length - 2 ? "Done!" : "Next"}</Text>
+                                </Pressable>
+                                : <Pressable style={styles.infoButtonDisabled}>
+                                    <Text style={styles.infoButtonDisabledText}>{currentSlideIndex === data.length - 2 ? "Done!" : "Next"}</Text>
+                                </Pressable>
+
+                        }
+
                         {currentSlideIndex != 0
                             ? <Pressable>
                                 <ArrowLeft2 style={{ ...styles.backButton, opacity: 0 }} size={28} color="black" />
@@ -308,11 +330,32 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 22,
     },
+    infoButtonDisabled: {
+        backgroundColor: "#FFCC26",
+        borderRadius: 35,
+        alignItems: "center",
+        justifyContent: "center",
+        shadowColor: "#FFDE70",
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 10,
+        paddingBottom: 10,
+        alignSelf: "center",
+        zIndex: 100,
+    },
+    infoButtonDisabledText: {
+        fontFamily: "SF-Rounded",
+        textAlign: "center",
+        fontSize: 22,
+        color: "rgba(0, 0, 0, 0.4)"
+    },
     infoButtonTextSmall: {
         fontFamily: "SF-Pro",
         textAlign: "center",
         fontSize: 22,
-        textDecorationLine: "underline"
+        textDecorationLine: "underline",
     },
     textInput: {
         borderBottomWidth: 2,
