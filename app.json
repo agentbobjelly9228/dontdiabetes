@@ -32,7 +32,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.samuellao.dontdiabetes"
+      "bundleIdentifier": "com.samuellao.dontdiabetes",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {

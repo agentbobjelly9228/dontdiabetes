@@ -23,6 +23,7 @@
     "axios": "^1.6.8",
     "dayjs": "^1.11.11",
     "expo": "^51.0.8",
+    "expo-apple-authentication": "~6.4.1",
     "expo-camera": "~15.0.9",
     "expo-dev-client": "~4.0.15",
     "expo-image-picker": "~15.0.5",

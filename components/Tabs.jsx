@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home2, Camera as CameraIcon, Gallery, Camera, Check, TickSquare, } from "iconsax-react-native";
 // import SweetSFSymbol from "sweet-sfsymbols";
 import { useFonts } from "expo-font";
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

@@ -77,6 +77,7 @@ export default function App() {
     async function onAuthStateChanged(user) {
       if (user) {
         setUser(user);
+        console.log(user)
         await checkIfReset();
       }
       else

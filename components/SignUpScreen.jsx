@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 // import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
 // import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, SafeAreaView, } from 'react-native';
 import { ref, set, get } from 'firebase/database';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { auth as FireAuth } from 'firebase/auth';
+
+
 
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
@@ -129,6 +133,39 @@ export default function SignUpScreen({ navigation, route }) {
                         <Google size={32} color="black" variant="Bold" />
                     </Pressable>
                 </View>
+                <AppleAuthentication.AppleAuthenticationButton
+                    buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+                    buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                    cornerRadius={5}
+                    style={styles.appleButton}
+                    onPress={async () => {
+                        try {
+                            const credential = await AppleAuthentication.signInAsync({
+                                requestedScopes: [
+                                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                                ],
+                            });
+                            console.log(credential.authorizationCode)
+                            const { identityToken } = credential;
+                            const nonce = credential.authorizationCode;
+
+                            const appleCredential = FireAuth().AppleAuthProvider.credential(identityToken, nonce)
+
+
+                            
+                            // signInWithCredential(credential);
+                            // signed in
+                        } catch (e) {
+                            if (e.code === 'ERR_REQUEST_CANCELED') {
+                                // handle that the user canceled the sign-in flow
+                            } else {
+                                // handle other errors
+                            }
+                            console.log(e)
+                        }
+                    }}
+                />
             </View>
 
             <View style={{ justifyContent: "center", alignItems: "center", flexDirection: "row", position: "absolute", top: screenHeight * 0.9, alignSelf: "center" }}>
@@ -237,6 +274,10 @@ const styles = StyleSheet.create({
     swapPage: {
         fontFamily: "SF-Pro",
         fontSize: 15
+    },
+    appleButton: {
+        width: "90%",
+        height: 50
     }
 
 });
