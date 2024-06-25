@@ -25,7 +25,16 @@
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos"
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      ["expo-apple-authentication"]
     ],
     "assetBundlePatterns": [
       "**/*"

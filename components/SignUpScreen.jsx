@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 // import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, OAuthProvider, OAuthCredential, } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
 // import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -152,20 +152,29 @@ export default function SignUpScreen({ navigation, route }) {
                     style={styles.appleButton}
                     onPress={async () => {
                         try {
-                            const credential = await AppleAuthentication.signInAsync({
+                            const appleCredential = await AppleAuthentication.signInAsync({
                                 requestedScopes: [
                                     AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
                                     AppleAuthentication.AppleAuthenticationScope.EMAIL,
                                 ],
                             });
-                            console.log(credential.authorizationCode)
-                            const { identityToken } = credential;
-                            const nonce = credential.authorizationCode;
+                            // console.log(credential.authorizationCode)
+                            // const nonce = credential.authorizationCode;
 
-                            const appleCredential = FireAuth().AppleAuthProvider.credential(identityToken, nonce)
+                            // const [appleCredential] = FireAuth().AppleAuthProvider.credential(identityToken, nonce)
 
+                            const { identityToken } = appleCredential;
+                            if (identityToken) {
+                                const provider = new OAuthProvider('apple.com');
+                                const credential = provider.credential({
+                                     idToken: identityToken,
+                                     rawNonce: appleCredential.authorizationCode
+                                    })
+                                const { user } = await signInWithCredential(auth, credential);
+                                console.log(user)
 
-                            
+                            }
+
                             // signInWithCredential(credential);
                             // signed in
                         } catch (e) {
