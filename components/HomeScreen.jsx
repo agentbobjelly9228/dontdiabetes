@@ -93,6 +93,7 @@ export default function HomeScreen({ route, navigation }) {
                 let savedData = await AsyncStorage.getItem('@todayMacros');
 
                 let uid = auth.currentUser.uid;
+                console.log(auth.currentUser.uid)
                 getGraphData(uid);
 
                 let displayName = auth.currentUser.displayName || await AsyncStorage.getItem("@name")

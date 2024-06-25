@@ -42,7 +42,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.samuellao.dontdiabetes",
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "entitlements": {
+        "com.apple.developer.applesignin": ["Default"]
+      }
+
     },
     "android": {
       "adaptiveIcon": {

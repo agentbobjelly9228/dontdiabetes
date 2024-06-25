@@ -171,7 +171,7 @@ export default function SignUpScreen({ navigation, route }) {
                                      rawNonce: appleCredential.authorizationCode
                                     })
                                 const { user } = await signInWithCredential(auth, credential);
-                                console.log(user)
+                                console.log(auth.currentUser)
 
                             }
 
