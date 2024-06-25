@@ -1,3 +1,5 @@
+//client id 9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com
+//npx expo run:ios
 import React, { useState, useEffect } from 'react';
 // import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
@@ -13,7 +15,10 @@ import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
 import { Apple, Google } from 'iconsax-react-native';
 import { updateProfile } from "firebase/auth";
+import * as WebBrowser from "expo-web-browser";
+import * as GoogleAuth from "expo-auth-session/providers/google";
 
+WebBrowser.maybeCompleteAuthSession();
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
@@ -35,6 +40,12 @@ async function loginWithGoogle() {
     return auth().signInWithCredential(googleCredential);
 }
 export default function SignUpScreen({ navigation, route }) {
+
+    const [userInfo, setUserInfo] = React.useState(null);
+    const [request, response, promptAsync] = GoogleAuth.useAuthRequest({
+        iosClientId: "9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com",
+        webClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com"
+    })
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -121,6 +132,7 @@ export default function SignUpScreen({ navigation, route }) {
                     </Pressable>
                     <Pressable style={styles.iconButton} onPress={() => {
                         console.log("hi")
+                        promptAsync();
                     }}>
                         <Google size={32} color="black" variant="Bold" />
                     </Pressable>

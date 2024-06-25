@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/cli": "^0.18.19",
+    "@expo/webpack-config": "^19.0.1",
     "@google-cloud/vertexai": "^0.5.0",
     "@google/generative-ai": "^0.3.1",
     "@gorhom/bottom-sheet": "^4",
@@ -22,14 +24,17 @@
     "@types/react": "~18.2.79",
     "axios": "^1.6.8",
     "dayjs": "^1.11.11",
-    "expo": "^51.0.8",
+    "expo": "^51.0.14",
+    "expo-auth-session": "^5.5.2",
     "expo-camera": "~15.0.9",
     "expo-dev-client": "~4.0.15",
     "expo-image-picker": "~15.0.5",
     "expo-linear-gradient": "~13.0.2",
     "expo-linking": "~6.3.1",
+    "expo-pwa": "^0.0.127",
     "expo-router": "~3.5.14",
     "expo-status-bar": "~1.12.1",
+    "expo-web-browser": "^13.0.3",
     "firebase": "^10.12.2",
     "google-auth-library": "^9.7.0",
     "iconsax-react-native": "^0.0.8",
@@ -47,7 +52,8 @@
     "typescript": "~5.3.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.0"
+    "@babel/core": "^7.24.0",
+    "@types/react-native": "^0.73.0"
   },
   "private": true
 }
