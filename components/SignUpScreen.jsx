@@ -1,6 +1,9 @@
-//client id 9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com
+//client id 9059900724-a8a12k9jdojeholjank93rm430n2i5ft.apps.googleusercontent.com
+//client id andoird 9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com
 //npx expo run:ios
 import React, { useState, useEffect } from 'react';
+// import * as GoogleSignIn from 'expo-google-sign-in';
+import { makeRedirectUri } from 'expo-auth-session';
 // import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential } from 'firebase/auth';
@@ -43,9 +46,27 @@ export default function SignUpScreen({ navigation, route }) {
 
     const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = GoogleAuth.useAuthRequest({
-        iosClientId: "9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com",
-        webClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com"
+        iosClientId: "9059900724-a8a12k9jdojeholjank93rm430n2i5ft.apps.googleusercontent.com",
+        expoClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com",
+        androidClientId: "9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com",
+        redirectUri: makeRedirectUri(),
+        useProxy: true
     })
+
+    useEffect(() => {
+        if (response?.type === 'success') {
+            const { id_token } = response.params;
+
+            const credential = GoogleAuthProvider.credential(id_token);
+            signInWithCredential(FIREBASE_AUTH, credential)
+                .then(userCredential => {
+                    setUser(userCredential.user);
+                })
+                .catch(error => {
+                    console.error('Error signing in with Google:', error);
+                });
+        }
+    }, [response]);
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),

@@ -28,6 +28,9 @@ target 'dontdiabetes' do
     :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
   )
 
+  # Enable modular headers globally
+  use_modular_headers!
+
   # Add Firebase pods with modular headers
   pod 'Firebase/Core', :modular_headers => true
   pod 'Firebase/Auth', :modular_headers => true
@@ -35,6 +38,10 @@ target 'dontdiabetes' do
   pod 'FirebaseCoreInternal', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
   pod 'leveldb-library', :modular_headers => true
+
+  # Add other dependencies
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app', :modular_headers => true
+  pod 'RNFBDatabase', :path => '../node_modules/@react-native-firebase/database', :modular_headers => true
 
   post_install do |installer|
     react_native_post_install(

@@ -35,6 +35,7 @@
       "bundleIdentifier": "com.samuellao.dontdiabetes"
     },
     "android": {
+      "package": "com.samuellao.dontdiabetes",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -49,8 +50,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "a4e3c149-58f9-4688-b149-eaf2b0fe9eab"
+        "projectId": "696542ce-c43c-4b8c-be18-0781de298bb7"
       }
-    }
+    },
+    "owner": "agentbobjelly"
   }
 }
