@@ -1,6 +1,6 @@
 import { useFonts } from "expo-font";
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, Pressable, Alert } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
 import DashedLine from 'react-native-dashed-line';
@@ -14,6 +14,12 @@ import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
 
 const dayjs = require('dayjs')
+
+function createNoSettingsAlert() {
+    Alert.alert("No settings yet", "We didn't make this page yet, sorry", [
+        { text: 'OK' },
+    ])
+}
 
 
 export default function HomeScreen({ route, navigation }) {
@@ -150,17 +156,14 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
                     <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute", top: 205 }} />
                 </View>
-
-                {/* <Button title="Thing" onPress={() => navigation.navigate("Feedback")} /> */}
-                <Button title="Log out" onPress={() => {
-                    auth.signOut()
-                    
-                }
-                }></Button>
-                <Pressable onPress={() => {
-                    navigation.navigate("Feedback")
-                }} style={{ padding: 100, }}><Text>Thing</Text></Pressable>
-
+                <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
+                    <Pressable style={styles.settingsButton} onPress={createNoSettingsAlert}>
+                        <Text style={styles.settingsText}>Settings</Text>
+                    </Pressable>
+                    <Pressable style={styles.logOutButton} onPress={() => auth.signOut()}>
+                        <Text style={styles.logOutText}>Log Out</Text>
+                    </Pressable>
+                </View>
             </ScrollView>
         );
 }
@@ -196,5 +199,36 @@ const styles = StyleSheet.create({
         borderColor: "red",
         borderWidth: 1,
         borderStyle: "dashed"
+    },
+    settingsButton: {
+        width: "45%",
+        borderColor: "#130630",
+        borderWidth: 3,
+        alignSelf: "center",
+        padding: 15,
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: "center"
+    },
+    settingsText: {
+        fontSize: 20,
+        fontFamily: "SF-Compact",
+        color: "#130630"
+    },
+    logOutButton: {
+        borderColor: "#130630",
+        borderWidth: 3,
+        width: "45%",
+        backgroundColor: "#130630",
+        alignSelf: "center",
+        padding: 15,
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: "center"
+    },
+    logOutText: {
+        fontSize: 20,
+        fontFamily: "SF-Compact",
+        color: "white"
     }
 });

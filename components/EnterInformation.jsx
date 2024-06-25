@@ -6,6 +6,9 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
+import thoughtguy from "../assets/mascots/thoughtguy.png"
+import bighappyguy from "../assets/mascots/bighappyguy.png"
+
 import { AddCircle, ArrowLeft2, MinusCirlce } from 'iconsax-react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -146,7 +149,7 @@ export default function EnterInformation({ navigation }) {
     return (
         <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
             <Animated.View style={animatedBigGuy}>
-                <Image source={onboardingguy} style={{ height: screenHeight * 0.7 }} />
+                <Image source={thoughtguy} style={{ height: screenHeight * 0.7 }} />
             </Animated.View>
 
             <FlatList

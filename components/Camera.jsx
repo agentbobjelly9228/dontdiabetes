@@ -60,20 +60,6 @@ export default function CameraPage({ route, navigation }) {
         ]);
     }
 
-    async function clearAsyncStorageIfFull() {
-        try {
-            let data = await AsyncStorage.getItem('@todayMacros')
-            let parsedData = JSON.parse(data)
-
-
-            // REPLACE WITH ACTUAL THING
-            if (parsedData.numMeals >= 3) {
-                await AsyncStorage.removeItem('@todayMacros')
-            }
-        } catch (e) {
-            // console.log(e)
-        }
-    }
 
     const bottomSheetRef = useRef(null);
 
@@ -103,7 +89,6 @@ export default function CameraPage({ route, navigation }) {
             // Set cameraOpen to true whenever this screen is focused
             setOpen(true);
             setMealKey(mealKey)
-            clearAsyncStorageIfFull()
 
             if (alertBadPhoto)
                 createAlert()
