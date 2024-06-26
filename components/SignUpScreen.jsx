@@ -24,7 +24,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
-
+const stuff = "";
 const errors = {
     "auth/invalid-email": "Please enter a valid email.",
     "auth/email-already-in-use": "This email is already associated with an account.",
