@@ -9,8 +9,11 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXApplication (5.9.1):
     - ExpoModulesCore
-  - EXConstants (16.0.1):
+  - EXConstants (14.4.2):
     - ExpoModulesCore
+  - EXGoogleSignIn (11.0.0):
+    - ExpoModulesCore
+    - GoogleSignIn (~> 5.0.2)
   - EXImageLoader (4.7.0):
     - ExpoModulesCore
     - React-Core
@@ -1643,6 +1646,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../node_modules/expo-application/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
+  - EXGoogleSignIn (from `../node_modules/expo-google-sign-in/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
   - EXJSONUtils (from `../node_modules/expo-json-utils/ios`)
   - EXManifests (from `../node_modules/expo-manifests/ios`)
@@ -1770,6 +1774,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-application/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
+  EXGoogleSignIn:
+    :path: "../node_modules/expo-google-sign-in/ios"
   EXImageLoader:
     :path: "../node_modules/expo-image-loader/ios"
   EXJSONUtils:
@@ -1947,7 +1953,8 @@ SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EXApplication: c08200c34daca7af7fd76ac4b9d606077410e8ad
-  EXConstants: 9a008dbf262550884e6280dea95b81b51f65ea6f
+  EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
+  EXGoogleSignIn: 749413fa020606d58e4ff40ddf1b11b7b30a29d9
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
   EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
