@@ -17,8 +17,19 @@ target 'dontdiabetes' do
   use_expo_modules!
   config = use_native_modules!
 
-  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
-  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
+  use_frameworks! :linkage => :static
+
+  pod 'Firebase/Core', '10.27.0'
+  pod 'Firebase/Auth', '10.27.0'
+  pod 'Firebase/Database', '10.27.0'
+  pod 'FirebaseCoreInternal', '10.27.0'
+  pod 'GoogleUtilities', '7.13.3' # Updated to match Firebase requirements
+  pod 'leveldb-library', '1.22.1'
+  pod 'GTMSessionFetcher/Core', '2.1.0' # Specifying a version compatible with both dependencies
+
+  # Use modular headers
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app', :modular_headers => true
+  pod 'RNFBDatabase', :path => '../node_modules/@react-native-firebase/database', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -27,21 +38,6 @@ target 'dontdiabetes' do
     :app_path => "#{Pod::Config.instance.installation_root}/..",
     :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
   )
-
-  # Enable modular headers globally
-  use_modular_headers!
-
-  # Add Firebase pods with modular headers
-  pod 'Firebase/Core', :modular_headers => true
-  pod 'Firebase/Auth', :modular_headers => true
-  pod 'Firebase/Database', :modular_headers => true
-  pod 'FirebaseCoreInternal', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
-  pod 'leveldb-library', :modular_headers => true
-
-  # Add other dependencies
-  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app', :modular_headers => true
-  pod 'RNFBDatabase', :path => '../node_modules/@react-native-firebase/database', :modular_headers => true
 
   post_install do |installer|
     react_native_post_install(
@@ -59,6 +55,12 @@ target 'dontdiabetes' do
         resource_bundle_target.build_configurations.each do |config|
           config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
+      end
+    end
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
       end
     end
   end
