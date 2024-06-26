@@ -34,7 +34,15 @@
           }
         }
       ],
-      ["expo-apple-authentication"]
+      [
+        "expo-apple-authentication"
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.9059900724-a8a12k9jdojeholjank93rm430n2i5ft"
+        }
+      ]
     ],
     "assetBundlePatterns": [
       "**/*"
@@ -43,10 +51,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.samuellao.dontdiabetes",
       "usesAppleSignIn": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
       "entitlements": {
-        "com.apple.developer.applesignin": ["Default"]
+        "com.apple.developer.applesignin": [
+          "Default"
+        ]
       }
-
     },
     "android": {
       "adaptiveIcon": {
