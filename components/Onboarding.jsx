@@ -37,6 +37,8 @@ data = [
 
 ]
 
+
+
 export default function Onboarding({ navigation }) {
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -46,7 +48,6 @@ export default function Onboarding({ navigation }) {
         const contentOffsetX = e.nativeEvent.contentOffset.x;
         const currentIndex = Math.round(contentOffsetX / screenWidth);
         setCurrentSlideIndex(currentIndex)
-        console.log(currentIndex)
     }
 
     const [fontsLoaded] = useFonts({
@@ -75,7 +76,7 @@ export default function Onboarding({ navigation }) {
 
     return (
         <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
-            <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.6, position: "absolute", top: screenHeight * -0.1, }} />
+            <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.55, resizeMode: "contain", position: "absolute", top: screenHeight * -0.1, }} />
             <Text style={styles.infoTitle}>All about Nutrivision</Text>
             <FlatList
                 data={data}
@@ -85,12 +86,13 @@ export default function Onboarding({ navigation }) {
                 renderItem={({ item }) => <Item index={item.index} text={item.text} title={item.title} image={item.image} navigation={navigation} />}
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
-                style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.4 }}
+                keyExtractor={(item) => item.index}
+                style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.37 }}
             // initialScrollIndex={-1}
 
             />
-            <View style={{ position: "absolute", top: screenHeight * 0.85, justifyContent: "center", alignSelf: "center", gap: 10 }}>
-                <DotProgress />
+            <View style={{ position: "absolute", top: screenHeight * 0.82, justifyContent: "center", alignSelf: "center", gap: 10 }}>
+                <DotProgress currentSlideIndex={currentSlideIndex} />
                 <Pressable onPress={() => navigation.navigate("EnterInformation")} style={styles.infoButton}><Text style={styles.infoButtonText}>Let's Begin!</Text></Pressable>
                 <Pressable onPress={() => { navigation.navigate("LoginScreen") }}>
                     <Text style={styles.infoButtonTextSmall}>Already have an account? Log In</Text>
@@ -160,17 +162,25 @@ function Item({ index, text, title, image, navigation }) {
     )
 }
 
-function DotProgress() {
-    
+
+
+function DotProgress({currentSlideIndex}) {
+    // let arr = new Array(data.length).fill()
+    // let answer = arr.map((_, index) => {return index})
+    // console.log(answer)
+
+    console.log(currentSlideIndex)
     return (
-        <View style={{gap: 10, flexDirection: "row", alignSelf: "center"}}>
+        <View style={{gap: 10, flexDirection: "row", alignSelf: "center", paddingBottom: 20}}>
             {
-                
+                new Array(data.length).fill().map((_, i) => {
+                    if (i == currentSlideIndex)
+                        return <View style={styles.selectedDot} />
+                    else
+                        return <View style={styles.unselectedDot} />
+                })  
             }
-            <View style={styles.unselectedDot} />
-            <View style={styles.unselectedDot} />
-            <View style={styles.unselectedDot} />
-            <View style={styles.unselectedDot} />
+
         </View>
     );
 }
@@ -181,7 +191,13 @@ const styles = StyleSheet.create({
         width: 10,
         borderRadius: 5,
         backgroundColor: "black",
-        opacity: 0.4
+        opacity: 0.3
+    },
+    selectedDot: {
+        height: 10,
+        width: 10,
+        borderRadius: 5,
+        backgroundColor: "black",
     },
     background: {
         padding: 50,
@@ -208,7 +224,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 35,
         position: "absolute",
-        top: screenHeight * 0.35,
+        top: screenHeight * 0.32,
         textAlign: "center",
         alignSelf: "center"
 

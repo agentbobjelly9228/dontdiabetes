@@ -12,6 +12,8 @@ import { ref, update, get } from 'firebase/database';
 
 const screenHeight = Dimensions.get('window').height;
 
+const dayjs = require('dayjs')
+
 export default function Feedback({ navigation }) {
     const auth = FIREBASE_AUTH;
     const database = FIREBASE_DATABASE;
@@ -194,9 +196,11 @@ export default function Feedback({ navigation }) {
             // Set messages in daily recap
             setMessages(position, allErrors);
 
+            let newDate = dayjs().set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
 
-            parsedScores.push(position);
-            setScores(parsedScores.slice(-7));
+
+            parsedScores.push({score: position, date: JSON.stringify(newDate)});
+            setScores(parsedScores);
 
             // Update AsyncStorage
             await AsyncStorage.setItem('@allScores', JSON.stringify(parsedScores));

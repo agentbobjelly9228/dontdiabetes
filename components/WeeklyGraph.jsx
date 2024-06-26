@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font'
 import { Svg, Polyline } from 'react-native-svg';
 import { LineChart, } from 'react-native-chart-kit';
 
+const dayjs = require("dayjs")
 
 
 export default function WeeklyGraph({ navigation, datapoints }) {
@@ -15,7 +16,18 @@ export default function WeeklyGraph({ navigation, datapoints }) {
         "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
     });
 
+    datapoints = datapoints.slice(-7);
+    // console.log(datapoints)
 
+    let scores = []
+    let dates = []
+    datapoints.forEach((item) => {
+        scores.push(item.score)
+        let dateObject = dayjs(JSON.parse(item.date))
+        dates.push(dateObject)
+    })
+    console.log(scores)
+    console.log(dates)
 
     const chartConfig = {
         backgroundGradientFromOpacity: 0,
@@ -26,7 +38,6 @@ export default function WeeklyGraph({ navigation, datapoints }) {
         propsForLabels: {
             fontFamily: "SF-Compact",
             fontSize: 9
-
         }
     };
 
@@ -38,7 +49,7 @@ export default function WeeklyGraph({ navigation, datapoints }) {
                     labels: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
                     datasets: [
                         {
-                            data: datapoints,
+                            data: scores,
                             color: () => `rgba(255, 204, 38, 1)`,
                             strokeWidth: 11
                         }
@@ -71,7 +82,7 @@ export default function WeeklyGraph({ navigation, datapoints }) {
                     labels: ["27", "28", "29", "30", "31", "1", "2"],
                     datasets: [
                         {
-                            data: datapoints,
+                            data: scores,
                             color: () => `rgba(0, 0, 0, 1)`,
                             strokeWidth: 6
                         }

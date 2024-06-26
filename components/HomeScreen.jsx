@@ -185,7 +185,7 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
                     <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute", top: 205 }} />
                 </View>
-                {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
+                <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
                 <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
                     <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
                         <Text style={styles.settingsText}>Delete Account</Text>
