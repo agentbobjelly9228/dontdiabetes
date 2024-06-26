@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native"
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home2, Camera as CameraIcon, Gallery, Camera, Check, TickSquare, } from "iconsax-react-native";
+import { Home2, Camera as CameraIcon, Gallery, Camera, Check, TickSquare, MagicStar, } from "iconsax-react-native";
 // import SweetSFSymbol from "sweet-sfsymbols";
 import { useFonts } from "expo-font";
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -162,9 +162,9 @@ export default function Tabs({ route, navigation }) {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
-          borderTopWidth: 0,
+          borderTopWidth: 1,
         },
-        tabBarShowLabel: false,
+        // tabBarShowLabel: false,
         tabBarIcon: ({ tintColor, focused }) => {
 
           let icon;
@@ -172,8 +172,8 @@ export default function Tabs({ route, navigation }) {
             icon = focused
               // ? <SweetSFSymbol name="leaf.fill" variant="Bold" size={24} style={{ color: "black" }} />
               // : <SweetSFSymbol name="leaf" variant="Bold" size={24} style={{ color: "black" }} />
-              ? <Home2 variant="Bold" size={32} style={{ color: "black" }} />
-              : <Home2 size={32} style={{ color: "black" }} />
+              ? <MagicStar variant="Bold" size={32} style={{ color: "black" }} />
+              : <MagicStar size={32} style={{ color: "black" }} />
           } else if (route.name === "Camera") {
             return (
               <View style={{

@@ -14,6 +14,8 @@ import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
 import { revokeAccessToken, OAuthProvider, signInWithCredential } from "firebase/auth";
 import * as AppleAuthentication from 'expo-apple-authentication';
+import homeguy from "../assets/mascots/homeguy.png"
+import { MagicStar } from "iconsax-react-native";
 
 
 const dayjs = require('dayjs')
@@ -24,6 +26,8 @@ function createNoSettingsAlert() {
     ])
 }
 
+const screenHeight = Dimensions.get("screen").height;
+const screenWidth = Dimensions.get("screen").width;
 
 export default function HomeScreen({ route, navigation }) {
     const auth = FIREBASE_AUTH;
@@ -74,7 +78,7 @@ export default function HomeScreen({ route, navigation }) {
             const allScores = snapshot.val()?.scores || []; 
             setGraphData(allScores);
         } else {
-            console.log("No data available");
+            setGraphData([])
         }
     }
 
@@ -89,23 +93,23 @@ export default function HomeScreen({ route, navigation }) {
             setTitle("What a Good Day!")
             setMascot(greenGuy);
             setTheme("#A8C84C");
-            setSubtitle("And that's the end of the today! But it looks like you haven't logged your entire day yet. What'd you eat? We're curious!")
+            setSubtitle("And that's it! But it looks like you haven't logged everything yet. What'd you eat? We're curious!")
             setCurrentMeal(2);
         } else if (hour >= preferredMealTimes["dinner"] - 1) {
             setTitle("Time for Dinner!");
-            setSubtitle("Take some time to relax. Enjoy your meal, savor those veggies, and know that you are valuable just the way you are. Go you!");
+            setSubtitle("Take some time to relax. Enjoy your meal and know that you are valuable just the way you are.");
             setMascot(redGuy);
             setTheme("#F3B15B");;
             setCurrentMeal(2);
         } else if (hour >= preferredMealTimes["lunch"] - 1) {
             setTitle("It's Lunch Time!");
-            setSubtitle("Woohoo! Let's set the tone for today and make it a good one. Pay attention to your hunger cues but don't stress out. You're already doing great!");
+            setSubtitle("Let's set the tone for today and make it a good one. Pay attention to your hunger cues but don't stress out.");
             setMascot(yellowGuy);
             setTheme("#F1CF48");
             setCurrentMeal(1);
         } else {
             setTitle("BREAKFAST TIME!!!!");
-            setSubtitle("Let's go! Kick today off with a great start by enjoying your meal. Scan your breakfast to get started!");
+            setSubtitle("Kick today off with a great start by enjoying your meal.");
             setMascot(greenGuy);
             setTheme("#A8C84C");
             setCurrentMeal(0);
@@ -162,37 +166,41 @@ export default function HomeScreen({ route, navigation }) {
 
     if (!loading && name)
         return (
-            <ScrollView style={{ flex: 1, backgroundColor: "F5F5F5" }}>
-
-                <Image source={mascot} style={{ alignSelf: "center", height: 350, resizeMode: "contain" }} />
-                <View style={{ alignItems: "left", marginLeft: 23, marginRight: 23, paddingBottom: 30 }}>
-                    <Text style={styles.blurb}>Hi {name},</Text>
-                    <Text style={styles.title}>{title}</Text>
-                    <Text style={styles.blurb}>{subtitle}</Text>
-                </View>
-
-                <View style={{ height: 175, marginBottom: 20 }}>
-                    <ProgressBar
-                        stage={currentMeal}
-                        color={themeColor}
-                        emojis={emojis}
-                    />
-                </View>
-                <View style={{ height: 300, alignItems: "center", }}>
-                    <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute" }} />
-                    <View style={{ position: "absolute" }}>
-                        <WeeklyGraph datapoints={graphData} />
+            <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
+                <Image source={homeguy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.25, }} />
+                <View style={{ paddingTop: screenHeight * 0.3, justifyContent: "center", width: "100%", }}>
+                    <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, paddingBottom: 30 }}>
+                        {/* <Text style={styles.blurb}>Hi {name},</Text> */}
+                        <Text style={styles.title}>{title}</Text>
+                        <Text style={styles.blurb}>{subtitle}</Text>
                     </View>
-                    <DashedLine dashLength={7} dashGap={4} dashThickness={1} style={{ width: "90%", opacity: 0.38, position: "absolute", top: 205 }} />
-                </View>
-                {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
-                <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
-                    <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
-                        <Text style={styles.settingsText}>Delete Account</Text>
-                    </Pressable>
-                    <Pressable style={styles.logOutButton} onPress={() => auth.signOut()}>
-                        <Text style={styles.logOutText}>Log Out</Text>
-                    </Pressable>
+
+                    <View style={{ height: 175, marginBottom: 20 }}>
+                        <ProgressBar
+                            stage={currentMeal}
+                            color={themeColor}
+                            emojis={emojis}
+                        />
+                    </View>
+                    {/* #FFF8DA */}
+                    <View style={{ height: 275, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20}}>
+                        <View style={{ position: "absolute", zIndex: 10, top: -30, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center" }}>
+                                <MagicStar size={40} variant="Bold" color="#FFC53A" />
+                         </View>
+
+                        <View style={{ position: "absolute" }}>
+                            <WeeklyGraph datapoints={graphData} />
+                        </View>
+                    </View>
+                    {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
+                    <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
+                        <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
+                            <Text style={styles.settingsText}>Delete Account</Text>
+                        </Pressable>
+                        <Pressable style={styles.logOutButton} onPress={() => auth.signOut()}>
+                            <Text style={styles.logOutText}>Log Out</Text>
+                        </Pressable>
+                    </View>
                 </View>
             </ScrollView>
         );
@@ -201,13 +209,17 @@ export default function HomeScreen({ route, navigation }) {
 const styles = StyleSheet.create({
     title: {
         fontFamily: "SF-Rounded",
-        fontSize: 30,
+        fontSize: 45,
         fontWeight: "bold",
-        marginTop: 5,
-        marginBottom: 5
+        marginBottom: 15,
+        textAlign: "center",
+        alignSelf: "center"
     },
     blurb: {
-        fontSize: 15,
+        fontSize: 20,
+        fontFamily: "SF-Pro",
+        textAlign: "center",
+        alignSelf: "center"
     },
     sfcompact: {
         fontSize: 20,
@@ -241,7 +253,7 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     settingsText: {
-        fontSize: 20,
+        fontSize: 15,
         fontFamily: "SF-Compact",
         color: "#130630"
     },
@@ -257,7 +269,7 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     logOutText: {
-        fontSize: 20,
+        fontSize: 15,
         fontFamily: "SF-Compact",
         color: "white"
     }

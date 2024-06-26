@@ -37,7 +37,7 @@ export default function App() {
   const db = FIREBASE_DATABASE;
 
   // AsyncStorage.clear()
-  AsyncStorage.removeItem("@onboardingDone")
+  // AsyncStorage.removeItem("@onboardingDone")
   // AsyncStorage.removeItem('@todayMacros')
 
   const [onboardingDone, setOnboardingDone] = useState(null);
