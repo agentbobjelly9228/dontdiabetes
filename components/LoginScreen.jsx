@@ -11,7 +11,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
-import { Apple, Google } from 'iconsax-react-native';
+import { Apple, ArrowLeft2, Google } from 'iconsax-react-native';
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
@@ -62,6 +62,9 @@ export default function LoginScreen({ navigation, route }) {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFBEE", }}>
             <View style={styles.container}>
+                <Pressable onPress={() => {navigation.goBack()}} style={{position: "absolute", left: 20 }}>
+                    <ArrowLeft2 color="#000" size={32} />
+                </Pressable>
                 <Text style={styles.title}>Login</Text>
 
                 <View style={{ position: "absolute", top: screenHeight * 0.15, width: "100%" }}>

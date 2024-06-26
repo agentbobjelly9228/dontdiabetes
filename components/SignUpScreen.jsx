@@ -15,7 +15,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
-import { Apple, Google } from 'iconsax-react-native';
+import { Apple, ArrowLeft2, Google } from 'iconsax-react-native';
 import { updateProfile } from "firebase/auth";
 import * as WebBrowser from "expo-web-browser";
 import * as GoogleAuth from "expo-auth-session/providers/google";
@@ -98,6 +98,9 @@ export default function SignUpScreen({ navigation, route }) {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFBEE", }}>
             <View style={styles.container}>
+                <Pressable onPress={() => { navigation.goBack() }} style={{ position: "absolute", left: 20 }}>
+                    <ArrowLeft2 color="#000" size={32} />
+                </Pressable>
                 <Text style={styles.title}>Sign Up</Text>
 
                 <View style={{ position: "absolute", top: screenHeight * 0.15, width: "100%" }}>
@@ -130,40 +133,38 @@ export default function SignUpScreen({ navigation, route }) {
 
                 {/* <Text style={styles.infoText}>Or continue with</Text> */}
                 <View style={styles.thirdPartyButtonContainer}>
-                <AppleAuthentication.AppleAuthenticationButton
-                    buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
-                    buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                    cornerRadius={5}
-                    style={styles.appleButton}
-                    onPress={async () => {
-                        try {
-                            const appleCredential = await AppleAuthentication.signInAsync({
-                                requestedScopes: [
-                                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-                                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
-                                ],
-                            });
-                            const { identityToken } = appleCredential;
-                            if (identityToken) {
-                                const provider = new OAuthProvider('apple.com');
-                                const credential = provider.credential({
-                                     idToken: identityToken,
-                                     rawNonce: appleCredential.authorizationCode
+                    <AppleAuthentication.AppleAuthenticationButton
+                        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+                        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                        cornerRadius={5}
+                        style={styles.appleButton}
+                        onPress={async () => {
+                            try {
+                                const appleCredential = await AppleAuthentication.signInAsync({
+                                    requestedScopes: [
+                                        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                                        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                                    ],
+                                });
+                                const { identityToken } = appleCredential;
+                                if (identityToken) {
+                                    const provider = new OAuthProvider('apple.com');
+                                    const credential = provider.credential({
+                                        idToken: identityToken,
+                                        rawNonce: appleCredential.authorizationCode
                                     })
-                                await signInWithCredential(auth, credential);
+                                    await signInWithCredential(auth, credential);
+                                }
+                            } catch (e) {
+                                if (e.code === 'ERR_REQUEST_CANCELED') {
+                                    // handle that the user canceled the sign-in flow
+                                } else {
+                                    setError("Something went wrong!")
+                                }
+                                console.log(e)
                             }
-                            else
-                                setError("Something went wrong!")
-                        } catch (e) {
-                            if (e.code === 'ERR_REQUEST_CANCELED') {
-                                // handle that the user canceled the sign-in flow
-                            } else {
-                                // handle other errors
-                            }
-                            console.log(e)
-                        }
-                    }}
-                />
+                        }}
+                    />
                 </View>
             </View>
 

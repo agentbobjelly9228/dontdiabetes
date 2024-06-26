@@ -299,7 +299,7 @@ export default function Feedback({ navigation }) {
                     </View>
                     <Animated.Text key={"page0subtitle"} entering={FadeInDown.duration(duration).delay(delay * 0.6)} exiting={FadeOutDown.duration(duration)} style={styles.bigSubtitle}>Today...</Animated.Text>
                     <Animated.View key={"page0"} entering={FadeInDown.duration(duration).delay(delay * 0.6)} exiting={FadeOutDown.duration(duration)} style={styles.graph}>
-                        <WeeklyGraph datapoints={scores} />
+                        <WeeklyGraph datapoints={scores} yellow={true} />
                     </Animated.View>
 
                     <Animated.View style={styles.graphFeedbackContainer} key={"page0.5"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)}>
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
     graphFeedbackContainer: {
         width: "80%",
         position: 'absolute',
-        top: screenHeight * 0.5,
+        top: screenHeight * 0.55,
         justifyContent: "center",
         alignItems: "center",
         gap: 20

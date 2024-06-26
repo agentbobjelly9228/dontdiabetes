@@ -148,6 +148,9 @@ export default function EnterInformation({ navigation }) {
 
     return (
         <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
+            <Pressable onPress={() => { navigation.goBack() }} style={{ position: "absolute", left: 20, top: 60, zIndex: 100 }}>
+                <ArrowLeft2 color="#000" size={32} />
+            </Pressable>
             <Animated.View style={animatedBigGuy}>
                 <Image source={thoughtguy} style={{ height: screenHeight * 0.7 }} />
             </Animated.View>

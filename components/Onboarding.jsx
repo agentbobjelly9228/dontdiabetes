@@ -15,7 +15,7 @@ const screenHeight = Dimensions.get("screen").height
 data = [
     {
         index: 0,
-        title: "This is Big Guy.",
+        title: "Welcome!\nThis is Big Guy.",
         image: smallguy,
         text: "He's been waiting for you to join him on a neat, new, nutrition journey.",
     },
@@ -76,8 +76,8 @@ export default function Onboarding({ navigation }) {
 
     return (
         <View style={{ backgroundColor: "#FFFBEE", flex: 1, }}>
-            <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.55, resizeMode: "contain", position: "absolute", top: screenHeight * -0.1, }} />
-            <Text style={styles.infoTitle}>All about Nutrivision</Text>
+            <Image source={onboardingguy} style={{ alignSelf: "center", height: screenHeight * 0.7, resizeMode: "contain", position: "absolute", top: screenHeight * -0.1, }} />
+            {/* <Text style={styles.infoTitle}>All about Nutrivision</Text> */}
             <FlatList
                 data={data}
                 ref={ref}
@@ -87,11 +87,11 @@ export default function Onboarding({ navigation }) {
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.index}
-                style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.37 }}
+                style={{ position: "absolute", zIndex: 100, top: screenHeight * 0.35 }}
             // initialScrollIndex={-1}
 
             />
-            <View style={{ position: "absolute", top: screenHeight * 0.82, justifyContent: "center", alignSelf: "center", gap: 10 }}>
+            <View style={{ position: "absolute", top: screenHeight * 0.8, justifyContent: "center", alignSelf: "center", gap: 20 }}>
                 <DotProgress currentSlideIndex={currentSlideIndex} />
                 <Pressable onPress={() => navigation.navigate("EnterInformation")} style={styles.infoButton}><Text style={styles.infoButtonText}>Let's Begin!</Text></Pressable>
                 <Pressable onPress={() => { navigation.navigate("LoginScreen") }}>
@@ -152,7 +152,7 @@ function Item({ index, text, title, image, navigation }) {
                     }
                     {index === 3 &&
                         <>
-                            <Code size={48} variant="Bold" color="#130630" />
+                            <Code size={48} variant="Bold" color="#ffcc32" />
                             <Text style={{ ...styles.cardText }}>{text}</Text>
                         </>
                     }
@@ -171,13 +171,13 @@ function DotProgress({currentSlideIndex}) {
 
     console.log(currentSlideIndex)
     return (
-        <View style={{gap: 10, flexDirection: "row", alignSelf: "center", paddingBottom: 20}}>
+        <View style={{gap: 10, flexDirection: "row", alignSelf: "center", paddingBottom: 15}}>
             {
                 new Array(data.length).fill().map((_, i) => {
                     if (i == currentSlideIndex)
-                        return <View style={styles.selectedDot} />
+                        return <View style={styles.selectedDot} key={i} />
                     else
-                        return <View style={styles.unselectedDot} />
+                        return <View style={styles.unselectedDot} key={i} />
                 })  
             }
 
@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         alignSelf: "center",
         fontFamily: "SF-Compact",
+        textAlign: "center"
 
     },
     input: {

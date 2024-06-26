@@ -7,8 +7,17 @@ import { LineChart, } from 'react-native-chart-kit';
 
 const dayjs = require("dayjs")
 
+const indexToDayName = {
+    0: "SUN",
+    1: "MON",
+    2: "TUE",
+    3: "WED",
+    4: "THU",
+    5: "FRI",
+    6: "SAT"
+}
 
-export default function WeeklyGraph({ navigation, datapoints }) {
+export default function WeeklyGraph({ navigation, datapoints, yellow=false }) {
     const screenWidth = Dimensions.get("window").width * 0.9;
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -20,21 +29,24 @@ export default function WeeklyGraph({ navigation, datapoints }) {
     // console.log(datapoints)
 
     let scores = []
-    let dates = []
+    let dayNums = []
+    let dayNames = []
     datapoints.forEach((item) => {
         scores.push(item.score)
         let dateObject = dayjs(JSON.parse(item.date))
-        dates.push(dateObject)
+        dayNames.push(indexToDayName[dateObject.day()])
+        dayNums.push(dateObject.date())
     })
     console.log(scores)
-    console.log(dates)
+    console.log(dayNames)
+    console.log(dayNums)
 
     const chartConfig = {
         backgroundGradientFromOpacity: 0,
         backgroundGradientToOpacity: 0,
         strokeWidth: 2, // optional, default 3
         useShadowColorFromDataset: false, // optional
-        color: () => `rgba(0, 0, 0, 1)`,
+        color: () => yellow ? `#FFCC32` : 'rgba(0, 0, 0, 1)',
         propsForLabels: {
             fontFamily: "SF-Compact",
             fontSize: 9
@@ -46,7 +58,7 @@ export default function WeeklyGraph({ navigation, datapoints }) {
             <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 45, alignItems: "center", position: "absolute", width: screenWidth, top: 55 }} />
             <LineChart
                 data={{
-                    labels: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                    labels: dayNames,
                     datasets: [
                         {
                             data: scores,
@@ -79,7 +91,7 @@ export default function WeeklyGraph({ navigation, datapoints }) {
             />
             <LineChart
                 data={{
-                    labels: ["27", "28", "29", "30", "31", "1", "2"],
+                    labels: dayNums,
                     datasets: [
                         {
                             data: scores,
