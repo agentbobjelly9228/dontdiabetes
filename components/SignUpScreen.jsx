@@ -6,7 +6,7 @@ import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, OAuthProvider, OAuthCredential, revokeAccessToken } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
-// import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, SafeAreaView, } from 'react-native';
 import { ref, set, get } from 'firebase/database';

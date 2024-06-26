@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>9059900724-a8a12k9jdojeholjank93rm430n2i5ft.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.9059900724-a8a12k9jdojeholjank93rm430n2i5ft</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAZfIxfx-7OpG7Q_3wWvGozjysBPOrLBn8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>9059900724</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.samuellao.dontdiabetes</string>
+	<key>PROJECT_ID</key>
+	<string>nutrivision-f1daa</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nutrivision-f1daa.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:9059900724:ios:b842918774448b9cb45961</string>
+	<key>DATABASE_URL</key>
+	<string>https://nutrivision-f1daa-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

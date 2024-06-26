@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "dontdiabetes",
+    "name": "nutrivision",
     "slug": "dontdiabetes",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -66,14 +66,15 @@
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "package": "com.samuellao.dontdiabetes"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "a4e3c149-58f9-4688-b149-eaf2b0fe9eab"
+        "projectId": "696542ce-c43c-4b8c-be18-0781de298bb7"
       }
     }
   }
