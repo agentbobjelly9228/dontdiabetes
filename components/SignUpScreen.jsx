@@ -66,6 +66,7 @@ export default function SignUpScreen({ navigation, route }) {
             checkPlayServices()
             const userInfo = await GoogleSignin.signIn();
             console.log(userInfo)
+            console.log("sup")
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 console.log('User cancelled the login flow');
