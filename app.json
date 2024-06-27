@@ -49,12 +49,21 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.samuellao.dontdiabetes",
+      "bundleIdentifier": "com.sanakama.dontdiabetes",
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "entitlements": {
         "com.apple.developer.applesignin": [
           "Default"
+        ]
+      },
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.9059900724-a8a12k9jdojeholjank93rm430n2i5ft"
+            ]
+          }
         ]
       }
     },
@@ -67,7 +76,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.samuellao.dontdiabetes"
+      "package": "com.sanakama.dontdiabetes"
     },
     "web": {
       "favicon": "./assets/favicon.png"

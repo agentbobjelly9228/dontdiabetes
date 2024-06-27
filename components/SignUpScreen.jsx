@@ -6,7 +6,7 @@ import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, OAuthProvider, OAuthCredential, revokeAccessToken } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
-// import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, SafeAreaView, } from 'react-native';
 import { ref, set, get } from 'firebase/database';
@@ -35,7 +35,7 @@ const errors = {
 }
 async function loginWithGoogle() {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-
+    const [infoThing, setInfo] = useState(null);
     const { idToken } = await GoogleSignin.signIn();
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
@@ -43,6 +43,28 @@ async function loginWithGoogle() {
 }
 export default function SignUpScreen({ navigation, route }) {
 
+    function configureGoogleSignin() {
+        GoogleSignin.configure({
+            iosClientId: "9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com",
+            webClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com",
+            androidClientId: "9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com"
+        })
+    }
+
+    useEffect(() => {
+        configureGoogleSignin();
+    })
+
+    async function signIn() {
+        console.log("sup");
+        try {
+            await GoogleSignin.hasPlayServices();
+            const info = await GoogleSignin.signIn();
+            console.log(info)
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = GoogleAuth.useAuthRequest({
         iosClientId: "9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com",
@@ -133,6 +155,10 @@ export default function SignUpScreen({ navigation, route }) {
 
                 {/* <Text style={styles.infoText}>Or continue with</Text> */}
                 <View style={styles.thirdPartyButtonContainer}>
+                    <GoogleSigninButton size={GoogleSigninButton.Size.Standard} color={GoogleSigninButton.Color.Dark} onPress={signIn}>
+
+                    </GoogleSigninButton>
+
                     <AppleAuthentication.AppleAuthenticationButton
                         buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
                         buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}

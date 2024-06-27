@@ -18,7 +18,9 @@ const indexToDayName = {
 }
 
 export default function WeeklyGraph({ navigation, datapoints, yellow=false }) {
-    const screenWidth = Dimensions.get("window").width * 0.9;
+   const screenWidth = Dimensions.get("window").width;
+    const screenHeight = Dimensions.get("window").height
+
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
         "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
@@ -55,7 +57,13 @@ export default function WeeklyGraph({ navigation, datapoints, yellow=false }) {
 
     return (
         <View>
-            <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 45, alignItems: "center", position: "absolute", width: screenWidth, top: 55 }} />
+            <View style={{gap: 10, top: screenHeight * 0.03, position: "absolute", width: screenWidth * 0.85, alignSelf: "center" }}>
+                <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", }} />
+                <View style={{ backgroundColor: "#FFCC26", height: 103, borderRadius: 15, alignItems: "center", justifyContent: "center" }}>
+                    {datapoints.length === 0 ? <Text style={{ fontSize: 18, width: "70%", textAlign: "center" }}>Scan your first few meals to receive insights tonight.</Text> : null}
+                </View>
+                <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center",  }} />
+            </View>
             <LineChart
                 data={{
                     labels: dayNames,
@@ -84,8 +92,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow=false }) {
                     }
                 }}
 
-                // withHorizontalLabels={false}
-                style={{ position: "absolute" }}
+                style={{ position: "absolute", left: -10 }}
 
 
             />
@@ -126,6 +133,8 @@ export default function WeeklyGraph({ navigation, datapoints, yellow=false }) {
 
                     }
                 }}
+                                style={{  left: -10 }}
+
 
             // withHorizontalLabels={false}
             // style={{backgroundColor: "red", opacity: 0}}
