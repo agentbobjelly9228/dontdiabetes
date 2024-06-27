@@ -14,6 +14,7 @@ import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
 import { revokeAccessToken, OAuthProvider, signInWithCredential } from "firebase/auth";
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { Logout } from "iconsax-react-native";
 
 
 const dayjs = require('dayjs')
@@ -26,6 +27,7 @@ function createNoSettingsAlert() {
 
 
 export default function HomeScreen({ route, navigation }) {
+    // AsyncStorage.clear()
     const auth = FIREBASE_AUTH;
     const database = FIREBASE_DATABASE;
     const [loading, setLoading] = useState(true);
@@ -47,31 +49,31 @@ export default function HomeScreen({ route, navigation }) {
     const deleteAppleAccount = async () => {
         try {
             const appleCredential = await AppleAuthentication.refreshAsync()
-            
+
             // Revokes token
             await revokeAccessToken(auth, appleCredential.authorizationCode)
-    
+
 
             // Signs user out
             const provider = new OAuthProvider('apple.com');
             const { identityToken } = appleCredential;
             const credential = provider.credential({
-                 idToken: identityToken,
-                 rawNonce: appleCredential.authorizationCode
-                })
+                idToken: identityToken,
+                rawNonce: appleCredential.authorizationCode
+            })
             const { user } = await signInWithCredential(auth, credential);
             user.delete()
-        } catch (e) { 
+        } catch (e) {
             console.log(e)
         }
 
-        
+
     }
 
     async function getGraphData(uid) {
         let snapshot = await get(ref(database, uid))
         if (snapshot.exists()) {
-            const allScores = snapshot.val()?.scores || []; 
+            const allScores = snapshot.val()?.scores || [];
             setGraphData(allScores);
         } else {
             console.log("No data available");
@@ -125,7 +127,7 @@ export default function HomeScreen({ route, navigation }) {
 
                 let displayName = auth.currentUser.displayName || await AsyncStorage.getItem("@name")
                 setName(displayName);
-                
+
                 let macros = savedData ? JSON.parse(savedData) : null;
 
                 // Set title, subtitle, mascot, and theme
