@@ -35,36 +35,50 @@ const errors = {
 }
 async function loginWithGoogle() {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    const [infoThing, setInfo] = useState(null);
+
     const { idToken } = await GoogleSignin.signIn();
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
     return auth().signInWithCredential(googleCredential);
 }
 export default function SignUpScreen({ navigation, route }) {
+    async function checkPlayServices() {
+        try {
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            console.log('Google Play Services are available');
+        } catch (error) {
+            console.error('Play Services error:', error);
+        }
+    }
 
-    function configureGoogleSignin() {
+    useEffect(() => {
         GoogleSignin.configure({
             iosClientId: "9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com",
             webClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com",
             androidClientId: "9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com"
-        })
-    }
-
-    useEffect(() => {
-        configureGoogleSignin();
-    })
+        });
+        console.log("sup")
+        checkPlayServices();
+    }, []);
 
     async function signIn() {
-        console.log("sup");
         try {
-            await GoogleSignin.hasPlayServices();
-            const info = await GoogleSignin.signIn();
-            console.log(info)
+            checkPlayServices()
+            const userInfo = await GoogleSignin.signIn();
+            console.log(userInfo)
         } catch (error) {
-            console.log(error)
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log('User cancelled the login flow');
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log('Sign in is in progress');
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                console.log('Play Services not available or outdated');
+            } else {
+                console.error('Error signing in:', error);
+            }
         }
     }
+
     const [userInfo, setUserInfo] = React.useState(null);
     const [request, response, promptAsync] = GoogleAuth.useAuthRequest({
         iosClientId: "9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com",

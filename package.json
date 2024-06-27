@@ -40,7 +40,7 @@
     "google-auth-library": "^9.7.0",
     "iconsax-react-native": "^0.0.8",
     "react": "18.2.0",
-    "react-native": "0.74.1",
+    "react-native": "0.74.2",
     "react-native-chart-kit": "^6.12.0",
     "react-native-dashed-line": "^1.1.0",
     "react-native-gesture-handler": "~2.16.1",
