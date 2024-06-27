@@ -70,6 +70,7 @@ export default function ShowPhoto({ route, navigation }) {
 
     async function storeData(value, imageLink) {
         return new Promise(async (resolve) => {
+            console.log(imageLink)
             let savedData = await AsyncStorage.getItem('@todayMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
 
@@ -228,7 +229,7 @@ export default function ShowPhoto({ route, navigation }) {
         
         // check if JSON is formatted correctly
         if (!isNaN(parsedText?.fruit))
-            storeData(parsedText, null).then(response => {
+            storeData(parsedText, imageLink).then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");
 
