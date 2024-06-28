@@ -1,6 +1,8 @@
 //client id 9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com
 //npx expo run:ios
 import React, { useState, useEffect } from 'react';
+import { GoogleAuthProvider } from "firebase/auth";
+// import { GoogleAuthProvider } from "../FirebaseConfig";
 // import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DATABASE } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, OAuthProvider, OAuthCredential, revokeAccessToken } from 'firebase/auth';
@@ -33,14 +35,18 @@ const errors = {
     "auth/wrong-password": "Your email or password is incorrect.",
     "auth/invalid-credential": "Your email or password is incorrect."
 }
-async function loginWithGoogle() {
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+// async function loginWithGoogle() {
+//     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
-    const { idToken } = await GoogleSignin.signIn();
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+//     const userInfo = await GoogleSignin.signIn();
+//     const idToken = userInfo.idToken;
+//     console.log("sup" + userInfo)
+//     console.log("hi" + GoogleAuthProvider)
+//     const googleCredential = GoogleAuthProvider.credential(idToken);
+//     const userCredential = await signInWithCredential(auth, googleCredential);
 
-    return auth().signInWithCredential(googleCredential);
-}
+//     return userCredential.user;
+// }
 export default function SignUpScreen({ navigation, route }) {
     async function checkPlayServices() {
         try {
@@ -53,7 +59,7 @@ export default function SignUpScreen({ navigation, route }) {
 
     useEffect(() => {
         GoogleSignin.configure({
-            iosClientId: "9059900724-j86mj3buad817c8q2on36asd46pchvsf.apps.googleusercontent.com",
+            iosClientId: "9059900724-a8a12k9jdojeholjank93rm430n2i5ft.apps.googleusercontent.com",
             webClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com",
             androidClientId: "9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com"
         });
@@ -65,7 +71,11 @@ export default function SignUpScreen({ navigation, route }) {
         try {
             checkPlayServices()
             const userInfo = await GoogleSignin.signIn();
-            console.log(userInfo)
+            console.log(userInfo.idToken)
+            const googleCredential = GoogleAuthProvider.credential(userInfo.idToken);
+
+            // Sign-in the user with the credential
+            return signInWithCredential(auth, googleCredential);
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 console.log('User cancelled the login flow');
@@ -169,7 +179,7 @@ export default function SignUpScreen({ navigation, route }) {
 
                 {/* <Text style={styles.infoText}>Or continue with</Text> */}
                 <View style={styles.thirdPartyButtonContainer}>
-                    <GoogleSigninButton size={GoogleSigninButton.Size.Standard} color={GoogleSigninButton.Color.Dark} onPress={signIn}>
+                    <GoogleSigninButton style={styles.GoogleButton} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={signIn}>
 
                     </GoogleSigninButton>
 
@@ -297,10 +307,11 @@ const styles = StyleSheet.create({
     thirdPartyButtonContainer: {
         top: screenHeight * 0.5,
         position: "absolute",
-        flexDirection: "row",
+        flexDirection: "column",
         gap: 20,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        width: 300
     },
     iconButton: {
         padding: 10,
