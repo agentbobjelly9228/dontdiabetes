@@ -4,11 +4,11 @@ import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithCredential, OAuthProvider } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setPersistence, browserSessionPersistence, getReactNativePersistence } from "firebase/auth";
-
+import { GoogleAuthProvider } from "firebase/auth";
 import { useFonts } from "expo-font";
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, TextInput, Pressable, FlatList, SafeAreaView, } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
-
+import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
 import { Apple, ArrowLeft2, Google } from 'iconsax-react-native';
@@ -26,6 +26,35 @@ const errors = {
 }
 
 export default function LoginScreen({ navigation, route }) {
+    async function checkPlayServices() {
+        try {
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            console.log('Google Play Services are available');
+        } catch (error) {
+            console.error('Play Services error:', error);
+        }
+    }
+    async function signInWithGoogle() {
+        try {
+            checkPlayServices()
+            const userInfo = await GoogleSignin.signIn();
+            console.log(userInfo.idToken)
+            const googleCredential = GoogleAuthProvider.credential(userInfo.idToken);
+
+            // Sign-in the user with the credential
+            return signInWithCredential(auth, googleCredential);
+        } catch (error) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log('User cancelled the login flow');
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log('Sign in is in progress');
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                console.log('Play Services not available or outdated');
+            } else {
+                console.error('Error signing in:', error);
+            }
+        }
+    }
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -62,7 +91,7 @@ export default function LoginScreen({ navigation, route }) {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFBEE", }}>
             <View style={styles.container}>
-                <Pressable onPress={() => {navigation.goBack()}} style={{position: "absolute", left: 20 }}>
+                <Pressable onPress={() => { navigation.goBack() }} style={{ position: "absolute", left: 20 }}>
                     <ArrowLeft2 color="#000" size={32} />
                 </Pressable>
                 <Text style={styles.title}>Login</Text>
@@ -102,43 +131,47 @@ export default function LoginScreen({ navigation, route }) {
 
 
                 {/* <Text style={styles.infoText}>Or continue with</Text> */}
-                <View style={styles.thirdPartyButtonContainer}>
-                <AppleAuthentication.AppleAuthenticationButton
-                    buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                    buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                    cornerRadius={5}
-                    style={styles.appleButton}
-                    onPress={async () => {
-                        try {
-                            const appleCredential = await AppleAuthentication.signInAsync({
-                                requestedScopes: [
-                                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-                                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
-                                ],
-                            });
-                            const { identityToken } = appleCredential;
-                            if (identityToken) {
-                                const provider = new OAuthProvider('apple.com');
-                                const credential = provider.credential({
-                                     idToken: identityToken,
-                                     rawNonce: appleCredential.authorizationCode
-                                    })
-                                await signInWithCredential(auth, credential);
-                            }
-                            else
-                                setError("Something went wrong!")
-                        } catch (e) {
-                            if (e.code === 'ERR_REQUEST_CANCELED') {
-                                // handle that the user canceled the sign-in flow
-                            } else {
-                                // handle other errors
-                            }
-                            console.log(e)
-                            setError("Something went wrong!")
 
-                        }
-                    }}
-                />
+                <View style={styles.thirdPartyButtonContainer}>
+                    <GoogleSigninButton style={styles.GoogleButton} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={signInWithGoogle}>
+
+                    </GoogleSigninButton>
+                    <AppleAuthentication.AppleAuthenticationButton
+                        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+                        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                        cornerRadius={5}
+                        style={styles.appleButton}
+                        onPress={async () => {
+                            try {
+                                const appleCredential = await AppleAuthentication.signInAsync({
+                                    requestedScopes: [
+                                        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                                        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                                    ],
+                                });
+                                const { identityToken } = appleCredential;
+                                if (identityToken) {
+                                    const provider = new OAuthProvider('apple.com');
+                                    const credential = provider.credential({
+                                        idToken: identityToken,
+                                        rawNonce: appleCredential.authorizationCode
+                                    })
+                                    await signInWithCredential(auth, credential);
+                                }
+                                else
+                                    setError("Something went wrong!")
+                            } catch (e) {
+                                if (e.code === 'ERR_REQUEST_CANCELED') {
+                                    // handle that the user canceled the sign-in flow
+                                } else {
+                                    // handle other errors
+                                }
+                                console.log(e)
+                                setError("Something went wrong!")
+
+                            }
+                        }}
+                    />
                 </View>
             </View>
 
@@ -231,7 +264,7 @@ const styles = StyleSheet.create({
     thirdPartyButtonContainer: {
         top: screenHeight * 0.5,
         position: "absolute",
-        flexDirection: "row",
+        flexDirection: "column",
         gap: 20,
         alignItems: "center",
         justifyContent: "center"
