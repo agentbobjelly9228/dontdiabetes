@@ -10,7 +10,7 @@ import Svg, { Path } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// import SweetSFSymbol from "sweet-sfsymbols";
+import SweetSFSymbol from "sweet-sfsymbols";
 
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -308,8 +308,8 @@ export default function CameraPage({ route, navigation }) {
                                         setOpen(false)
                                         navigation.navigate('Home')
                                     }} style={styles.backBtn}>
-                                        {/* <SweetSFSymbol name="arrow.uturn.backward" size={24} colors={["white"]} /> */}
-                                        <Back size="36" color="#FFF" style={{ alignSelf: "center" }} />
+                                        <SweetSFSymbol name="arrow.uturn.backward" size={24} colors={["white"]} />
+                                        {/* <Back size="36" color="#FFF" style={{ alignSelf: "center" }} /> */}
                                     </Pressable>
                                     <View style={styles.mealListContainer}>
                                         {showMealList
@@ -338,7 +338,8 @@ export default function CameraPage({ route, navigation }) {
                                                     <Text style={[{ backgroundColor: pressed ? null : null }, styles.chosenMealText]}>{currentMealKey.charAt(0).toUpperCase() + currentMealKey.slice(1)}</Text>
                                                     {mealsEaten.length !== meals.length - 1
                                                         ? <Animated.View style={animatedCarat}>
-                                                            <ArrowDown2 size={32} color="#FFF" />
+                                                            {/* <ArrowDown2 size={32} color="#FFF" /> */}
+                                                            <SweetSFSymbol name="chevron.down" size={32} colors={["white"]} />
                                                         </Animated.View>
                                                         : null
                                                     }
@@ -355,7 +356,8 @@ export default function CameraPage({ route, navigation }) {
                                                         {({ pressed }) => (
                                                             <>
                                                                 <Text style={pressed ? styles.chosenMealText : styles.optionMealText}>Breakfast</Text>
-                                                                <Coffee size={32} color="#FFF" />
+                                                                {/* <Coffee size={32} color="#FFF" /> */}
+                                                                <SweetSFSymbol name="mug" size={32} colors={["white"]} />
                                                             </>
                                                         )}
                                                     </Pressable>
@@ -366,7 +368,8 @@ export default function CameraPage({ route, navigation }) {
                                                         {({ pressed }) => (
                                                             <>
                                                                 <Text style={pressed ? styles.chosenMealText : styles.optionMealText}>Lunch</Text>
-                                                                <Sun1 size={32} color="#FFF" />
+                                                                {/* <Sun1 size={32} color="#FFF" /> */}
+                                                                <SweetSFSymbol name="sun.max" size={32} colors={["white"]} />
                                                             </>
                                                         )}
                                                     </Pressable>
@@ -377,7 +380,8 @@ export default function CameraPage({ route, navigation }) {
                                                         {({ pressed }) => (
                                                             <>
                                                                 <Text style={pressed ? styles.chosenMealText : styles.optionMealText}>Dinner</Text>
-                                                                <Moon size={32} color="#FFF" />
+                                                                {/* <Moon size={32} color="#FFF" /> */}
+                                                                <SweetSFSymbol name="moon" size={32} colors={["white"]} />
                                                             </>
                                                         )}
                                                     </Pressable>
@@ -401,20 +405,20 @@ export default function CameraPage({ route, navigation }) {
                                 </View>
                                 <View style={styles.buttonContainer}>
                                     <Pressable onPress={openTextSheet} style={styles.actionBtn}>
-                                        {/* <SweetSFSymbol name="photo.on.rectangle.angled" size={24} colors={["white"]} /> */}
-                                        <TextIcon size="24" color="#fff" style={{ alignSelf: "center", }} />
+                                        <SweetSFSymbol name="character.textbox" size={24} colors={["white"]} />
+                                        {/* <TextIcon size="24" color="#fff" style={{ alignSelf: "center", }} /> */}
                                     </Pressable>
                                     <Pressable onPress={takePicture} style={styles.pictureBtn}>
-                                        {/* <SweetSFSymbol name="camera.aperture" size={48} colors={["white"]} symbolEffect={{
-                        type: "bounce",
-                        value: bounceValue,
-                        direction: "down",
-                    }}/> */}
-                                        <Lifebuoy size="48" color="#000" style={{ alignSelf: "center" }} />
+                                        <SweetSFSymbol name="camera.aperture" size={48} colors={["black"]} symbolEffect={{
+                                            type: "bounce",
+                                            value: bounceValue,
+                                            direction: "down",
+                                        }}/>
+                                        {/* <Lifebuoy size="48" color="#000" style={{ alignSelf: "center" }} /> */}
                                     </Pressable>
                                     <Pressable onPress={pickImage} style={styles.actionBtn}>
-                                        {/* <SweetSFSymbol name="photo.on.rectangle.angled" size={24} colors={["white"]} /> */}
-                                        <GalleryAdd size="24" color="#FFF" style={{ alignSelf: "center", }} />
+                                        <SweetSFSymbol name="photo.on.rectangle.angled" size={24} colors={["white"]} />
+                                        {/* <GalleryAdd size="24" color="#FFF" style={{ alignSelf: "center", }} /> */}
                                     </Pressable>
                                 </View>
                             </View>
