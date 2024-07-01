@@ -216,7 +216,7 @@ export default function CameraPage({ route, navigation }) {
     }
 
     async function sendTextRequest(text) {
-        const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
+        const apiKey = "AIzaSyDk3LpUrSqXY_DJmpOtCZjEDzphzLaoK-Y";
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         setAwaitingResponse(true);
@@ -443,14 +443,14 @@ export default function CameraPage({ route, navigation }) {
                                     />
                                     <Text style={styles.error}>{error}</Text>
                                     <Pressable
-                                        onPress={() => {if (!awaitingResponse) sendTextRequest(text)}}
+                                        onPress={() => { if (!awaitingResponse) sendTextRequest(text) }}
                                         style={styles.submitTextBtn}
                                     >
-                                    {!awaitingResponse
-                                        ? <Text style={styles.submitText}>Submit!</Text>
-                                        : <ActivityIndicator />
-                                    }
-                                        
+                                        {!awaitingResponse
+                                            ? <Text style={styles.submitText}>Submit!</Text>
+                                            : <ActivityIndicator />
+                                        }
+
                                     </Pressable>
                                 </Pressable>
                             </BottomSheetView>
