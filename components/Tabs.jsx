@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native"
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home2, Camera as CameraIcon, Gallery, Camera, Check, TickSquare, MagicStar, } from "iconsax-react-native";
-// import SweetSFSymbol from "sweet-sfsymbols";
+import SweetSFSymbol from "sweet-sfsymbols";
 import { useFonts } from "expo-font";
 import * as AppleAuthentication from 'expo-apple-authentication';
 
@@ -22,13 +22,13 @@ const Tab = createBottomTabNavigator();
 
 const CameraTabButton = ({ children, onPress, selectedCamera }) => {
   return (
-    <>
+    <View style={{alignItems: "center"}}>
       <Pressable
         style={{
-          height: 60,
-          width: 60,
-          borderRadius: 20,
-          backgroundColor: '#FFFFFF',
+          height: 70,
+          width: 120,
+          borderRadius: 40,
+          backgroundColor: '#FFCC26',
           padding: 10,
           alignItems: "center",
           shadowOpacity: 0.5,
@@ -36,13 +36,21 @@ const CameraTabButton = ({ children, onPress, selectedCamera }) => {
           marginBottom: 50,
           justifyContent: "center",
           alignItems: "center",
-          bottom: 30
+          bottom: 40,
+          shadowOpacity: 0.8,
+          // shadowOffset: {width: 10, height: 10},
+          shadowRadius: 8,
+          shadowColor: "#FFCC26",
+          borderWidth: 1,
+          borderColor: "#bbbbbb"
         }}
         onPress={onPress}
       >
-        <CameraIcon size={32} color="black" variant={selectedCamera ? "Bold" : null} />
+        <SweetSFSymbol name="camera.aperture" size={40} />
+        {/* <CameraIcon size={32} color="black" variant={selectedCamera ? "Bold" : null} /> */}
       </Pressable>
-    </>
+      <Text style={{position: "absolute", zIndex: 10, top: 35}}>Scan</Text>
+    </View>
   )
 };
 
@@ -170,10 +178,12 @@ export default function Tabs({ route, navigation }) {
           let icon;
           if (route.name === "Home") {
             icon = focused
-              // ? <SweetSFSymbol name="leaf.fill" variant="Bold" size={24} style={{ color: "black" }} />
-              // : <SweetSFSymbol name="leaf" variant="Bold" size={24} style={{ color: "black" }} />
-              ? <MagicStar variant="Bold" size={32} style={{ color: "black" }} />
-              : <MagicStar size={32} style={{ color: "black" }} />
+              ? <SweetSFSymbol name="leaf.fill" size={24} />
+              : <SweetSFSymbol name="leaf" size={24} />
+              // ? <SweetSFSymbol name="sparkles" size={24} />
+              // : <SweetSFSymbol name="sparkles" size={24} style={{opacity: 0.6}}/>
+              // ? <MagicStar variant="Bold" size={32} style={{ color: "black" }} />
+              // : <MagicStar size={32} style={{ color: "black" }} />
           } else if (route.name === "Camera") {
             return (
               <View style={{
@@ -198,10 +208,10 @@ export default function Tabs({ route, navigation }) {
             )
           } else if (route.name === "Gallery") {
             icon = focused
-              // ? <SweetSFSymbol name="circle.grid.2x2.fill" variant="Bold" size={27} style={{ color: "black" }} />
-              // : <SweetSFSymbol name="circle.grid.2x2" variant="Bold" size={27} style={{ color: "black" }} />
-              ? <Gallery variant="Bold" size={32} color="black" />
-              : <Gallery size={32} color="black" />
+              ? <SweetSFSymbol name="circle.grid.2x2.fill" variant="Bold" size={24} style={{ color: "black" }} />
+              : <SweetSFSymbol name="circle.grid.2x2" variant="Bold" size={24} style={{ color: "black" }} />
+              // ? <Gallery variant="Bold" size={32} color="black" />
+              // : <Gallery size={32} color="black" />
           }
 
           return icon;

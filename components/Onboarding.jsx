@@ -8,6 +8,8 @@ import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
 import smallguy from "../assets/mascots/smallGuy.png"
 import { Camera, Clipboard, Code, Flag, MenuBoard, Moon, Tether } from 'iconsax-react-native';
+import SweetSFSymbol from "sweet-sfsymbols";
+
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
@@ -118,17 +120,20 @@ function Item({ index, text, title, image, navigation }) {
                     }
                     {index === 1 &&
                         <View style={{ justifyContent: "center", alignItems: "center", }}>
-                            <View style={{ gap: 10 }}>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
-                                    <MenuBoard size={48} variant="Bold" color="#FFCC26" />
+                            <View style={{ gap: 15 }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
+                                    {/* <MenuBoard size={48} variant="Bold" color="#FFCC26" /> */}
+                                    <SweetSFSymbol name="fork.knife" size={40} colors={["#FFCC26"]}/>
                                     <Text style={styles.listText}>Eat food.</Text>
                                 </View>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
-                                    <Camera size={48} variant="Bold" color="#FFCC26" />
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
+                                    {/* <Camera size={48} variant="Bold" color="#FFCC26" /> */}
+                                    <SweetSFSymbol name="camera.fill" size={40} colors={["#FFCC26"]}/>
                                     <Text style={styles.listText}>Scan it.</Text>
                                 </View>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
-                                    <Flag size={48} variant="Bold" color="#FFCC26" />
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
+                                    {/* <Flag size={48} variant="Bold" color="#FFCC26" /> */}
+                                    <SweetSFSymbol name="flag.fill" size={40} colors={["#FFCC26"]}/>
                                     <Text style={styles.listText}>That's it!</Text>
                                 </View>
                             </View>
@@ -137,13 +142,15 @@ function Item({ index, text, title, image, navigation }) {
                     }
                     {index === 2 &&
                         <View style={{ justifyContent: "center", alignItems: "center", }}>
-                            <View style={{ gap: 10 }}>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
-                                    <Clipboard size={48} variant="Bold" color="#ffcc32" />
-                                    <Text style={styles.listText}>Daily advice.</Text>
+                            <View style={{ gap: 15 }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
+                                    {/* <Clipboard size={48} variant="Bold" color="#ffcc32" /> */}
+                                    <SweetSFSymbol name="sparkles" size={40} colors={["#FFCC26"]}/>
+                                    <Text style={styles.listText}>Daily insights.</Text>
                                 </View>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
-                                    <Moon size={48} variant="Bold" color="#ffcc32" />
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
+                                    {/* <Moon size={48} variant="Bold" color="#ffcc32" /> */}
+                                    <SweetSFSymbol name="moon.fill" size={40} colors={["#FFCC26"]}/>
                                     <Text style={styles.listText}>Nightly recaps.</Text>
                                 </View>
                             </View>
@@ -152,7 +159,8 @@ function Item({ index, text, title, image, navigation }) {
                     }
                     {index === 3 &&
                         <>
-                            <Code size={48} variant="Bold" color="#ffcc32" />
+                            {/* <Code size={48} variant="Bold" color="#ffcc32" /> */}
+                            <SweetSFSymbol name="exclamationmark.circle.fill" size={40} colors={["#FFCC26"]}/>
                             <Text style={{ ...styles.cardText }}>{text}</Text>
                         </>
                     }

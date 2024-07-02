@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Button, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
-// import SweetSFSymbol from "sweet-sfsymbols";
+import SweetSFSymbol from "sweet-sfsymbols";
 import { Alarm, Sun1, Moon, Add } from "iconsax-react-native";
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,12 +15,12 @@ export default function ProgressBar({ stage, color, emojis }) {
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginLeft: 20, marginRight: 20, marginTop: 30 }}>
 
             <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", position: "absolute", zIndex: 100, bottom: 40 }}>
-                {/* <SweetSFSymbol name={stage == 0 ? "sunrise.fill" : "sunrise"} size={24} style={{ marginLeft: 2, opacity: stage == 0 ? 1 : 0.5 }} />
+                <SweetSFSymbol name={stage == 0 ? "sunrise.fill" : "sunrise"} size={24} style={{ marginLeft: 2, opacity: stage == 0 ? 1 : 0.5 }} />
                 <SweetSFSymbol name={stage == 1 ? "sun.max.fill" : "sun.max"} size={24} style={{ opacity: stage == 1 ? 1 : 0.5 }} />
-                <SweetSFSymbol name={stage == 2 ? "sunset.fill" : "sunset"} size={24} style={{ marginRight: 2, opacity: stage == 2 ? 1 : 0.5 }} /> */}
-                <Alarm variant={stage == 0 ? "Bold" : null} size={24} color="black" style={{ marginLeft: 2, opacity: stage == 0 ? 1 : 0.5 }} />
+                <SweetSFSymbol name={stage == 2 ? "sunset.fill" : "sunset"} size={24} style={{ marginRight: 2, opacity: stage == 2 ? 1 : 0.5 }} />
+                {/* <Alarm variant={stage == 0 ? "Bold" : null} size={24} color="black" style={{ marginLeft: 2, opacity: stage == 0 ? 1 : 0.5 }} />
                 <Sun1 variant={stage == 1 ? "Bold" : null} size={24} color="black" style={{ opacity: stage == 1 ? 1 : 0.5 }} />
-                <Moon variant={stage == 2 ? "Bold" : null} size={24} color="black" style={{ marginRight: 2, opacity: stage == 2 ? 1 : 0.5 }} />
+                <Moon variant={stage == 2 ? "Bold" : null} size={24} color="black" style={{ marginRight: 2, opacity: stage == 2 ? 1 : 0.5 }} /> */}
 
                 {/* <Sun1 variant={stage == 1 ? "Bold" : null} size={24} color="black" style={{ opacity: stage == 1 ? 1 : 0.5 }} />
                 <Moon variant={stage == 2 ? "Bold" : null} size={24} color="black" style={{ marginRight: 2, opacity: stage == 2 ? 1 : 0.5 }} /> */}
@@ -50,8 +50,8 @@ export default function ProgressBar({ stage, color, emojis }) {
                         <Text style={styles.emoji}>{[...emojis.breakfast].slice(0, 1).join('')}</Text>
                     </View>
                     : <Pressable onPress={() => navigation.navigate("Camera", {mealKey: "breakfast", alertBadPhoto: false})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
-                        {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
-                        <Add size={40} color="black" />
+                        <SweetSFSymbol name="plus" size={32} color="black" />
+                        {/* <Add size={40} color="black" /> */}
                     </Pressable>
                 }
                 {emojis?.lunch
@@ -59,8 +59,8 @@ export default function ProgressBar({ stage, color, emojis }) {
                         <Text style={styles.emoji}>{[...emojis.lunch].slice(0, 1).join('')}</Text>
                     </View>
                     : <Pressable onPress={() => navigation.navigate("Camera", {mealKey: "lunch", alertBadPhoto: false})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
-                    {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
-                    <Add size={40} color="black" />
+                    <SweetSFSymbol name="plus" size={32} color="black" />
+                    {/* <Add size={40} color="black" /> */}
                 </Pressable>
                 }
                 {emojis?.dinner
@@ -68,8 +68,8 @@ export default function ProgressBar({ stage, color, emojis }) {
                         <Text style={styles.emoji}>{[...emojis.dinner].slice(0, 1).join('')}</Text>
                     </View>
                     : <Pressable onPress={() => navigation.navigate("Camera", {mealKey: "dinner", alertBadPhoto: false})} style={{ borderStyle: "dashed", borderWidth: 2, borderColor: "black", borderRadius: 5, height: 75, width: 75, opacity: 0.3, alignItems: "center", justifyContent: "center" }}>
-                    {/* <SweetSFSymbol name="plus" size={32} color="black" /> */}
-                    <Add size={40} color="black" />
+                    <SweetSFSymbol name="plus" size={32} color="black" />
+                    {/* <Add size={40} color="black" /> */}
                 </Pressable>
                 }
 

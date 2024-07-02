@@ -70,6 +70,7 @@ export default function ShowPhoto({ route, navigation }) {
 
     async function storeData(value, imageLink) {
         return new Promise(async (resolve) => {
+            console.log(imageLink)
             let savedData = await AsyncStorage.getItem('@todayMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
 
