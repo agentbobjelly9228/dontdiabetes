@@ -146,13 +146,14 @@ export default function HomeScreen({ route, navigation }) {
                     meals = Object.keys(macros?.foods)
                 try {
                     let temp = []
-                    temp.push(macros.foods["breakfast"].food)
-                    temp.push(macros.foods["lunch"].food)
-                    temp.push(macros.foods["dinner"].food)
+                    temp.push(macros.foods["breakfast"]?.food)
+                    temp.push(macros.foods["lunch"]?.food)
+                    temp.push(macros.foods["dinner"]?.food)
                     setFoods(temp)
                     setImages(macros?.images)
-                } catch {
-                    console.log("sup")
+                    console.log(macros.images + "hi")
+                } catch (e) {
+                    console.log(e)
                 }
 
 
@@ -202,17 +203,23 @@ export default function HomeScreen({ route, navigation }) {
                             emojis={emojis}
                         /> */}
                         <View style={{ width: 130, height: 170, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", borderRadius: 10, transform: [{ rotate: '-10deg' }] }}>
-                            <Image
-                                source={{ uri: images[0] }}
-                                style={{ width: 110, height: 110, margin: 10 }}
-                            />
+                            {images[0] ?
+                                <Image
+                                    source={{ uri: images[0] }}
+                                    style={{ width: 110, height: 110, margin: 10 }}
+                                />
+                                :
+                                <SweetSFSymbol name="mug" size={32} colors={["grey"]} />}
                             <Text style={{ alignSelf: "center" }}>{foods[0]}</Text>
                         </View>
                         <View style={{ width: 130, height: 170, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", borderRadius: 10, bottom: 20 }}>
-                            <Image
-                                source={{ uri: images[1] }}
-                                style={{ width: 110, height: 110, margin: 10 }}
-                            />
+                            {images[1] ?
+                                <Image
+                                    source={{ uri: images[0] }}
+                                    style={{ width: 110, height: 110, margin: 10 }}
+                                />
+                                :
+                                <SweetSFSymbol name="sun.max" size={62} colors={["grey"]} style={{ alignSelf: "center", top: 20 }} />}
                             <Text style={{ alignSelf: "center" }}>{foods[1]}</Text>
                         </View>
                         <View style={{ width: 130, height: 170, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", borderRadius: 10, transform: [{ rotate: '10deg' }] }}>
