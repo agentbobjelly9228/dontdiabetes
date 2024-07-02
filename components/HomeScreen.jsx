@@ -144,17 +144,22 @@ export default function HomeScreen({ route, navigation }) {
 
                 if (macros)
                     meals = Object.keys(macros?.foods)
+                try {
+                    let temp = []
+                    temp.push(macros.foods["breakfast"].food)
+                    temp.push(macros.foods["lunch"].food)
+                    temp.push(macros.foods["dinner"].food)
+                    setFoods(temp)
+                    setImages(macros?.images)
+                } catch {
+                    console.log("sup")
+                }
 
-                let temp = []
-                temp.push(macros.foods["breakfast"].food)
-                temp.push(macros.foods["lunch"].food)
-                temp.push(macros.foods["dinner"].food)
-                setFoods(temp)
+
                 console.log(meals)
                 setMessages(hour, meals)
                 setEmojis(macros?.emojis);
-                console.log(macros.images)
-                setImages(macros.images)
+
                 setLoading(false)
             }
             getAsyncData();
@@ -221,9 +226,9 @@ export default function HomeScreen({ route, navigation }) {
                     {/* #FFF8DA */}
                     <View style={{ height: 275, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20 }}>
                         <View style={{ position: "absolute", zIndex: 10, top: -30, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center" }}>
-                                {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
-                                <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]}/>
-                         </View>
+                            {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
+                            <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} />
+                        </View>
 
                         <View style={{ position: "absolute" }}>
                             <WeeklyGraph datapoints={graphData} />
