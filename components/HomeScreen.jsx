@@ -183,8 +183,13 @@ export default function HomeScreen({ route, navigation }) {
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
         "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
         "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
+        "SpaceGrotesk-Regular": require("../assets/fonts/SpaceGrotesk-Regular.ttf"),
+        "SpaceGrotesk-Bold": require("../assets/fonts/SpaceGrotesk-Bold.ttf"),
     });
-
+    // console.log(screenWidth)
+    // console.log(screenHeight)
+    // 393
+    // 852
     if (!loading && name)
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
@@ -193,54 +198,66 @@ export default function HomeScreen({ route, navigation }) {
                     <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, paddingBottom: 30 }}>
                         {/* <Text style={styles.blurb}>Hi {name},</Text> */}
                         <Text style={styles.title}>{title}</Text>
-                        <Text style={styles.blurb}>{subtitle}</Text>
+                        {/* <Text style={styles.blurb}>{subtitle}</Text> */}
                     </View>
-
-                    <View style={{ height: 175, marginBottom: 20, flexDirection: "row" }}>
-                        {/* <ProgressBar
-                            stage={currentMeal}
-                            color={themeColor}
-                            emojis={emojis}
-                        /> */}
-                        <View style={{ width: 130, height: 170, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", borderRadius: 10, transform: [{ rotate: '-10deg' }] }}>
-                            {images[0] ?
-                                <Image
-                                    source={{ uri: images[0] }}
-                                    style={{ width: 110, height: 110, margin: 10 }}
-                                />
-                                :
-                                <SweetSFSymbol name="mug" size={32} colors={["grey"]} />}
-                            <Text style={{ alignSelf: "center" }}>{foods[0]}</Text>
-                        </View>
-                        <View style={{ width: 130, height: 170, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", borderRadius: 10, bottom: 20 }}>
-                            {images[1] ?
-                                <Image
-                                    source={{ uri: images[0] }}
-                                    style={{ width: 110, height: 110, margin: 10 }}
-                                />
-                                :
-                                <SweetSFSymbol name="sun.max" size={62} colors={["grey"]} style={{ alignSelf: "center", top: 20 }} />}
-                            <Text style={{ alignSelf: "center" }}>{foods[1]}</Text>
-                        </View>
-                        <View style={{ width: 130, height: 170, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", borderRadius: 10, transform: [{ rotate: '10deg' }] }}>
-                            <Image
-                                source={{ uri: images[2] }}
-                                style={{ width: 110, height: 110, margin: 10 }}
-                            />
-                            <Text style={{ alignSelf: "center" }}>{foods[2]}</Text>
-                        </View>
-                    </View>
-                    {/* #FFF8DA */}
-                    <View style={{ height: 275, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20 }}>
-                        <View style={{ position: "absolute", zIndex: 10, top: -30, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center" }}>
+                    <View style={{ height: 275, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
+                        <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#b0b0b0", borderRightColor: "#b0b0b0", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
                             {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
-                            <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} />
+                            <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }] }} />
                         </View>
 
                         <View style={{ position: "absolute" }}>
                             <WeeklyGraph datapoints={graphData} />
                         </View>
                     </View>
+                    <View style={{ height: 175, marginBottom: 20, flexDirection: "row", marginTop: 20 }}>
+                        {/* <ProgressBar
+                            stage={currentMeal}
+                            color={themeColor}
+                            emojis={emojis}
+                        /> */}
+                        <View style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
+                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
+                                {images[0] ?
+                                    <Image
+                                        source={{ uri: images[0] }}
+                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
+                                    />
+                                    :
+                                    <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />}
+                            </View>
+
+                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
+                        </View>
+                        <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
+                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
+                                {images[1] ?
+                                    <Image
+                                        source={{ uri: images[1] }}
+                                        style={{ width: (screenWidth / 3) - 20, height: (screenWidth / 3) - 20 }}
+                                    />
+                                    :
+                                    <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />}
+                            </View>
+
+                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[1] ? foods[1] : "Lunch"}</Text>
+                        </View>
+                        <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
+                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
+                                {images[2] ?
+                                    <Image
+                                        source={{ uri: images[2] }}
+                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
+                                    />
+                                    :
+                                    <SweetSFSymbol name="moon" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />}
+                            </View>
+
+                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
+                        </View>
+                    </View>
+                    {/* #FFF8DA */}
+
                     {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
                     <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
                         <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
