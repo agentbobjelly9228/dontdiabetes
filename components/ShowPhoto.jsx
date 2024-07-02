@@ -100,6 +100,7 @@ export default function ShowPhoto({ route, navigation }) {
             macros.dairy += value.dairy;
             macros.numMeals += 1;
             macros.images.push(imageLink)
+            console.log(imageLink)
             macros.GIs.push(value.GIindex)
             value.image = imageLink
             value.protein = value.protein;
@@ -141,7 +142,7 @@ export default function ShowPhoto({ route, navigation }) {
 
 
     async function sendTextRequest(text) {
-        const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
+        const apiKey = "AIzaSyDk3LpUrSqXY_DJmpOtCZjEDzphzLaoK-Y";
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         setAwaitingResponse(true);
@@ -198,7 +199,7 @@ export default function ShowPhoto({ route, navigation }) {
         //     }
         // );
         //actual requesting stuff
-        const apiKey = "AIzaSyDNDv6k5t-YBPcrwtf8AZplMjSfkTaGCgc";
+        const apiKey = "AIzaSyDk3LpUrSqXY_DJmpOtCZjEDzphzLaoK-Y";
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         setAwaitingResponse(true);
@@ -223,10 +224,10 @@ export default function ShowPhoto({ route, navigation }) {
         console.log(text)
         text = trimForJson(text);
         console.log(text)
-        
-        
+
+
         let parsedText = JSON.parse(text);
-        
+
         // check if JSON is formatted correctly
         if (!isNaN(parsedText?.fruit))
             storeData(parsedText, imageLink).then(response => {
@@ -237,7 +238,7 @@ export default function ShowPhoto({ route, navigation }) {
         else {
             // not food!
             console.log("Bad photo")
-            navigation.navigate("Camera", { mealKey: mealKey, alertBadPhoto: true})
+            navigation.navigate("Camera", { mealKey: mealKey, alertBadPhoto: true })
         }
     }
 
@@ -254,7 +255,7 @@ export default function ShowPhoto({ route, navigation }) {
 
                 <View style={{ ...styles.imgFrame, transform: [{ rotate: angle }] }}>
 
-                    {imageData 
+                    {imageData
                         ? <Image source={{ uri: imageData.uri }} style={styles.previewImage} />
                         : <Text>{textData}</Text>
                     }
@@ -264,21 +265,21 @@ export default function ShowPhoto({ route, navigation }) {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <Pressable style={styles.backBtn} onPress={() => {if (!awaitingResponse) navigation.goBack()}}>
+                    <Pressable style={styles.backBtn} onPress={() => { if (!awaitingResponse) navigation.goBack() }}>
                         {!awaitingResponse
                             // ? <SweetSFSymbol name="arrow.uturn.backward" size={24} />
                             ? <Back size="32" color="#000" />
                             : <ActivityIndicator />
                         }
                     </Pressable>
-                    <Pressable style={styles.submitBtn} 
+                    <Pressable style={styles.submitBtn}
                         onPress={() => {
                             if (imageData && !awaitingResponse)
                                 sendRequest(imageData.base64, imageData.uri)
                             else
                                 sendTextRequest(textData)
 
-                            
+
                         }}
                     >
                         {!awaitingResponse
