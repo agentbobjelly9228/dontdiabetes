@@ -198,18 +198,27 @@ export default function HomeScreen({ route, navigation }) {
                     <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, paddingBottom: 30 }}>
                         {/* <Text style={styles.blurb}>Hi {name},</Text> */}
                         <Text style={styles.title}>{title}</Text>
-                        {/* <Text style={styles.blurb}>{subtitle}</Text> */}
                     </View>
+
                     <View style={{ height: 275, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
+
                         <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#b0b0b0", borderRightColor: "#b0b0b0", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
                             {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
                             <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }] }} />
                         </View>
-
-                        <View style={{ position: "absolute" }}>
+                        <Text style={{
+                            fontSize: 20,
+                            position: "absolute",
+                            zIndex: 10,
+                            fontFamily: "SF-Pro",
+                            textAlign: "center",
+                            alignSelf: "center"
+                        }}>{subtitle}</Text>
+                        <View style={{ position: "absolute", bottom: 0, backgroundColor: "green", padding: 0 }}>
                             <WeeklyGraph datapoints={graphData} />
                         </View>
                     </View>
+
                     <View style={{ height: 175, marginBottom: 20, flexDirection: "row", marginTop: 20 }}>
                         {/* <ProgressBar
                             stage={currentMeal}
