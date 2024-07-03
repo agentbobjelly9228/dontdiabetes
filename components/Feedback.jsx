@@ -76,15 +76,9 @@ export default function Feedback({ navigation }) {
         await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
         await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
     }
-    useEffect(async () => {
-        await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
-    }, tmrwAdvice1)
-    useEffect(async () => {
-        await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
-    }, tmrwAdvice1)
-    useEffect(async () => {
-        await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
-    }, tmrwAdvice1)
+    // useEffect(() => {
+    //     storeAdvice()
+    // }, tmrwAdvice3)
     // From mozilla
     function getRandomInt(min, max) {
         const minCeiled = Math.ceil(min);

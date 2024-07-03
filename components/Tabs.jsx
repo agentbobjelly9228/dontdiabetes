@@ -22,7 +22,7 @@ const Tab = createBottomTabNavigator();
 
 const CameraTabButton = ({ children, onPress, selectedCamera }) => {
   return (
-    <View style={{alignItems: "center"}}>
+    <View style={{ alignItems: "center" }}>
       <Pressable
         style={{
           height: 70,
@@ -49,7 +49,7 @@ const CameraTabButton = ({ children, onPress, selectedCamera }) => {
         <SweetSFSymbol name="camera.aperture" size={40} />
         {/* <CameraIcon size={32} color="black" variant={selectedCamera ? "Bold" : null} /> */}
       </Pressable>
-      <Text style={{position: "absolute", zIndex: 10, top: 35}}>Scan</Text>
+      <Text style={{ position: "absolute", zIndex: 10, top: 35 }}>Scan</Text>
     </View>
   )
 };
@@ -114,6 +114,32 @@ export default function Tabs({ route, navigation }) {
       : (route.params ? route.params.screen : 'HomeScreen');
     return !['Camera'].includes(routeName);
   };
+  function clearData() {
+    AsyncStorage.removeItem("@todayMacros")
+  }
+  function sameDay(day1, day2) {
+    console.log(day1)
+    console.log(day2)
+    if (day1[0] == day2[0] && day1[1] == day2[1] && day1[2] == day2[2]) {
+      return true
+    }
+    return false
+  }
+  async function checkClear() {
+    const now = new Date();
+    console.log(now)
+    const lastMealTime = await AsyncStorage.getItem("@lastMealTime")
+    const d = new Date(lastMealTime)
+    console.log(now.getMonth())
+    console.log(sameDay([now.getDay(), now.getMonth(), now.getFullYear()], [d.getDay(), d.getMonth(), d.getFullYear()]) + "sup")
+    if (!sameDay([now.getDay(), now.getMonth(), now.getFullYear()], [d.getDay(), d.getMonth(), d.getFullYear()])) {
+      clearData();
+    }
+  }
+  useEffect(() => {
+    checkClear()
+
+  }, [])
   useFocusEffect(
     useCallback(() => {
       const getAndSetMealsEaten = async () => {
@@ -180,10 +206,10 @@ export default function Tabs({ route, navigation }) {
             icon = focused
               ? <SweetSFSymbol name="leaf.fill" size={24} />
               : <SweetSFSymbol name="leaf" size={24} />
-              // ? <SweetSFSymbol name="sparkles" size={24} />
-              // : <SweetSFSymbol name="sparkles" size={24} style={{opacity: 0.6}}/>
-              // ? <MagicStar variant="Bold" size={32} style={{ color: "black" }} />
-              // : <MagicStar size={32} style={{ color: "black" }} />
+            // ? <SweetSFSymbol name="sparkles" size={24} />
+            // : <SweetSFSymbol name="sparkles" size={24} style={{opacity: 0.6}}/>
+            // ? <MagicStar variant="Bold" size={32} style={{ color: "black" }} />
+            // : <MagicStar size={32} style={{ color: "black" }} />
           } else if (route.name === "Camera") {
             return (
               <View style={{
@@ -210,8 +236,8 @@ export default function Tabs({ route, navigation }) {
             icon = focused
               ? <SweetSFSymbol name="circle.grid.2x2.fill" variant="Bold" size={24} style={{ color: "black" }} />
               : <SweetSFSymbol name="circle.grid.2x2" variant="Bold" size={24} style={{ color: "black" }} />
-              // ? <Gallery variant="Bold" size={32} color="black" />
-              // : <Gallery size={32} color="black" />
+            // ? <Gallery variant="Bold" size={32} color="black" />
+            // : <Gallery size={32} color="black" />
           }
 
           return icon;
@@ -248,10 +274,10 @@ export default function Tabs({ route, navigation }) {
             else
               return (
                 <AllMealsEatenCameraTabButton
-                {...props}
-                onPress={null}
-              />
-            )
+                  {...props}
+                  onPress={null}
+                />
+              )
           }
         }}
       />

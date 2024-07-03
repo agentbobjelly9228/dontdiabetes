@@ -171,6 +171,8 @@ export default function ShowPhoto({ route, navigation }) {
             console.log("hi")
             navigation.navigate("Feedback");
         })
+        const now = new Date()
+        AsyncStorage.setItem("@lastMealTime", now.toString());
     }
 
     async function sendRequest(imageData, imageLink) {
@@ -229,12 +231,15 @@ export default function ShowPhoto({ route, navigation }) {
         let parsedText = JSON.parse(text);
 
         // check if JSON is formatted correctly
-        if (!isNaN(parsedText?.fruit))
+        if (!isNaN(parsedText?.fruit)) {
             storeData(parsedText, imageLink).then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");
 
             })
+            const now = new Date()
+            AsyncStorage.setItem("@lastMealTime", now.toString());
+        }
         else {
             // not food!
             console.log("Bad photo")

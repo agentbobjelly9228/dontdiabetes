@@ -67,11 +67,12 @@ export default function App() {
         await AsyncStorage.removeItem('@todayMacros');
 
         let newDate = dayjs().set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
-        await update(ref(db, auth.currentUser.uid + "/profile"), {loggedDay: JSON.stringify(newDate)})
+        await update(ref(db, auth.currentUser.uid + "/profile"), { loggedDay: JSON.stringify(newDate) })
 
         console.log("Reset");
       }
-    }  }
+    }
+  }
 
 
   useEffect(() => {
