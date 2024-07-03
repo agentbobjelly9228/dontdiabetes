@@ -170,7 +170,9 @@ export default function HomeScreen({ route, navigation }) {
 
 
     );
-
+    useEffect(() => {
+        console.log(auth)
+    })
 
     const handleSheetChanges = React.useCallback((index) => {
         console.log('handleSheetChanges', index);
@@ -266,7 +268,16 @@ export default function HomeScreen({ route, navigation }) {
                         </View>
                     </View>
                     {/* #FFF8DA */}
+                    <View style={{ height: 275, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20 }}>
+                        <View style={{ position: "absolute", zIndex: 10, top: -30, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center" }}>
+                            {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
+                            <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} />
+                        </View>
 
+                        <View style={{ position: "absolute" }}>
+                            <WeeklyGraph datapoints={graphData} />
+                        </View>
+                    </View>
                     {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
                     <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
                         <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
