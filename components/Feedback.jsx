@@ -71,6 +71,20 @@ export default function Feedback({ navigation }) {
 
     const finalNotes = ["Don't die.", "Your body deserves nourishment. :)", "Cars don't run on soda, but also they don't run on water either. Eat gasoline.", "Don't stress yourself out! You're doing great.", "Your most important sale in life is to sell yourself to yourself."]
 
+    async function storeAdvice() {
+        await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
+        await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
+        await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
+    }
+    useEffect(async () => {
+        await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
+    }, tmrwAdvice1)
+    useEffect(async () => {
+        await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
+    }, tmrwAdvice1)
+    useEffect(async () => {
+        await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
+    }, tmrwAdvice1)
     // From mozilla
     function getRandomInt(min, max) {
         const minCeiled = Math.ceil(min);
@@ -199,12 +213,12 @@ export default function Feedback({ navigation }) {
             let newDate = dayjs().set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
 
 
-            parsedScores.push({score: position, date: JSON.stringify(newDate)});
+            parsedScores.push({ score: position, date: JSON.stringify(newDate) });
             setScores(parsedScores);
 
             // Update AsyncStorage
             await AsyncStorage.setItem('@allScores', JSON.stringify(parsedScores));
-            update(ref(database, auth.currentUser.uid), {scores: parsedScores})
+            update(ref(database, auth.currentUser.uid), { scores: parsedScores })
 
             console.log(savedData.GIs)
             var temp = 0;
@@ -352,6 +366,7 @@ export default function Feedback({ navigation }) {
     //     );
 
     if (page == 1)
+
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
                 <View style={styles.container}>
