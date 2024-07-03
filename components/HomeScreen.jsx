@@ -34,12 +34,15 @@ const screenWidth = Dimensions.get("screen").width;
 
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
+
     const auth = FIREBASE_AUTH;
+    // auth.signOut()
     const database = FIREBASE_DATABASE;
     const [loading, setLoading] = useState(true);
     const [emojis, setEmojis] = useState([]);
     const [graphData, setGraphData] = useState([]);
     const [mascot, setMascot] = useState("");
+    const [advice, setAdvice] = useState("");
     const [themeColor, setTheme] = useState("");
     const [images, setImages] = useState([]);
     const [foods, setFoods] = useState([])
@@ -146,12 +149,12 @@ export default function HomeScreen({ route, navigation }) {
                     meals = Object.keys(macros?.foods)
                 try {
                     let temp = []
-                    temp.push(macros.foods["breakfast"]?.food)
-                    temp.push(macros.foods["lunch"]?.food)
-                    temp.push(macros.foods["dinner"]?.food)
+                    temp.push(macros?.foods["breakfast"]?.food)
+                    temp.push(macros?.foods["lunch"]?.food)
+                    temp.push(macros?.foods["dinner"]?.food)
                     setFoods(temp)
                     setImages(macros?.images)
-                    console.log(macros.images + "hi")
+                    console.log(macros?.images + "hi")
                 } catch (e) {
                     console.log(e)
                 }
@@ -174,11 +177,28 @@ export default function HomeScreen({ route, navigation }) {
         const advice1 = await AsyncStorage.getItem("@tmrwAdvice1")
         const advice2 = await AsyncStorage.getItem("@tmrwAdvice2")
         const advice3 = await AsyncStorage.getItem("@tmrwAdvice3")
-        console.log(advice1 + advice2 + advice3)
+        const advice1Highlight = await AsyncStorage.getItem("@tmrwAdvice1Highlight")
+        const advice2Highlight = await AsyncStorage.getItem("@tmrwAdvice2Highlight")
+        const advice3Highlight = await AsyncStorage.getItem("@tmrwAdvice3Highlight")
+        var temp = "";
+        if (advice1 && advice1Highlight) {
+            temp += advice1 + " " + advice1Highlight + ". "
+        }
+        if (advice2 && advice2Highlight) {
+            temp += advice2 + " " + advice2Highlight + ". "
+        }
+        if (advice3 && advice3Highlight) {
+            temp += advice3 + " " + advice3Highlight + ". "
+        }
+        console.log(temp + " whadup there")
+        setAdvice(temp);
+        console.log(advice1 + advice1Highlight)
+        console.log(advice2 + advice2Highlight)
+        console.log(advice3 + advice3Highlight)
     }
     useEffect(() => {
         getFeedback()
-    }, [])
+    })
 
     const handleSheetChanges = React.useCallback((index) => {
         console.log('handleSheetChanges', index);
@@ -222,7 +242,7 @@ export default function HomeScreen({ route, navigation }) {
                             textAlign: "center",
                             alignSelf: "center",
                             top: 15
-                        }}>{subtitle}</Text>
+                        }}>{advice}</Text>
                         <View style={{ position: "absolute", bottom: 10, margin: 0 }}>
                             <WeeklyGraph datapoints={graphData} />
                         </View>
@@ -236,7 +256,7 @@ export default function HomeScreen({ route, navigation }) {
                         /> */}
                         <View style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images[0] ?
+                                {images && images[0] ?
                                     <Image
                                         source={{ uri: images[0] }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
@@ -249,7 +269,7 @@ export default function HomeScreen({ route, navigation }) {
                         </View>
                         <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images[1] ?
+                                {images && images[1] ?
                                     <Image
                                         source={{ uri: images[1] }}
                                         style={{ width: (screenWidth / 3) - 20, height: (screenWidth / 3) - 20 }}
@@ -262,7 +282,7 @@ export default function HomeScreen({ route, navigation }) {
                         </View>
                         <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images[2] ?
+                                {images && images[2] ?
                                     <Image
                                         source={{ uri: images[2] }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}

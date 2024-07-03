@@ -79,6 +79,9 @@ export default function Feedback({ navigation }) {
         await AsyncStorage.setItem('@tmrwAdvice2Highlight', tmrwAdvice2Highlight)
         await AsyncStorage.setItem('@tmrwAdvice3Highlight', tmrwAdvice3Highlight)
     }
+    useEffect(() => {
+        storeAdvice();
+    }, [tmrwAdvice1, tmrwAdvice2, tmrwAdvice3, tmrwAdvice1Highlight, tmrwAdvice2Highlight, tmrwAdvice3Highlight])
     // useEffect(() => {
     //     storeAdvice()
     // }, tmrwAdvice3)

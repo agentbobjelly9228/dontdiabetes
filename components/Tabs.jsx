@@ -137,6 +137,7 @@ export default function Tabs({ route, navigation }) {
     }
   }
   useEffect(() => {
+    // clearData()
     checkClear()
 
   }, [])
