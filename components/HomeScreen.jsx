@@ -170,9 +170,15 @@ export default function HomeScreen({ route, navigation }) {
 
 
     );
+    async function getFeedback() {
+        const advice1 = await AsyncStorage.getItem("@tmrwAdvice1")
+        const advice2 = await AsyncStorage.getItem("@tmrwAdvice2")
+        const advice3 = await AsyncStorage.getItem("@tmrwAdvice3")
+        console.log(advice1 + advice2 + advice3)
+    }
     useEffect(() => {
-        console.log(auth)
-    })
+        getFeedback()
+    }, [])
 
     const handleSheetChanges = React.useCallback((index) => {
         console.log('handleSheetChanges', index);
@@ -202,7 +208,7 @@ export default function HomeScreen({ route, navigation }) {
                         <Text style={styles.title}>{title}</Text>
                     </View>
 
-                    <View style={{ height: 275, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
+                    <View style={{ height: 350, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
 
                         <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#b0b0b0", borderRightColor: "#b0b0b0", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
                             {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
@@ -217,7 +223,7 @@ export default function HomeScreen({ route, navigation }) {
                             alignSelf: "center",
                             top: 15
                         }}>{subtitle}</Text>
-                        <View style={{ position: "absolute", bottom: -70, margin: 0 }}>
+                        <View style={{ position: "absolute", bottom: 10, margin: 0 }}>
                             <WeeklyGraph datapoints={graphData} />
                         </View>
                     </View>
