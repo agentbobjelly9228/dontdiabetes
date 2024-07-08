@@ -57,9 +57,9 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
 
     return (
         <View>
-            <View style={{ gap: 10, top: 0, position: "absolute", width: screenWidth * 0.85, alignSelf: "center", paddingBottom: 0 }}>
-                <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", }} />
-                <View style={{ backgroundColor: "#FFCC26", height: 103, borderRadius: 15, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ gap: 5, top: 0, position: "absolute", width: screenWidth * 0.85, alignSelf: "center", paddingBottom: 0 }}>
+                <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", padding: 0 }} />
+                <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 15, alignItems: "center", justifyContent: "center", margin: 0 }}>
                     {datapoints.length === 0 ? <Text style={{ fontSize: 18, width: "70%", textAlign: "center" }}>Scan your first few meals to receive insights tonight.</Text> : null}
                 </View>
                 <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", }} />
@@ -76,7 +76,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                     ],
                 }}
                 width={screenWidth}
-                height={235}
+                height={190}
                 chartConfig={chartConfig}
                 withHorizontalLabels={false}
                 withShadow={false}

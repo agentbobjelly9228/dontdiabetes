@@ -135,19 +135,19 @@ export default function App() {
                 />
               </>
               : <>
-                {
-                  !onboardingDone &&
-                  <>
-                    <Stack.Screen
-                      name="Onboarding"
-                      component={Onboarding}
-                    />
-                    <Stack.Screen
-                      name="EnterInformation"
-                      component={EnterInformation}
-                    />
-                  </>
-                }
+                {/* {
+                  !onboardingDone && */}
+                <>
+                  <Stack.Screen
+                    name="Onboarding"
+                    component={Onboarding}
+                  />
+                  <Stack.Screen
+                    name="EnterInformation"
+                    component={EnterInformation}
+                  />
+                </>
+                {/* } */}
                 <Stack.Screen
                   name="LoginScreen"
                   component={LoginScreen}

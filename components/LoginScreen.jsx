@@ -91,7 +91,7 @@ export default function LoginScreen({ navigation, route }) {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFBEE", }}>
             <View style={styles.container}>
-                <Pressable onPress={() => { navigation.goBack() }} style={{ position: "absolute", left: 20 }}>
+                <Pressable onPress={() => { navigation.navigate("Onboarding") }} style={{ position: "absolute", left: 20 }}>
                     <ArrowLeft2 color="#000" size={32} />
                 </Pressable>
                 <Text style={styles.title}>Login</Text>
