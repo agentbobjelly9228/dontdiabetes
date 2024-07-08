@@ -136,11 +136,11 @@ export default function Tabs({ route, navigation }) {
       clearData();
     }
   }
-  useEffect(() => {
-    // clearData()
-    checkClear()
+  // useEffect(() => {
+  //   // clearData()
+  //   checkClear()
 
-  }, [])
+  // }, [])
   useFocusEffect(
     useCallback(() => {
       const getAndSetMealsEaten = async () => {

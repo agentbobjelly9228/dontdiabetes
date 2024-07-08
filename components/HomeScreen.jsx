@@ -127,46 +127,80 @@ export default function HomeScreen({ route, navigation }) {
 
 
     // TODO: Add reset on new day
+    function clearData() {
+        AsyncStorage.removeItem("@todayMacros")
+    }
+    function sameDay(day1, day2) {
+        console.log(day1)
+        console.log(day2)
+        if (day1[0] == day2[0] && day1[1] == day2[1] && day1[2] == day2[2]) {
+            return true
+        }
+        return false
+    }
+    async function checkClear() {
+        const now = new Date();
+        console.log(now)
+        const lastMealTime = await AsyncStorage.getItem("@lastMealTime")
+        const d = new Date(lastMealTime)
+        console.log(now.getDate())
+        console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
+        if (!sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()])) {
+            clearData();
+        }
+    }
+    // useEffect(() => {
+    //     // clearData()
+    //     checkClear().then(() => {
+    //         getAsyncData()
+    //     })
+
+    // }, [])
+
+    const getAsyncData = async () => {
+        let savedData = await AsyncStorage.getItem('@todayMacros');
+
+        let uid = auth.currentUser.uid;
+        console.log(auth.currentUser.uid)
+        getGraphData(uid);
+
+        let displayName = auth.currentUser.displayName || await AsyncStorage.getItem("@name")
+        setName(displayName);
+
+        let macros = savedData ? JSON.parse(savedData) : null;
+
+        // Set title, subtitle, mascot, and theme
+        let hour = dayjs().hour();
+        let meals = []
+
+        if (macros)
+            meals = Object.keys(macros?.foods)
+        try {
+            let temp = []
+            temp.push(macros?.foods["breakfast"]?.food)
+            temp.push(macros?.foods["lunch"]?.food)
+            temp.push(macros?.foods["dinner"]?.food)
+            setFoods(temp)
+            setImages(macros?.images)
+            console.log(macros?.images + "hi")
+        } catch (e) {
+            console.log(e)
+        }
+
+
+        console.log(meals)
+        setMessages(hour, meals)
+        setEmojis(macros?.emojis);
+
+        setLoading(false)
+    }
+
     useFocusEffect(
         React.useCallback(() => {
-            const getAsyncData = async () => {
-                let savedData = await AsyncStorage.getItem('@todayMacros');
 
-                let uid = auth.currentUser.uid;
-                console.log(auth.currentUser.uid)
-                getGraphData(uid);
-
-                let displayName = auth.currentUser.displayName || await AsyncStorage.getItem("@name")
-                setName(displayName);
-
-                let macros = savedData ? JSON.parse(savedData) : null;
-
-                // Set title, subtitle, mascot, and theme
-                let hour = dayjs().hour();
-                let meals = []
-
-                if (macros)
-                    meals = Object.keys(macros?.foods)
-                try {
-                    let temp = []
-                    temp.push(macros?.foods["breakfast"]?.food)
-                    temp.push(macros?.foods["lunch"]?.food)
-                    temp.push(macros?.foods["dinner"]?.food)
-                    setFoods(temp)
-                    setImages(macros?.images)
-                    console.log(macros?.images + "hi")
-                } catch (e) {
-                    console.log(e)
-                }
-
-
-                console.log(meals)
-                setMessages(hour, meals)
-                setEmojis(macros?.emojis);
-
-                setLoading(false)
-            }
-            getAsyncData();
+            checkClear().then(() => {
+                getAsyncData()
+            })
             // deleteAppleAccount();
             // getGraphData();
         }, [])
@@ -228,20 +262,20 @@ export default function HomeScreen({ route, navigation }) {
                         <Text style={styles.title}>{title}</Text>
                     </View>
 
-                    <View style={{ height: 350, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
+                    <View style={{ height: 300, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
 
                         <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#b0b0b0", borderRightColor: "#b0b0b0", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
                             {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
                             <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }] }} />
                         </View>
                         <Text style={{
-                            fontSize: 20,
+                            fontSize: 17,
                             position: "absolute",
                             zIndex: 10,
                             fontFamily: "SF-Pro",
                             textAlign: "center",
                             alignSelf: "center",
-                            top: 15
+                            top: 25
                         }}>{advice}</Text>
                         <View style={{ position: "absolute", bottom: 10, margin: 0 }}>
                             <WeeklyGraph datapoints={graphData} />
@@ -272,7 +306,7 @@ export default function HomeScreen({ route, navigation }) {
                                 {images && images[1] ?
                                     <Image
                                         source={{ uri: images[1] }}
-                                        style={{ width: (screenWidth / 3) - 20, height: (screenWidth / 3) - 20 }}
+                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10 }}
                                     />
                                     :
                                     <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />}
@@ -296,7 +330,7 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
                     {/* #FFF8DA */}
 
-                    <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
+                    {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
                     <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
                         <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
                             <Text style={styles.settingsText}>Delete Account</Text>
