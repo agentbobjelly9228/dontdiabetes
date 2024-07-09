@@ -58,25 +58,27 @@ export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
 
     const deleteAppleAccount = async () => {
-        try {
-            const appleCredential = await AppleAuthentication.refreshAsync()
+        AsyncStorage.clear()
+        auth.currentUser.delete()
+        // try {
+        //     const appleCredential = await AppleAuthentication.refreshAsync()
 
-            // Revokes token
-            await revokeAccessToken(auth, appleCredential.authorizationCode)
+        //     // Revokes token
+        //     await revokeAccessToken(auth, appleCredential.authorizationCode)
 
 
-            // Signs user out
-            const provider = new OAuthProvider('apple.com');
-            const { identityToken } = appleCredential;
-            const credential = provider.credential({
-                idToken: identityToken,
-                rawNonce: appleCredential.authorizationCode
-            })
-            const { user } = await signInWithCredential(auth, credential);
-            user.delete()
-        } catch (e) {
-            console.log(e)
-        }
+        //     // Signs user out
+        //     const provider = new OAuthProvider('apple.com');
+        //     const { identityToken } = appleCredential;
+        //     const credential = provider.credential({
+        //         idToken: identityToken,
+        //         rawNonce: appleCredential.authorizationCode
+        //     })
+        //     const { user } = await signInWithCredential(auth, credential);
+        //     user.delete()
+        // } catch (e) {
+        //     console.log(e)
+        // }
 
 
     }

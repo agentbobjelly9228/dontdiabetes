@@ -116,6 +116,7 @@ export default function Tabs({ route, navigation }) {
   };
   function clearData() {
     AsyncStorage.removeItem("@todayMacros")
+    console.log("cleared")
   }
   function sameDay(day1, day2) {
     console.log(day1)
@@ -130,26 +131,32 @@ export default function Tabs({ route, navigation }) {
     console.log(now)
     const lastMealTime = await AsyncStorage.getItem("@lastMealTime")
     const d = new Date(lastMealTime)
-    console.log(now.getMonth())
-    console.log(sameDay([now.getDay(), now.getMonth(), now.getFullYear()], [d.getDay(), d.getMonth(), d.getFullYear()]) + "sup")
-    if (!sameDay([now.getDay(), now.getMonth(), now.getFullYear()], [d.getDay(), d.getMonth(), d.getFullYear()])) {
+    console.log(now.getDate())
+    console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
+    if (!sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()])) {
       clearData();
     }
   }
-  // useEffect(() => {
-  //   // clearData()
-  //   checkClear()
+  useFocusEffect(
+    React.useCallback(() => {
 
-  // }, [])
+      checkClear().then(() => {
+        getAndSetMealsEaten()
+      })
+      // deleteAppleAccount();
+      // getGraphData();
+    }, []))
+
+  const getAndSetMealsEaten = async () => {
+    let macros = await AsyncStorage.getItem('@todayMacros');
+    macros = JSON.parse(macros)
+    let asyncMeals = macros ? Object.keys(macros?.foods) : []
+    console.log(asyncMeals)
+    setMealsEaten(asyncMeals)
+  }
   useFocusEffect(
     useCallback(() => {
-      const getAndSetMealsEaten = async () => {
-        let macros = await AsyncStorage.getItem('@todayMacros');
-        macros = JSON.parse(macros)
-        let asyncMeals = macros ? Object.keys(macros?.foods) : []
-        console.log(asyncMeals)
-        setMealsEaten(asyncMeals)
-      }
+
 
       setSelected(false);
       getAndSetMealsEaten();
