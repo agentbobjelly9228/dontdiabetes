@@ -34,7 +34,7 @@ data = [
     {
         index: 3,
         title: "Please note:",
-        text: "This is still a very early release. Feel free to submit any feedback!"
+        text: "This application is in an early release phase, and the information provided is for informational purposes only, not as medical advice. Always consult your physician with any health concerns or questions. Feel free to submit any feedback!"
     },
 
 ]
@@ -100,7 +100,7 @@ export default function Onboarding({ navigation }) {
                     <Text style={styles.infoButtonTextSmall}>Already have an account? Log In</Text>
                 </Pressable>
             </View>
-            
+
         </View>
     );
 }
@@ -123,17 +123,17 @@ function Item({ index, text, title, image, navigation }) {
                             <View style={{ gap: 15 }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
                                     {/* <MenuBoard size={48} variant="Bold" color="#FFCC26" /> */}
-                                    <SweetSFSymbol name="fork.knife" size={40} colors={["#FFCC26"]}/>
+                                    <SweetSFSymbol name="fork.knife" size={40} colors={["#FFCC26"]} />
                                     <Text style={styles.listText}>Eat food.</Text>
                                 </View>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
                                     {/* <Camera size={48} variant="Bold" color="#FFCC26" /> */}
-                                    <SweetSFSymbol name="camera.fill" size={40} colors={["#FFCC26"]}/>
+                                    <SweetSFSymbol name="camera.fill" size={40} colors={["#FFCC26"]} />
                                     <Text style={styles.listText}>Scan it.</Text>
                                 </View>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
                                     {/* <Flag size={48} variant="Bold" color="#FFCC26" /> */}
-                                    <SweetSFSymbol name="flag.fill" size={40} colors={["#FFCC26"]}/>
+                                    <SweetSFSymbol name="flag.fill" size={40} colors={["#FFCC26"]} />
                                     <Text style={styles.listText}>That's it!</Text>
                                 </View>
                             </View>
@@ -145,12 +145,12 @@ function Item({ index, text, title, image, navigation }) {
                             <View style={{ gap: 15 }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
                                     {/* <Clipboard size={48} variant="Bold" color="#ffcc32" /> */}
-                                    <SweetSFSymbol name="sparkles" size={40} colors={["#FFCC26"]}/>
+                                    <SweetSFSymbol name="sparkles" size={40} colors={["#FFCC26"]} />
                                     <Text style={styles.listText}>Daily insights.</Text>
                                 </View>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 25 }}>
                                     {/* <Moon size={48} variant="Bold" color="#ffcc32" /> */}
-                                    <SweetSFSymbol name="moon.fill" size={40} colors={["#FFCC26"]}/>
+                                    <SweetSFSymbol name="moon.fill" size={40} colors={["#FFCC26"]} />
                                     <Text style={styles.listText}>Nightly recaps.</Text>
                                 </View>
                             </View>
@@ -160,7 +160,7 @@ function Item({ index, text, title, image, navigation }) {
                     {index === 3 &&
                         <>
                             {/* <Code size={48} variant="Bold" color="#ffcc32" /> */}
-                            <SweetSFSymbol name="exclamationmark.circle.fill" size={40} colors={["#FFCC26"]}/>
+                            <SweetSFSymbol name="exclamationmark.circle.fill" size={40} colors={["#FFCC26"]} />
                             <Text style={{ ...styles.cardText }}>{text}</Text>
                         </>
                     }
@@ -172,21 +172,21 @@ function Item({ index, text, title, image, navigation }) {
 
 
 
-function DotProgress({currentSlideIndex}) {
+function DotProgress({ currentSlideIndex }) {
     // let arr = new Array(data.length).fill()
     // let answer = arr.map((_, index) => {return index})
     // console.log(answer)
 
     console.log(currentSlideIndex)
     return (
-        <View style={{gap: 10, flexDirection: "row", alignSelf: "center", paddingBottom: 15}}>
+        <View style={{ gap: 10, flexDirection: "row", alignSelf: "center", paddingBottom: 15 }}>
             {
                 new Array(data.length).fill().map((_, i) => {
                     if (i == currentSlideIndex)
                         return <View style={styles.selectedDot} key={i} />
                     else
                         return <View style={styles.unselectedDot} key={i} />
-                })  
+                })
             }
 
         </View>

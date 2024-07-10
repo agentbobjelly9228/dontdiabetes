@@ -257,12 +257,16 @@ export default function CameraPage({ route, navigation }) {
         }
 
         // check if JSON is formatted correctly
-        if (!isNaN(parsedText?.fruit))
+        if (!isNaN(parsedText?.fruit)) {
+            const now = new Date();
+            AsyncStorage.setItem("@lastMealTime", now.toString());
+            console.log(now + "hallo")
             storeData(parsedText, null).then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");
 
             })
+        }
         else {
             // not food!
             setError("Please describe your food better!")
@@ -413,7 +417,7 @@ export default function CameraPage({ route, navigation }) {
                                             type: "bounce",
                                             value: bounceValue,
                                             direction: "down",
-                                        }}/>
+                                        }} />
                                         {/* <Lifebuoy size="48" color="#000" style={{ alignSelf: "center" }} /> */}
                                     </Pressable>
                                     <Pressable onPress={pickImage} style={styles.actionBtn}>

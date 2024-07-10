@@ -142,6 +142,7 @@ export default function ShowPhoto({ route, navigation }) {
 
 
     async function sendTextRequest(text) {
+        console.log("hallo there my friend")
         const apiKey = "AIzaSyDk3LpUrSqXY_DJmpOtCZjEDzphzLaoK-Y";
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -171,8 +172,9 @@ export default function ShowPhoto({ route, navigation }) {
             console.log("hi")
             navigation.navigate("Feedback");
         })
-        const now = new Date()
+        const now = new Date();
         AsyncStorage.setItem("@lastMealTime", now.toString());
+        console.log(now + "hallo")
     }
 
     async function sendRequest(imageData, imageLink) {

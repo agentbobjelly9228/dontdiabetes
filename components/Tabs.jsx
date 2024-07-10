@@ -139,7 +139,6 @@ export default function Tabs({ route, navigation }) {
   }
   useFocusEffect(
     React.useCallback(() => {
-
       checkClear().then(() => {
         getAndSetMealsEaten()
       })

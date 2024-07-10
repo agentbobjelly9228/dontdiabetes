@@ -151,6 +151,7 @@ export default function HomeScreen({ route, navigation }) {
             clearData();
         }
     }
+    console.log(emojis)
     // useEffect(() => {
     //     // clearData()
     //     checkClear().then(() => {
@@ -297,8 +298,12 @@ export default function HomeScreen({ route, navigation }) {
                                         source={{ uri: images[0] }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
                                     />
-                                    :
-                                    <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />}
+
+                                    : emojis && emojis.breakfast ?
+                                        <Text style={{ fontSize: 100 }}>{emojis.breakfast}</Text>
+                                        :
+                                        <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
+                                }
                             </View>
 
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
@@ -311,7 +316,11 @@ export default function HomeScreen({ route, navigation }) {
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10 }}
                                     />
                                     :
-                                    <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />}
+                                    emojis && emojis.lunch ?
+                                        <Text style={{ fontSize: 100 }}>{emojis.lunch}</Text>
+                                        :
+                                        <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
+                                }
                             </View>
 
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[1] ? foods[1] : "Lunch"}</Text>
@@ -323,8 +332,11 @@ export default function HomeScreen({ route, navigation }) {
                                         source={{ uri: images[2] }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
                                     />
-                                    :
-                                    <SweetSFSymbol name="moon" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />}
+                                    : emojis && emojis.dinner ?
+                                        <Text style={{ fontSize: 100 }}>{emojis.dinner}</Text>
+                                        :
+                                        <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
+                                }
                             </View>
 
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
