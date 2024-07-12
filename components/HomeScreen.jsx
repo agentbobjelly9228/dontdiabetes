@@ -82,6 +82,30 @@ export default function HomeScreen({ route, navigation }) {
 
 
     }
+    async function newCalculationScore(data) {
+        // Carbs: 45–65 % of your daily calories
+        // Protein: 10–35 % of your daily calories
+        // Fat: 20–35 % of your daily calories
+        // BMR = 66.47 + (13.75 x weight in kg) + (5.003 x height in cm) - (6.755 x age in years)
+        //calculate ideal calories
+
+        let snapshot = await get(ref(database, auth.currentUser.uid))
+        let personalMetrics;
+        if (snapshot.exists()) {
+            personalMetrics = snapshot.val().profile;
+        } else {
+            console.log("No data available");
+        }
+        let heightCM = parseInt(personalMetrics.height) * 2.54
+        let weightKG = parseInt(personalMetrics.weight) * 0.45359237
+        let BMR = 66.47 + (13.75 * weightKG) + (5.003 * heightCM) - (6.755 * parseInt(personalMetrics.age))
+        let idealCalories = BMR * 1.375
+        console.log(idealCalories)
+        let carbCalories = 1000;
+        let proteinCalories = 500;
+        let fatCalories = 300;
+        let totalCalories = 1800;
+    }
 
     async function getGraphData(uid) {
         let snapshot = await get(ref(database, uid))
@@ -346,7 +370,10 @@ export default function HomeScreen({ route, navigation }) {
 
                     {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
                     <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
-                        <Pressable style={styles.settingsButton} onPress={deleteAppleAccount}>
+                        <Pressable style={styles.settingsButton} onPress={() => {
+                            // deleteAppleAccount()
+                            newCalculationScore(["hi"])
+                        }}>
                             <Text style={styles.settingsText}>Delete Account</Text>
                         </Pressable>
                         <Pressable style={styles.logOutButton} onPress={() => auth.signOut()}>

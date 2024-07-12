@@ -28,7 +28,7 @@ export default function EnterInformation({ navigation }) {
     const [age, setAge] = useState(20);
     const [weight, setWeight] = useState(150);
     const [exercise, setExercise] = useState(3);
-
+    const [height, setHeight] = useState(68);
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -68,6 +68,17 @@ export default function EnterInformation({ navigation }) {
         },
         {
             id: "4",
+            question: "How tall are you?",
+            type: "numeric",
+            units: "inches",
+            placeholder: "68",
+            increment: "10",
+            value: height,
+            onChange: setHeight,
+            max: 999,
+        },
+        {
+            id: "5",
             question: "How often do you exercise?",
             type: "numeric",
             units: "days a week",
@@ -78,7 +89,7 @@ export default function EnterInformation({ navigation }) {
             max: 7
         },
         {
-            id: "5",
+            id: "6",
             title: "Fabulous!",
             text: "We've saved all of your answers. Now before you head along, make an account to sync Big Guy on all your other devices."
         },
@@ -130,6 +141,7 @@ export default function EnterInformation({ navigation }) {
         await AsyncStorage.setItem("@age", JSON.stringify(age));
         await AsyncStorage.setItem("@weight", JSON.stringify(weight));
         await AsyncStorage.setItem("@exercise", JSON.stringify(exercise));
+        await AsyncStorage.setItem("@height", JSON.stringify(height));
 
         console.log("answers stored")
         goNextSlide();
@@ -143,7 +155,8 @@ export default function EnterInformation({ navigation }) {
         0: name,
         1: age,
         2: weight,
-        3: exercise,
+        3: height,
+        4: exercise,
     }
 
     return (

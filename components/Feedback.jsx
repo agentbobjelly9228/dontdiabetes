@@ -229,7 +229,20 @@ export default function Feedback({ navigation }) {
         }
     }
 
-
+    async function newCalculationScore(data) {
+        // Carbs: 45–65 % of your daily calories
+        // Protein: 10–35 % of your daily calories
+        // Fat: 20–35 % of your daily calories
+        //calculate ideal calories
+        let snapshot = await get(ref(database, auth.currentUser.uid))
+        let personalMetrics;
+        if (snapshot.exists()) {
+            personalMetrics = snapshot.val()?.profile;
+        } else {
+            console.log("No data available");
+        }
+        console.log(personalMetrics)
+    }
 
     function calculateFoodScore(data) {
         let optimalCal = 2000.0;

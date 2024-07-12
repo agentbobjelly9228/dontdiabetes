@@ -128,8 +128,9 @@ export default function SignUpScreen({ navigation, route }) {
         const age = await AsyncStorage.getItem("@age")
         const weight = await AsyncStorage.getItem("@weight")
         const exercise = await AsyncStorage.getItem("@exercise")
+        const height = await AsyncStorage.getItem("@height")
 
-        let profile = { profile: { age: age, weight: weight, exercise: exercise } }
+        let profile = { profile: { age: age, weight: weight, exercise: exercise, height: height } }
 
         // Store in firebase data collected via onboarding
         await set(ref(db, auth.currentUser.uid), profile)
