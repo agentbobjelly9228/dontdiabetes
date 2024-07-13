@@ -93,14 +93,15 @@ export default function Feedback({ navigation }) {
     }
 
     // Set messages in daily recap
-    function setMessages(position, allErrors) {
+    function setMessages(position, ratios) {
         // Final Note
+        let adviceSet = [false, false, false]
         let randInt = getRandomInt(0, finalNotes.length);
         setFinalNote(finalNotes[randInt])
 
 
         // Today Screen: good or bad job
-        if (position >= 1 && position <= 4) {
+        if (position >= 1.875 && position <= 3.125) {
             setTodayScreenSubtitle("Wonderful job!");
             setTodayScreenText("You're continuing your commitment to long-term health and happiness, so pat yourself on the back!");
         } else {
@@ -109,69 +110,134 @@ export default function Feedback({ navigation }) {
         }
 
         // Tomorrow Screen: 3 pieces of advice
-        console.log("ALL ERRORS: " + allErrors);
+        console.log("ALL Ratios: " + ratios);
+
+        //overall amount
+        if (ratios.overallScore < 0.75) {
+            setTmrwAdvice1("Consider eating")
+            settmrwAdvice1Highlight("more")
+            adviceSet[0] = true
+        } else if (ratios.overallScore > 1.25) {
+            setTmrwAdvice1("Consider eating")
+            settmrwAdvice1Highlight("less")
+            adviceSet[0] = true
+        }
+        //protein
+        if (ratios.proteinCalorieRatio < 0.1) {
+            if (!adviceSet[0]) {
+                setTmrwAdvice1("Try eating some more")
+                settmrwAdvice1Highlight("protein")
+            } else {
+                setTmrwAdvice2("Try eating some more")
+                settmrwAdvice2Highlight("protein")
+            }
+            adviceSet[1] = true
+
+        } else if (ratios.proteinCalorieRatio > 0.35) {
+            if (!adviceSet[0]) {
+                setTmrwAdvice1("Try eating less")
+                settmrwAdvice1Highlight("protein")
+            } else {
+                setTmrwAdvice2("Try eating less")
+                settmrwAdvice2Highlight("protein")
+            }
+            adviceSet[1] = true
+        }
+        //carbs
+        if (ratios.carbCalorieRatio < 0.45) {
+            if (!adviceSet[1] && !adviceSet[0]) {
+                setTmrwAdvice1("Consider eating more")
+                settmrwAdvice1Highlight("carbs")
+            } else if (!adviceSet[1]) {
+                setTmrwAdvice2("Consider eating more")
+                settmrwAdvice2Highlight("carbs")
+            } else {
+                setTmrwAdvice3("Consider eating more")
+                settmrwAdvice3Highlight("carbs")
+            }
+        } else if (ratios.proteinCalorieRatio > 0.65) {
+            if (!adviceSet[1] && !adviceSet[0]) {
+                setTmrwAdvice1("Consider eating less")
+                settmrwAdvice1Highlight("carbs")
+            } else if (!adviceSet[1]) {
+                setTmrwAdvice2("Consider eating less")
+                settmrwAdvice2Highlight("carbs")
+            } else {
+                setTmrwAdvice3("Consider eating less")
+                settmrwAdvice3Highlight("carbs")
+            }
+        }
+        //fats
+        if (ratios.fatCalorieRatio < 0.2) {
+            setTmrwAdvice3("Consider eating some more")
+            settmrwAdvice3Highlight("healthy fats")
+        } else if (ratios.fatCalorieRatio > 0.35) {
+            setTmrwAdvice3("Try eating less")
+            settmrwAdvice3Highlight("fats")
+        }
+
 
         // Guaranteed "change" advice
-        let largestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) > Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
-        // console.log("LARGEST: " + largestErrorIndex)
-        if (Math.abs(allErrors[largestErrorIndex]) > leeway) {
-            if (allErrors[largestErrorIndex] < 0) {
-                // Ate too little of the macro
-                let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
-                setTmrwAdvice1(changeMoreAdviceStarters[randInt]);
-                changeMoreAdviceStarters.splice(randInt, randInt);
+        // let largestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) > Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
+        // // console.log("LARGEST: " + largestErrorIndex)
+        // if (Math.abs(allErrors[largestErrorIndex]) > leeway) {
+        //     if (allErrors[largestErrorIndex] < 0) {
+        //         // Ate too little of the macro
+        //         let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+        //         setTmrwAdvice1(changeMoreAdviceStarters[randInt]);
+        //         changeMoreAdviceStarters.splice(randInt, randInt);
 
-                settmrwAdvice1Highlight(indexToMacro[largestErrorIndex]);
-            } else {
-                // Ate too much
-                let randInt = getRandomInt(0, changeLessAdviceStarters.length)
-                setTmrwAdvice1(changeLessAdviceStarters[randInt]);
-                settmrwAdvice1Highlight(indexToMacro[largestErrorIndex]);
-                changeLessAdviceStarters.splice(randInt, randInt);
-            }
+        //         settmrwAdvice1Highlight(indexToMacro[largestErrorIndex]);
+        //     } else {
+        //         // Ate too much
+        //         let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+        //         setTmrwAdvice1(changeLessAdviceStarters[randInt]);
+        //         settmrwAdvice1Highlight(indexToMacro[largestErrorIndex]);
+        //         changeLessAdviceStarters.splice(randInt, randInt);
+        //     }
 
-            // Remove from arrays (such that advice can't be repeated)
-            allErrors.splice(largestErrorIndex, largestErrorIndex)
-            indexToMacro.splice(largestErrorIndex, largestErrorIndex)
+        //     // Remove from arrays (such that advice can't be repeated)
+        //     allErrors.splice(largestErrorIndex, largestErrorIndex)
+        //     indexToMacro.splice(largestErrorIndex, largestErrorIndex)
 
-            // console.log(changeLessAdviceStarters[randInt])
-            // console.log(indexToMacro[largestErrorIndex])
-            // console.log(largestErrorIndex)
-        } else {
-            // If absolutely everything is within the macro range
-            setTmrwAdvice1("You're doing wonderfully.");
-            settmrwAdvice1Highlight("Keep up the great work");
-            return
-        }
+        //     // console.log(changeLessAdviceStarters[randInt])
+        //     // console.log(indexToMacro[largestErrorIndex])
+        //     // console.log(largestErrorIndex)
+        // } else {
+        //     // If absolutely everything is within the macro range
+        //     setTmrwAdvice1("You're doing wonderfully.");
+        //     settmrwAdvice1Highlight("Keep up the great work");
+        //     return
+        // }
 
-        // Either "change" or "continue" message
-        largestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) > Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
-        if (Math.abs(allErrors[largestErrorIndex]) > leeway) {
-            if (allErrors[largestErrorIndex] < 0) {
-                let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
-                setTmrwAdvice2(changeMoreAdviceStarters[randInt]);
-                settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
-            } else {
-                // Ate too much
-                let randInt = getRandomInt(0, changeLessAdviceStarters.length)
-                setTmrwAdvice2(changeLessAdviceStarters[randInt]);
-                settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
-            }
-        } else {
-            let randInt = getRandomInt(0, continueAdviceStarters.length);
-            setTmrwAdvice2(continueAdviceStarters[randInt]);
-            settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
-            continueAdviceStarters.splice(randInt, randInt);
-        }
+        // // Either "change" or "continue" message
+        // largestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) > Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
+        // if (Math.abs(allErrors[largestErrorIndex]) > leeway) {
+        //     if (allErrors[largestErrorIndex] < 0) {
+        //         let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+        //         setTmrwAdvice2(changeMoreAdviceStarters[randInt]);
+        //         settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
+        //     } else {
+        //         // Ate too much
+        //         let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+        //         setTmrwAdvice2(changeLessAdviceStarters[randInt]);
+        //         settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
+        //     }
+        // } else {
+        //     let randInt = getRandomInt(0, continueAdviceStarters.length);
+        //     setTmrwAdvice2(continueAdviceStarters[randInt]);
+        //     settmrwAdvice2Highlight(indexToMacro[largestErrorIndex]);
+        //     continueAdviceStarters.splice(randInt, randInt);
+        // }
 
-        // Guaranteed "continue" message
-        let smallestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) < Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
-        // console.log(smallestErrorIndex)
-        if (Math.abs(allErrors[smallestErrorIndex]) <= leeway) {
-            let randInt = getRandomInt(0, continueAdviceStarters.length)
-            setTmrwAdvice3(continueAdviceStarters[randInt])
-            settmrwAdvice3Highlight(indexToMacro[smallestErrorIndex])
-        }
+        // // Guaranteed "continue" message
+        // let smallestErrorIndex = allErrors.reduce((maxIndex, elem, i, allErrors) => Math.abs(elem) < Math.abs(allErrors[maxIndex]) ? i : maxIndex, 0);
+        // // console.log(smallestErrorIndex)
+        // if (Math.abs(allErrors[smallestErrorIndex]) <= leeway) {
+        //     let randInt = getRandomInt(0, continueAdviceStarters.length)
+        //     setTmrwAdvice3(continueAdviceStarters[randInt])
+        //     settmrwAdvice3Highlight(indexToMacro[smallestErrorIndex])
+        // }
 
 
 
@@ -204,11 +270,11 @@ export default function Feedback({ navigation }) {
             // let tempScore = [];
 
             // Add today's score to all scores, set displayed scores to last 7 days
-            let [position, allErrors] = calculateFoodScore(savedData);
+            let [position, ratios] = await calculateFoodScore(savedData);
             console.log("Position: " + position);
 
             // Set messages in daily recap
-            setMessages(position, allErrors);
+            setMessages(position, ratios);
 
             let newDate = dayjs().set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
 
@@ -265,57 +331,59 @@ export default function Feedback({ navigation }) {
         // } else {
         //     console.log("Out of the range")
         // }
-        return [overallScore, carbCalorieRatio, proteinCalorieRatio, fatCalorieRatio]
+        return {
+            "overallScore": overallScore, "carbCalorieRatio": carbCalorieRatio, "proteinCalorieRatio": proteinCalorieRatio, "fatCalorieRatio": fatCalorieRatio
+        }
     }
 
-    function calculateFoodScore(data) {
-        console.log("hallo my friend")
-        // newCalculationScore(data)
-        // console.log(ratios)
-        let optimalCal = 2000.0;
-        let optimalFruits = 2.0;
-        let optimalVeg = 3.0;
-        let optimalGrain = 4.0;
-        let optimalProtein = 6.5;
-        let optimalDairy = 3.0;
-        let optimal = [optimalCal, optimalFruits, optimalVeg, optimalGrain, optimalProtein, optimalDairy];
-        // console.log(optimal)
-        let eaten = [data.kcal, data.fruit, data.vegetables, data.grains, data.protein, data.dairy];
-        // console.log(eaten)
-        let totalError = 0;
+    async function calculateFoodScore(data) {
+        const ratios = await newCalculationScore(data)
+        console.log(ratios)
+        // let optimalCal = 2000.0;
+        // let optimalFruits = 2.0;
+        // let optimalVeg = 3.0;
+        // let optimalGrain = 4.0;
+        // let optimalProtein = 6.5;
+        // let optimalDairy = 3.0;
+        // let optimal = [optimalCal, optimalFruits, optimalVeg, optimalGrain, optimalProtein, optimalDairy];
+        // // console.log(optimal)
+        // let eaten = [data.kcal, data.fruit, data.vegetables, data.grains, data.protein, data.dairy];
+        // // console.log(eaten)
+        // let totalError = 0;
 
-        let allErrors = [];
+        let allErrors = [0.1, 0.1, 0.1];
 
-        let totalLeeway = leeway * optimal.length
+        // let totalLeeway = leeway * optimal.length
 
-        optimal.forEach((optimalValue, index) => {
-            let error = (eaten[index] - optimalValue) / optimalValue
+        // optimal.forEach((optimalValue, index) => {
+        //     let error = (eaten[index] - optimalValue) / optimalValue
 
-            // Append total error to list of all errors
-            allErrors.push(error);
-            // console.log("Error for " + index + ": " + error)
-            totalError += Math.abs(error);
-        })
+        //     // Append total error to list of all errors
+        //     allErrors.push(error);
+        //     // console.log("Error for " + index + ": " + error)
+        //     totalError += Math.abs(error);
+        // })
 
-        var position = 2.5 // midpoint
+        var position = 2.5 * ratios.overallScore// midpoint
+        console.log(position)
 
-        console.log("Total Error: " + totalError)
+        // console.log("Total Error: " + totalError)
 
 
-        // Calculate position of point on WeeklyGraph
-        if (totalError <= totalLeeway) {
-            if (data.kcal >= optimalCal) // Error above center
-                position += ((totalError / totalLeeway) * 1.5)
-            else // Error below center
-                position -= ((totalError / totalLeeway) * 1.5)
-        } else {
-            if (data.kcal >= optimalCal)
-                position += 1.5 + (Math.atan(totalError / totalLeeway) / 2) / (Math.PI / 2)
-            else
-                position -= 1.5 + Math.atan(totalError / totalLeeway) / (Math.PI / 2)
-        }
+        // // Calculate position of point on WeeklyGraph
+        // if (totalError <= totalLeeway) {
+        //     if (data.kcal >= optimalCal) // Error above center
+        //         position += ((totalError / totalLeeway) * 1.5)
+        //     else // Error below center
+        //         position -= ((totalError / totalLeeway) * 1.5)
+        // } else {
+        //     if (data.kcal >= optimalCal)
+        //         position += 1.5 + (Math.atan(totalError / totalLeeway) / 2) / (Math.PI / 2)
+        //     else
+        //         position -= 1.5 + Math.atan(totalError / totalLeeway) / (Math.PI / 2)
+        // }
 
-        return [position, allErrors]
+        return [position, ratios]
     }
 
 
