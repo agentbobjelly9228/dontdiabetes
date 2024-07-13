@@ -158,45 +158,52 @@ export default function CameraPage({ route, navigation }) {
     // Not sure if we want to show preview screen when just text is submitted. logic is in ShowPhoto if we choose to do so
     async function storeData(value, imageLink) {
         return new Promise(async (resolve) => {
+            console.log(imageLink)
             let savedData = await AsyncStorage.getItem('@todayMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
-
+            console.log(macros + "Steven he")
             // Initialize macros properties if they don't exist
-            if (!macros.foods) {
+            if (!macros.proteinCal) {
                 console.log("null")
-                macros.fruit = 0;
-                macros.vegetables = 0;
-                macros.grains = 0;
-                macros.protein = 0;
-                macros.dairy = 0;
+                macros.carbCal = 0;
+                macros.fatCal = 0;
+                macros.proteinCal = 0;
                 macros.kcal = 0;
                 macros.numMeals = 0;
                 macros.images = [];
-                macros.GIs = [];
                 macros.emojis = {};
                 macros.foods = {};
 
             }
 
             // Assuming `value` is already an object with the correct structure
-            macros.fruit += value?.fruit;
-            macros.vegetables += value?.vegetables;
-            macros.grains += value?.grains;
-            macros.kcal += value?.kcal;
-            macros.protein += value?.protein;
-            macros.dairy += value?.dairy;
+
+            macros.kcal += value.kcal;
+            macros.proteinCal += value.proteinCal;
+            macros.carbCal += value.carbCal;
+            macros.fatCal += value.fatCal
             macros.numMeals += 1;
             macros.images.push(imageLink)
-            macros.GIs.push(value?.GIindex)
+            console.log(imageLink)
             value.image = imageLink
-            value.protein = value?.protein;
-            value.description = value?.food
+            value.description = value.food
 
+            // // Get meals already registered for today
+            // const meals = Object.keys(macros.foods)
 
-            macros.foods[currentMealKey] = value
-            macros.emojis[currentMealKey] = value.emoji
+            // // Logic for which meal it should be
+            // let currentMeal = null;
+            // if (!meals.includes('breakfast') && hour <= preferredMealTimes["lunch"] - 1)
+            //     currentMeal = 'breakfast'
+            // else if (!meals.includes('lunch') && hour <= preferredMealTimes["dinner"] - 1)
+            //     currentMeal = 'lunch'
+            // else
+            //     currentMeal = 'dinner'
 
-            console.log(currentMealKey)
+            macros.foods[mealKey] = value
+            macros.emojis[mealKey] = value.emoji
+
+            console.log(mealKey)
 
 
             console.log(macros)
@@ -231,13 +238,10 @@ export default function CameraPage({ route, navigation }) {
 
             {"food": food title in 7 words or less (capitalize each word),
             "emoji": ONE SINGLE food emoji that best represents the food,
-            "kcal": amount of kilocalories,
-            "fruit": amount of fruit in cups,
-            "vegetables": amount of vegetables in cups,
-            "grains": amount of grains in ounces,
-            "protein": amount of protein in ounces,
-            "dairy": amount of dairy in cups,
-            "GIindex": estimated GI index of the food,}
+            "kcal": amount of kilocalories total,
+            "carbCal": amount of calories from the carbohydrates in kilocalories,
+            "proteinCal": amount of calories from protein in kilocalories,
+            "fatCal": amount of calories from fats in kilocalories,
             
             If the food has 0 of anything, return the string "error" and nothing else.
             `]);
@@ -257,7 +261,7 @@ export default function CameraPage({ route, navigation }) {
         }
 
         // check if JSON is formatted correctly
-        if (!isNaN(parsedText?.fruit)) {
+        if (!isNaN(parsedText?.proteinCal)) {
             const now = new Date();
             AsyncStorage.setItem("@lastMealTime", now.toString());
             console.log(now + "hallo")

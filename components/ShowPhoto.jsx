@@ -73,37 +73,31 @@ export default function ShowPhoto({ route, navigation }) {
             console.log(imageLink)
             let savedData = await AsyncStorage.getItem('@todayMacros');
             var macros = savedData ? JSON.parse(savedData) : {}; // Parse the saved data, if it exists
-
+            console.log(macros + "Steven he")
             // Initialize macros properties if they don't exist
-            if (!macros.foods) {
+            if (!macros.proteinCal) {
                 console.log("null")
-                macros.fruit = 0;
-                macros.vegetables = 0;
-                macros.grains = 0;
-                macros.protein = 0;
-                macros.dairy = 0;
+                macros.carbCal = 0;
+                macros.fatCal = 0;
+                macros.proteinCal = 0;
                 macros.kcal = 0;
                 macros.numMeals = 0;
                 macros.images = [];
-                macros.GIs = [];
                 macros.emojis = {};
                 macros.foods = {};
 
             }
 
             // Assuming `value` is already an object with the correct structure
-            macros.fruit += value.fruit;
-            macros.vegetables += value.vegetables;
-            macros.grains += value.grains;
+
             macros.kcal += value.kcal;
-            macros.protein += value.protein;
-            macros.dairy += value.dairy;
+            macros.proteinCal += value.proteinCal;
+            macros.carbCal += value.carbCal;
+            macros.fatCal += value.fatCal
             macros.numMeals += 1;
             macros.images.push(imageLink)
             console.log(imageLink)
-            macros.GIs.push(value.GIindex)
             value.image = imageLink
-            value.protein = value.protein;
             value.description = value.food
 
             // // Get meals already registered for today
@@ -167,7 +161,7 @@ export default function ShowPhoto({ route, navigation }) {
         var text = response.text().toString();
         text = trimForJson(text)
         console.log(text)
-        console.log("hi")
+        console.log("steven")
         storeData(text, null).then(response => {
             console.log("hi")
             navigation.navigate("Feedback");

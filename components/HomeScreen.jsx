@@ -34,7 +34,7 @@ const screenWidth = Dimensions.get("screen").width;
 
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
-
+    // clearData();
     const auth = FIREBASE_AUTH;
     // auth.signOut()
     const database = FIREBASE_DATABASE;
@@ -102,9 +102,23 @@ export default function HomeScreen({ route, navigation }) {
         let idealCalories = BMR * 1.375
         console.log(idealCalories)
         let carbCalories = 1000;
-        let proteinCalories = 500;
-        let fatCalories = 300;
-        let totalCalories = 1800;
+        let proteinCalories = 600;
+        let fatCalories = 500;
+        let carbCalorieRatio = carbCalories / idealCalories;
+        let fatCalorieRatio = fatCalories / idealCalories;
+        let proteinCalorieRatio = proteinCalories / idealCalories;
+        console.log("Carb ratio: " + carbCalorieRatio)
+        console.log("Protein ratio: " + proteinCalorieRatio)
+        console.log("Fat ratio: " + fatCalorieRatio)
+        let overallScore = carbCalorieRatio + fatCalorieRatio + proteinCalorieRatio;
+        //score range should be 0.75 - 1.25
+        console.log(overallScore)
+        if (overallScore > 0.75 && overallScore < 1.25) {
+            console.log("You're in the range")
+        } else {
+            console.log("Out of the range")
+        }
+
     }
 
     async function getGraphData(uid) {
@@ -151,7 +165,7 @@ export default function HomeScreen({ route, navigation }) {
         }
     }
 
-
+    // clearData()
     // TODO: Add reset on new day
     function clearData() {
         AsyncStorage.removeItem("@todayMacros")
@@ -368,7 +382,7 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
                     {/* #FFF8DA */}
 
-                    {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
+                    <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
                     <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
                         <Pressable style={styles.settingsButton} onPress={() => {
                             // deleteAppleAccount()

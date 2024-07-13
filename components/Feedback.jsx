@@ -233,18 +233,45 @@ export default function Feedback({ navigation }) {
         // Carbs: 45–65 % of your daily calories
         // Protein: 10–35 % of your daily calories
         // Fat: 20–35 % of your daily calories
+        // BMR = 66.47 + (13.75 x weight in kg) + (5.003 x height in cm) - (6.755 x age in years)
         //calculate ideal calories
+
         let snapshot = await get(ref(database, auth.currentUser.uid))
         let personalMetrics;
         if (snapshot.exists()) {
-            personalMetrics = snapshot.val()?.profile;
+            personalMetrics = snapshot.val().profile;
         } else {
             console.log("No data available");
         }
-        console.log(personalMetrics)
+        let heightCM = parseInt(personalMetrics.height) * 2.54
+        let weightKG = parseInt(personalMetrics.weight) * 0.45359237
+        let BMR = 66.47 + (13.75 * weightKG) + (5.003 * heightCM) - (6.755 * parseInt(personalMetrics.age))
+        let idealCalories = BMR * 1.375
+        console.log(idealCalories)
+        let carbCalories = data.carbCal;
+        let proteinCalories = data.proteinCal;
+        let fatCalories = data.fatCal;
+        let carbCalorieRatio = carbCalories / idealCalories;
+        let fatCalorieRatio = fatCalories / idealCalories;
+        let proteinCalorieRatio = proteinCalories / idealCalories;
+        console.log("Carb ratio: " + carbCalorieRatio)
+        console.log("Protein ratio: " + proteinCalorieRatio)
+        console.log("Fat ratio: " + fatCalorieRatio)
+        let overallScore = carbCalorieRatio + fatCalorieRatio + proteinCalorieRatio;
+        //score range should be 0.75 - 1.25
+        // console.log(overallScore)
+        // if (overallScore > 0.75 && overallScore < 1.25) {
+        //     console.log("You're in the range")
+        // } else {
+        //     console.log("Out of the range")
+        // }
+        return [overallScore, carbCalorieRatio, proteinCalorieRatio, fatCalorieRatio]
     }
 
     function calculateFoodScore(data) {
+        console.log("hallo my friend")
+        // newCalculationScore(data)
+        // console.log(ratios)
         let optimalCal = 2000.0;
         let optimalFruits = 2.0;
         let optimalVeg = 3.0;
