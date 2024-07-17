@@ -76,15 +76,15 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                     ],
                 }}
                 width={screenWidth}
-                height={190}
+                height={200}
                 chartConfig={chartConfig}
                 withHorizontalLabels={false}
                 withShadow={false}
-                fromNumber={5}
+                fromNumber={1.25}
                 fromZero={true}
                 withHorizontalLines={false}
                 withVerticalLines={false}
-                segments={5}
+                segments={3}
                 xLabelsOffset={-10}
                 getDotProps={(dataPoint, dataPointIndex) => {
                     return {
@@ -108,14 +108,14 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                     ],
                 }}
                 width={screenWidth}
-                height={200}
+                height={215}
                 chartConfig={chartConfig}
-                withHorizontalLabels={false}
+                withHorizontalLabels={true}
                 withShadow={false}
-                fromNumber={5}
+                fromNumber={1.25}
                 fromZero={true}
-                segments={5}
-                withHorizontalLines={false}
+                segments={3}
+                withHorizontalLines={true}
                 withVerticalLines={false}
                 xLabelsOffset={0}
 
@@ -133,7 +133,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
 
                     }
                 }}
-                style={{ left: -10, bottom: 5 }}
+                style={{ left: -10, bottom: 0 }}
 
 
             // withHorizontalLabels={false}

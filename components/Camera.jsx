@@ -178,10 +178,10 @@ export default function CameraPage({ route, navigation }) {
 
             // Assuming `value` is already an object with the correct structure
 
-            macros.kcal += value.kcal;
-            macros.proteinCal += value.proteinCal;
-            macros.carbCal += value.carbCal;
-            macros.fatCal += value.fatCal
+            macros.kcal += parseInt(value.kcal);
+            macros.proteinCal += parseInt(value.proteinCal);
+            macros.carbCal += parseInt(value.carbCal);
+            macros.fatCal += parseInt(value.fatCal)
             macros.numMeals += 1;
             macros.images.push(imageLink)
             console.log(imageLink)

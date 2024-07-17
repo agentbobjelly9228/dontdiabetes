@@ -101,7 +101,7 @@ export default function Feedback({ navigation }) {
 
 
         // Today Screen: good or bad job
-        if (position >= 1.875 && position <= 3.125) {
+        if (position >= 3.75 && position <= 6.25) {
             setTodayScreenSubtitle("Wonderful job!");
             setTodayScreenText("You're continuing your commitment to long-term health and happiness, so pat yourself on the back!");
         } else {
@@ -365,13 +365,13 @@ export default function Feedback({ navigation }) {
         //     totalError += Math.abs(error);
         // })
 
-        var position = 2.5 * ratios.overallScore// midpoint
+        var position = 5 * ratios.overallScore// midpoint
         if (position > 5) {
             position = 5
         } else if (position < 1) {
             position = 1
         }
-        position = 2.5
+        position = 1
         console.log(position + "hallo my friend")
 
         // console.log("Total Error: " + totalError)
