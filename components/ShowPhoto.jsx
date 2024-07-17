@@ -206,14 +206,12 @@ export default function ShowPhoto({ route, navigation }) {
             However, if the image does contain food, considering the size of the meal, estimate each of the following quantities: Calories, fruits (cups), vegetables (cups), grains (ounces), protein (ounces), dairy (cups), GI index. 
                                 Consult online sources and be realistic. Return your answer in only a JSON format like this: 
                                 {"food": food title in 7 words or less (capitalize each word),
-                                    "emoji": ONE SINGLE food emoji that best represents the food,
-                                    "kcal": amount of kilocalories,
-                                    "fruit": amount of fruit in cups,
-                                    "vegetables": amount of vegetables in cups,
-                                    "grains": amount of grains in ounces,
-                                    "protein": amount of protein in ounces,
-                                    "dairy": amount of dairy in cups,
-                                    "GIindex": estimated GI index of the food}
+                                "emoji": ONE SINGLE food emoji that best represents the food,
+                                "kcal": amount of kilocalories total,
+                                "carbCal": amount of calories from the carbohydrates in kilocalories,
+                                "proteinCal": amount of calories from protein in kilocalories,
+                                "fatCal": amount of calories from fats in kilocalories,
+                                }
                                 
                                 `, { inlineData: { data: imageData, mimeType: 'image/png' } }]);
 
@@ -227,7 +225,8 @@ export default function ShowPhoto({ route, navigation }) {
         let parsedText = JSON.parse(text);
 
         // check if JSON is formatted correctly
-        if (!isNaN(parsedText?.fruit)) {
+
+        if (parsedText?.food !== "error") {
             storeData(parsedText, imageLink).then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");

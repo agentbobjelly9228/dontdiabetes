@@ -242,7 +242,7 @@ export default function CameraPage({ route, navigation }) {
             "carbCal": amount of calories from the carbohydrates in kilocalories,
             "proteinCal": amount of calories from protein in kilocalories,
             "fatCal": amount of calories from fats in kilocalories,
-            
+            }
             If the food has 0 of anything, return the string "error" and nothing else.
             `]);
 

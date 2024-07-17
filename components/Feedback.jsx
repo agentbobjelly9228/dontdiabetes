@@ -53,14 +53,14 @@ export default function Feedback({ navigation }) {
     const [todayScreenSubtitle, setTodayScreenSubtitle] = useState(null);
     const [todayScreenText, setTodayScreenText] = useState(null);
 
-    const [tmrwAdvice1, setTmrwAdvice1] = useState(null);
-    const [tmrwAdvice1Highlight, settmrwAdvice1Highlight] = useState(null);
+    const [tmrwAdvice1, setTmrwAdvice1] = useState("");
+    const [tmrwAdvice1Highlight, settmrwAdvice1Highlight] = useState("");
 
-    const [tmrwAdvice2, setTmrwAdvice2] = useState(null);
-    const [tmrwAdvice2Highlight, settmrwAdvice2Highlight] = useState(null);
+    const [tmrwAdvice2, setTmrwAdvice2] = useState("");
+    const [tmrwAdvice2Highlight, settmrwAdvice2Highlight] = useState("");
 
-    const [tmrwAdvice3, setTmrwAdvice3] = useState(null);
-    const [tmrwAdvice3Highlight, settmrwAdvice3Highlight] = useState(null);
+    const [tmrwAdvice3, setTmrwAdvice3] = useState("");
+    const [tmrwAdvice3Highlight, settmrwAdvice3Highlight] = useState("");
 
     const [finalNote, setFinalNote] = useState(null);
 
@@ -155,6 +155,7 @@ export default function Feedback({ navigation }) {
                 setTmrwAdvice3("Consider eating more")
                 settmrwAdvice3Highlight("carbs")
             }
+
         } else if (ratios.proteinCalorieRatio > 0.65) {
             if (!adviceSet[1] && !adviceSet[0]) {
                 setTmrwAdvice1("Consider eating less")
@@ -272,9 +273,9 @@ export default function Feedback({ navigation }) {
             // Add today's score to all scores, set displayed scores to last 7 days
             let [position, ratios] = await calculateFoodScore(savedData);
             console.log("Position: " + position);
-
             // Set messages in daily recap
-            setMessages(position, ratios);
+            setMessages(position, ratios)
+
 
             let newDate = dayjs().set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
 
@@ -286,12 +287,12 @@ export default function Feedback({ navigation }) {
             await AsyncStorage.setItem('@allScores', JSON.stringify(parsedScores));
             update(ref(database, auth.currentUser.uid), { scores: parsedScores })
 
-            console.log(savedData.GIs)
-            var temp = 0;
-            for (let i = 0; i < savedData.GIs.length; i++) {
-                temp += savedData.GIs[i]
-            }
-            setGI(temp / savedData.GIs.length);
+            // console.log(savedData.GIs)
+            // var temp = 0;
+            // for (let i = 0; i < savedData.GIs.length; i++) {
+            //     temp += savedData.GIs[i]
+            // }
+            // setGI(temp / savedData.GIs.length);
         }
     }
 
@@ -365,7 +366,13 @@ export default function Feedback({ navigation }) {
         // })
 
         var position = 2.5 * ratios.overallScore// midpoint
-        console.log(position)
+        if (position > 5) {
+            position = 5
+        } else if (position < 1) {
+            position = 1
+        }
+        position = 2.5
+        console.log(position + "hallo my friend")
 
         // console.log("Total Error: " + totalError)
 
