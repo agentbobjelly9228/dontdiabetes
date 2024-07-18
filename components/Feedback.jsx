@@ -101,7 +101,7 @@ export default function Feedback({ navigation }) {
 
 
         // Today Screen: good or bad job
-        if (position >= 3.75 && position <= 6.25) {
+        if (position > 1 && position < 4) {
             setTodayScreenSubtitle("Wonderful job!");
             setTodayScreenText("You're continuing your commitment to long-term health and happiness, so pat yourself on the back!");
         } else {
@@ -365,30 +365,35 @@ export default function Feedback({ navigation }) {
         //     totalError += Math.abs(error);
         // })
 
-        var position = 5 * ratios.overallScore// midpoint
-        if (position > 5) {
-            position = 5
-        } else if (position < 1) {
-            position = 1
-        }
-        position = 1
-        console.log(position + "hallo my friend")
+        // var position = (1.5 * ratios.overallScore) + 1
+        var position = 2.5
+        // var position = (2.4 * 1) + 1
+        // if (position > 4) {
+        //     position = 4
+        // } else if (position < 1) {
+        //     position = 1
+        // }l
+        // console.log(position + "hallo my friend")
 
         // console.log("Total Error: " + totalError)
 
 
         // // Calculate position of point on WeeklyGraph
-        // if (totalError <= totalLeeway) {
-        //     if (data.kcal >= optimalCal) // Error above center
-        //         position += ((totalError / totalLeeway) * 1.5)
-        //     else // Error below center
-        //         position -= ((totalError / totalLeeway) * 1.5)
-        // } else {
-        //     if (data.kcal >= optimalCal)
-        //         position += 1.5 + (Math.atan(totalError / totalLeeway) / 2) / (Math.PI / 2)
-        //     else
-        //         position -= 1.5 + Math.atan(totalError / totalLeeway) / (Math.PI / 2)
-        // }
+        let totalError = Math.abs(1 - ratios.overallScore)
+        // let temp = 0.8;
+        // let totalError = Math.abs(1 - temp)
+        let totalLeeway = 0.25
+        if (totalError <= totalLeeway) {
+            if (ratios.overallScore >= 1) // Error above center
+                position += ((totalError / totalLeeway) * 1.5)
+            else // Error below center
+                position -= ((totalError / totalLeeway) * 1.5)
+        } else {
+            if (ratios.overallScore > 1.25)
+                position = 4
+            else
+                position = 1
+        }
 
         return [position, ratios]
     }
@@ -402,7 +407,8 @@ export default function Feedback({ navigation }) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                    <Text style={styles.title}>Enjoy your meal!</Text>
+                    <Text style={styles.title}>We'll get back to you</Text>
+                    <Text style={styles.title}>on your progress tonight!</Text>
                 </View>
             </SafeAreaView>
         )

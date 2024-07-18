@@ -34,7 +34,7 @@ const screenWidth = Dimensions.get("screen").width;
 
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
-    // clearData();
+    clearData();
     const auth = FIREBASE_AUTH;
     // auth.signOut()
     const database = FIREBASE_DATABASE;
@@ -343,7 +343,7 @@ export default function HomeScreen({ route, navigation }) {
                                         <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
                                 }
                             </View>
-
+                        {/* Fix the camera with emoji bugg. Image lunch places in breakfast because it is list not json */}
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
                         </View>
                         <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
