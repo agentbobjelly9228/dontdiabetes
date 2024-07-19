@@ -256,7 +256,8 @@ export default function CameraPage({ route, navigation }) {
         let parsedText = null
         try {
             parsedText = JSON.parse(text)
-        } catch {
+        } catch (e) {
+            console.log(e)
             console.log("result didn't parse")
         }
 
@@ -265,7 +266,7 @@ export default function CameraPage({ route, navigation }) {
             const now = new Date();
             AsyncStorage.setItem("@lastMealTime", now.toString());
             console.log(now + "hallo")
-            storeData(parsedText, null).then(response => {
+            storeData(parsedText, "none").then(response => {
                 console.log("hi")
                 navigation.navigate("Feedback");
 

@@ -110,7 +110,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                 width={screenWidth}
                 height={200}
                 chartConfig={chartConfig}
-                withHorizontalLabels={true}
+                withHorizontalLabels={false}
                 withShadow={false}
                 fromNumber={4}
 

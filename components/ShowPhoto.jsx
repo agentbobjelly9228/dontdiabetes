@@ -162,7 +162,7 @@ export default function ShowPhoto({ route, navigation }) {
         text = trimForJson(text)
         console.log(text)
         console.log("steven")
-        storeData(text, null).then(response => {
+        storeData(text, "none").then(response => {
             console.log("hi")
             navigation.navigate("Feedback");
         })

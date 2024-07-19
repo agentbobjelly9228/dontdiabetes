@@ -34,7 +34,7 @@ const screenWidth = Dimensions.get("screen").width;
 
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
-    clearData();
+    // clearData();
     const auth = FIREBASE_AUTH;
     // auth.signOut()
     const database = FIREBASE_DATABASE;
@@ -331,7 +331,7 @@ export default function HomeScreen({ route, navigation }) {
                         /> */}
                         <View style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images[0] ?
+                                {images && images[0] && images[0] !== "none" ?
                                     <Image
                                         source={{ uri: images[0] }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
@@ -343,12 +343,12 @@ export default function HomeScreen({ route, navigation }) {
                                         <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
                                 }
                             </View>
-                        {/* Fix the camera with emoji bugg. Image lunch places in breakfast because it is list not json */}
+                            {/* Fix the camera with emoji bugg. Image lunch places in breakfast because it is list not json */}
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
                         </View>
                         <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images[1] ?
+                                {images && images[1] && images[1] != "none" ?
                                     <Image
                                         source={{ uri: images[1] }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10 }}
@@ -365,7 +365,7 @@ export default function HomeScreen({ route, navigation }) {
                         </View>
                         <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images[2] ?
+                                {images && images[2] && images[2] != "none" ?
                                     <Image
                                         source={{ uri: images[2] }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
@@ -382,7 +382,7 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
                     {/* #FFF8DA */}
 
-                    <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
+                    {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
                     <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
                         <Pressable style={styles.settingsButton} onPress={() => {
                             deleteAppleAccount()
