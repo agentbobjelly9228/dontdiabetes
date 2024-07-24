@@ -170,7 +170,7 @@ export default function CameraPage({ route, navigation }) {
                 macros.proteinCal = 0;
                 macros.kcal = 0;
                 macros.numMeals = 0;
-                macros.images = [];
+                macros.images = {};
                 macros.emojis = {};
                 macros.foods = {};
 
@@ -183,7 +183,7 @@ export default function CameraPage({ route, navigation }) {
             macros.carbCal += parseInt(value.carbCal);
             macros.fatCal += parseInt(value.fatCal)
             macros.numMeals += 1;
-            macros.images.push(imageLink)
+            // macros.images.push(imageLink)
             console.log(imageLink)
             value.image = imageLink
             value.description = value.food
@@ -201,6 +201,7 @@ export default function CameraPage({ route, navigation }) {
             //     currentMeal = 'dinner'
 
             macros.foods[mealKey] = value
+            macros.images[mealKey] = imageLink
             macros.emojis[mealKey] = value.emoji
 
             console.log(mealKey)

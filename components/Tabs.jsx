@@ -253,7 +253,7 @@ export default function Tabs({ route, navigation }) {
         tabBarInactiveTintColor: 'black',
       })}>
 
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} initialParams={{ updateCameraBtn: getAndSetMealsEaten }} />
       <Tab.Screen
         name="CameraButton"
         component={HomeScreen}

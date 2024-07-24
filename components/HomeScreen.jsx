@@ -5,11 +5,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
 import DashedLine from 'react-native-dashed-line';
 import { FIREBASE_DATABASE } from '../FirebaseConfig';
-import { ref, set, get } from 'firebase/database';
+import { ref, set, get, remove } from 'firebase/database';
 import greenGuy from '../assets/mascots/greenGuy.png';
 import yellowGuy from '../assets/mascots/yellowGuy.png';
 import redGuy from '../assets/mascots/redGuy.png';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
+import Tabs from "./Tabs";
+
 import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
 import { revokeAccessToken, OAuthProvider, signInWithCredential } from "firebase/auth";
@@ -18,6 +20,7 @@ import { Logout } from "iconsax-react-native";
 import homeguy from "../assets/mascots/homeguy.png"
 import { MagicStar } from "iconsax-react-native";
 import SweetSFSymbol from "sweet-sfsymbols";
+
 
 
 
@@ -35,6 +38,8 @@ const screenWidth = Dimensions.get("screen").width;
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
     // clearData();
+    // console.log(route.params.updateCameraBtn)
+
     const auth = FIREBASE_AUTH;
     // auth.signOut()
     const database = FIREBASE_DATABASE;
@@ -235,6 +240,13 @@ export default function HomeScreen({ route, navigation }) {
 
         setLoading(false)
     }
+    function clearHistory() {
+        clearData()
+        AsyncStorage.removeItem("@allFoods")
+        getAsyncData()
+        remove(ref(database, auth.currentUser.uid + "/scores"))
+        route.params.updateCameraBtn()
+    }
 
     useFocusEffect(
         React.useCallback(() => {
@@ -331,9 +343,9 @@ export default function HomeScreen({ route, navigation }) {
                         /> */}
                         <View style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images[0] && images[0] !== "none" ?
+                                {images && images.breakfast && images.breakfast !== "none" ?
                                     <Image
-                                        source={{ uri: images[0] }}
+                                        source={{ uri: images.breakfast }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
                                     />
 
@@ -348,9 +360,9 @@ export default function HomeScreen({ route, navigation }) {
                         </View>
                         <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images[1] && images[1] != "none" ?
+                                {images && images.lunch && images.lunch != "none" ?
                                     <Image
-                                        source={{ uri: images[1] }}
+                                        source={{ uri: images.lunch }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10 }}
                                     />
                                     :
@@ -365,9 +377,9 @@ export default function HomeScreen({ route, navigation }) {
                         </View>
                         <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images[2] && images[2] != "none" ?
+                                {images && images.dinner && images.dinner != "none" ?
                                     <Image
-                                        source={{ uri: images[2] }}
+                                        source={{ uri: images.dinner }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
                                     />
                                     : emojis && emojis.dinner ?
@@ -385,10 +397,13 @@ export default function HomeScreen({ route, navigation }) {
                     {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
                     <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
                         <Pressable style={styles.settingsButton} onPress={() => {
-                            deleteAppleAccount()
+                            // deleteAppleAccount()
+                            clearHistory()
+
+
                             // newCalculationScore(["hi"])
                         }}>
-                            <Text style={styles.settingsText}>Delete Account</Text>
+                            <Text style={styles.settingsText}>Clear Meal History</Text>
                         </Pressable>
                         <Pressable style={styles.logOutButton} onPress={() => auth.signOut()}>
                             <Text style={styles.logOutText}>Log Out</Text>
@@ -437,18 +452,22 @@ const styles = StyleSheet.create({
     },
     settingsButton: {
         width: "45%",
-        borderColor: "#130630",
-        borderWidth: 3,
+        // borderColor: "#130630",
+        // borderWidth: 3,
         alignSelf: "center",
-        padding: 15,
+        padding: 18,
         borderRadius: 15,
         alignItems: 'center',
-        justifyContent: "center"
+        justifyContent: "center",
+        backgroundColor: "#FF6231",
+        shadowColor: "#FF6231",
+        shadowOpacity: 0.5,
+        shadowRadius: 10
     },
     settingsText: {
         fontSize: 15,
         fontFamily: "SF-Compact",
-        color: "#130630"
+        color: "white",
     },
     logOutButton: {
         borderColor: "#130630",

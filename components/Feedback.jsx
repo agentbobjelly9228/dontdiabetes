@@ -8,7 +8,7 @@ import { ArrowRight } from 'iconsax-react-native';
 import Animated, { FadeInDown, FadeOutDown, FadeOutUp } from 'react-native-reanimated';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { FIREBASE_DATABASE } from '../FirebaseConfig';
-import { ref, update, get } from 'firebase/database';
+import { ref, update, get, remove } from 'firebase/database';
 
 const screenHeight = Dimensions.get('window').height;
 

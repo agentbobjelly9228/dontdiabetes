@@ -82,7 +82,7 @@ export default function ShowPhoto({ route, navigation }) {
                 macros.proteinCal = 0;
                 macros.kcal = 0;
                 macros.numMeals = 0;
-                macros.images = [];
+                macros.images = {};
                 macros.emojis = {};
                 macros.foods = {};
 
@@ -95,7 +95,7 @@ export default function ShowPhoto({ route, navigation }) {
             macros.carbCal += value.carbCal;
             macros.fatCal += value.fatCal
             macros.numMeals += 1;
-            macros.images.push(imageLink)
+            // macros.images.push(imageLink)
             console.log(imageLink)
             value.image = imageLink
             value.description = value.food
@@ -114,7 +114,7 @@ export default function ShowPhoto({ route, navigation }) {
 
             macros.foods[mealKey] = value
             macros.emojis[mealKey] = value.emoji
-
+            macros.images[mealKey] = imageLink
             console.log(mealKey)
 
 
