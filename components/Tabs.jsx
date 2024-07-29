@@ -173,7 +173,6 @@ export default function Tabs({ route, navigation }) {
     let hour = dayjs().hour();
     hour = 5
 
-
     // Will continue being dinner until 3 AM
     if (((hour >= preferredMealTimes["dinner"] - 1 || hour <= 3) && !mealsEaten.includes("dinner")) || mealsEaten.includes("lunch")) {
       return "dinner"

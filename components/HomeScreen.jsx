@@ -56,6 +56,7 @@ export default function HomeScreen({ route, navigation }) {
     // const [uid, setUID] = useState("");
     const [currentMeal, setCurrentMeal] = useState(0)
     const [name, setName] = useState(null)
+    const [meals, setMeals] = useState([])
 
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
@@ -176,8 +177,8 @@ export default function HomeScreen({ route, navigation }) {
         AsyncStorage.removeItem("@todayMacros")
     }
     function sameDay(day1, day2) {
-        console.log(day1)
-        console.log(day2)
+        // console.log(day1)
+        // console.log(day2)
         if (day1[0] == day2[0] && day1[1] == day2[1] && day1[2] == day2[2]) {
             return true
         }
@@ -185,16 +186,16 @@ export default function HomeScreen({ route, navigation }) {
     }
     async function checkClear() {
         const now = new Date();
-        console.log(now)
+        // console.log(now)
         const lastMealTime = await AsyncStorage.getItem("@lastMealTime")
         const d = new Date(lastMealTime)
-        console.log(now.getDate())
-        console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
+        // console.log(now.getDate())
+        // console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
         if (!sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()])) {
             clearData();
         }
     }
-    console.log(emojis)
+    // console.log(emojis)
     // useEffect(() => {
     //     // clearData()
     //     checkClear().then(() => {
@@ -207,7 +208,7 @@ export default function HomeScreen({ route, navigation }) {
         let savedData = await AsyncStorage.getItem('@todayMacros');
 
         let uid = auth.currentUser.uid;
-        console.log(auth.currentUser.uid)
+        // console.log(auth.currentUser.uid)
         getGraphData(uid);
 
         let displayName = auth.currentUser.displayName || await AsyncStorage.getItem("@name")
@@ -215,12 +216,15 @@ export default function HomeScreen({ route, navigation }) {
 
         let macros = savedData ? JSON.parse(savedData) : null;
 
+        console.log(macros)
+
         // Set title, subtitle, mascot, and theme
         let hour = dayjs().hour();
         let meals = []
 
         if (macros)
             meals = Object.keys(macros?.foods)
+        setMeals(meals)
         try {
             let temp = []
             temp.push(macros?.foods["breakfast"]?.food)
@@ -228,13 +232,13 @@ export default function HomeScreen({ route, navigation }) {
             temp.push(macros?.foods["dinner"]?.food)
             setFoods(temp)
             setImages(macros?.images)
-            console.log(macros?.images + "hi")
+            // console.log(macros?.images + "hi")
         } catch (e) {
             console.log(e)
         }
 
 
-        console.log(meals)
+        // console.log(meals)
         setMessages(hour, meals)
         setEmojis(macros?.emojis);
 
@@ -277,34 +281,25 @@ export default function HomeScreen({ route, navigation }) {
         if (advice3 && advice3Highlight) {
             temp += advice3 + " " + advice3Highlight + ". "
         }
-        console.log(temp + " whadup there")
+        // console.log(temp + " whadup there")
         setAdvice(temp);
-        console.log(advice1 + advice1Highlight)
-        console.log(advice2 + advice2Highlight)
-        console.log(advice3 + advice3Highlight)
+        // console.log(advice1 + advice1Highlight)
+        // console.log(advice2 + advice2Highlight)
+        // console.log(advice3 + advice3Highlight)
     }
     useEffect(() => {
         getFeedback()
     })
 
-    const handleSheetChanges = React.useCallback((index) => {
-        console.log('handleSheetChanges', index);
-    }, []);
-
-    const bottomSheetRef = React.useRef(null);
-
-
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
         "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
         "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
+        "SF-Pro-Medium": require("../assets/fonts/SF-Pro-Text-Medium.otf"),
         "SpaceGrotesk-Regular": require("../assets/fonts/SpaceGrotesk-Regular.ttf"),
         "SpaceGrotesk-Bold": require("../assets/fonts/SpaceGrotesk-Bold.ttf"),
     });
-    // console.log(screenWidth)
-    // console.log(screenHeight)
-    // 393
-    // 852
+
     if (!loading && name)
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
@@ -315,34 +310,19 @@ export default function HomeScreen({ route, navigation }) {
                         <Text style={styles.title}>{title}</Text>
                     </View>
 
-                    <View style={{ height: 300, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
+                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#FFE292", }}>
 
-                        <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#b0b0b0", borderRightColor: "#b0b0b0", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
-                            {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
+                        <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
                             <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }] }} />
                         </View>
-                        <Text style={{
-                            fontSize: 17,
-                            position: "absolute",
-                            zIndex: 10,
-                            fontFamily: "SF-Pro",
-                            textAlign: "center",
-                            alignSelf: "center",
-                            top: 25
-                        }}>{advice}</Text>
-                        <View style={{ position: "absolute", bottom: 10, margin: 0 }}>
-                            <WeeklyGraph datapoints={graphData} />
-                        </View>
+
+                        <Text style={styles.adviceText}>{advice}</Text>
                     </View>
 
+                    {/* FOOD POLAROIDS */}
                     <View style={{ height: 175, marginBottom: 20, flexDirection: "row", marginTop: 20 }}>
-                        {/* <ProgressBar
-                            stage={currentMeal}
-                            color={themeColor}
-                            emojis={emojis}
-                        /> */}
-                        <View style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
-                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
+                        <Pressable onPress={() => meals.includes("breakfast") || navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })} style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
+                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
                                 {images && images.breakfast && images.breakfast !== "none" ?
                                     <Image
                                         source={{ uri: images.breakfast }}
@@ -350,16 +330,15 @@ export default function HomeScreen({ route, navigation }) {
                                     />
 
                                     : emojis && emojis.breakfast ?
-                                        <Text style={{ fontSize: 100 }}>{emojis.breakfast}</Text>
+                                        <Text style={{ fontSize: 62 }}>{emojis.breakfast}</Text>
                                         :
-                                        <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
+                                        <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} />
                                 }
                             </View>
-                            {/* Fix the camera with emoji bugg. Image lunch places in breakfast because it is list not json */}
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
-                        </View>
-                        <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
-                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
+                        </Pressable>
+                        <Pressable onPress={() => meals.includes("lunch") || navigation.navigate('Camera', { mealKey: "lunch", alertBadPhoto: false })} style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
+                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
                                 {images && images.lunch && images.lunch != "none" ?
                                     <Image
                                         source={{ uri: images.lunch }}
@@ -367,35 +346,43 @@ export default function HomeScreen({ route, navigation }) {
                                     />
                                     :
                                     emojis && emojis.lunch ?
-                                        <Text style={{ fontSize: 100 }}>{emojis.lunch}</Text>
+                                        <Text style={{ fontSize: 62 }}>{emojis.lunch}</Text>
                                         :
-                                        <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
+                                        <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} />
                                 }
                             </View>
 
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[1] ? foods[1] : "Lunch"}</Text>
-                        </View>
-                        <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
-                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
+                        </Pressable>
+                        <Pressable onPress={() => meals.includes("dinner") || navigation.navigate('Camera', { mealKey: "dinner", alertBadPhoto: false })} style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
+                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
                                 {images && images.dinner && images.dinner != "none" ?
                                     <Image
                                         source={{ uri: images.dinner }}
                                         style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
                                     />
                                     : emojis && emojis.dinner ?
-                                        <Text style={{ fontSize: 100 }}>{emojis.dinner}</Text>
+                                        <Text style={{ fontSize: 62 }}>{emojis.dinner}</Text>
                                         :
-                                        <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
+                                        <SweetSFSymbol name="moon" size={62} colors={["#b0b0b0"]} />
                                 }
                             </View>
-
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
+                        </Pressable>
+                    </View>
+
+                    {/* STATS CONTAINER */}
+                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#FFE292", padding: 20}}>
+                        <View>
+                            <WeeklyGraph datapoints={graphData} />
                         </View>
                     </View>
+
+
                     {/* #FFF8DA */}
 
                     {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
-                    <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
+                    <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center", paddingTop: 30 }}>
                         <Pressable style={styles.settingsButton} onPress={() => {
                             // deleteAppleAccount()
                             clearHistory()
@@ -415,11 +402,20 @@ export default function HomeScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+    adviceText: {
+        fontSize: 18,
+        zIndex: 10,
+        fontFamily: "SF-Pro-Medium",
+        textAlign: "center",
+        alignSelf: "center",
+        margin: 10,
+        marginTop: 30,
+        marginBottom: 20
+    },
     title: {
         fontFamily: "SF-Rounded",
-        fontSize: 45,
+        fontSize: 35,
         fontWeight: "bold",
-        marginBottom: 15,
         textAlign: "center",
         alignSelf: "center"
     },

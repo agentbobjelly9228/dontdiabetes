@@ -39,9 +39,9 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
         dayNames.push(indexToDayName[dateObject.day()])
         dayNums.push(dateObject.date())
     })
-    console.log(scores)
-    console.log(dayNames)
-    console.log(dayNums)
+    // console.log(scores)
+    // console.log(dayNames)
+    // console.log(dayNums)
 
     const chartConfig = {
         backgroundGradientFromOpacity: 0,
@@ -56,7 +56,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
     };
 
     return (
-        <View>
+        <View style={{ height: 200 }}>
             <View style={{ gap: 5, top: 0, position: "absolute", width: screenWidth * 0.85, alignSelf: "center", paddingBottom: 0 }}>
                 <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", padding: 0 }} />
                 <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 15, alignItems: "center", justifyContent: "center", margin: 0 }}>
