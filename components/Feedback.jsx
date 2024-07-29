@@ -73,17 +73,17 @@ export default function Feedback({ navigation }) {
 
     const finalNotes = ["Don't die.", "Your body deserves nourishment. :)", "Cars don't run on soda, but also they don't run on water either. Eat gasoline.", "Don't stress yourself out! You're doing great.", "Your most important sale in life is to sell yourself to yourself."]
 
-    async function storeAdvice() {
-        await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
-        await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
-        await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
-        await AsyncStorage.setItem('@tmrwAdvice1Highlight', tmrwAdvice1Highlight)
-        await AsyncStorage.setItem('@tmrwAdvice2Highlight', tmrwAdvice2Highlight)
-        await AsyncStorage.setItem('@tmrwAdvice3Highlight', tmrwAdvice3Highlight)
-    }
-    useEffect(() => {
-        storeAdvice();
-    }, [tmrwAdvice1, tmrwAdvice2, tmrwAdvice3, tmrwAdvice1Highlight, tmrwAdvice2Highlight, tmrwAdvice3Highlight])
+    // async function storeAdvice() {
+    //     await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
+    //     await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
+    //     await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
+    //     await AsyncStorage.setItem('@tmrwAdvice1Highlight', tmrwAdvice1Highlight)
+    //     await AsyncStorage.setItem('@tmrwAdvice2Highlight', tmrwAdvice2Highlight)
+    //     await AsyncStorage.setItem('@tmrwAdvice3Highlight', tmrwAdvice3Highlight)
+    // }
+    // useEffect(() => {
+    //     storeAdvice();
+    // }, [tmrwAdvice1, tmrwAdvice2, tmrwAdvice3, tmrwAdvice1Highlight, tmrwAdvice2Highlight, tmrwAdvice3Highlight])
     // useEffect(() => {
     //     storeAdvice()
     // }, tmrwAdvice3)
@@ -95,12 +95,10 @@ export default function Feedback({ navigation }) {
     }
 
     // Set messages in daily recap
-    function setMessages(position, ratios) {
+    async function setMessages(position, ratios) {
         // Final Note
-        let adviceSet = [false, false, false]
         let randInt = getRandomInt(0, finalNotes.length);
         setFinalNote(finalNotes[randInt])
-
 
         // Today Screen: good or bad job
         if (position > 1 && position < 4) {
@@ -114,64 +112,79 @@ export default function Feedback({ navigation }) {
         // Tomorrow Screen: 3 pieces of advice
         console.log("ALL Ratios: " + JSON.stringify(ratios));
 
-
-        
-
         let overallAdvice = null;
         let proteinAdvice = null;
         let carbsAdvice = null;
         let fatsAdvice = null;
 
+        let adviceInfo = {more: [], less: []}
+
         // Overall amount
         if (ratios.overallScore < 0.75) {
             overallAdvice = {text: "In general, consider eating", highlight: "more"}
+            // adviceInfo.more.push("overall")
         } else if (ratios.overallScore > 1.25) {
             overallAdvice = {text: "In general, consider eating", highlight: "less"}
+            // adviceInfo.less.push("overall")
         }
-        //protein
+        // Protein
         if (ratios.proteinCalorieRatio < 0.1) {
             let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
             proteinAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "protein"}
+            adviceInfo.more.push("protein")
             changeMoreAdviceStarters.splice(randInt, randInt);
         } else if (ratios.proteinCalorieRatio > 0.35) {
             let randInt = getRandomInt(0, changeLessAdviceStarters.length)
-            setAdvice([...advice, {text: changeLessAdviceStarters[randInt], highlight: "protein"}])
+            proteinAdvice = {text: changeLessAdviceStarters[randInt], highlight: "protein"}
+            adviceInfo.less.push("protein")
             changeLessAdviceStarters.splice(randInt, randInt);
-
         }
-        //carbs
+        // Carbs
         if (ratios.carbCalorieRatio < 0.45) {
-            if (!adviceSet[1] && !adviceSet[0]) {
-                setTmrwAdvice1("Consider eating more")
-                settmrwAdvice1Highlight("carbs")
-            } else if (!adviceSet[1]) {
-                setTmrwAdvice2("Consider eating more")
-                settmrwAdvice2Highlight("carbs")
-            } else {
-                setTmrwAdvice3("Consider eating more")
-                settmrwAdvice3Highlight("carbs")
-            }
+            let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+            carbsAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "carbs"}
+            adviceInfo.more.push("carbs")
+            changeMoreAdviceStarters.splice(randInt, randInt);
 
         } else if (ratios.proteinCalorieRatio > 0.65) {
-            if (!adviceSet[1] && !adviceSet[0]) {
-                setTmrwAdvice1("Consider eating less")
-                settmrwAdvice1Highlight("carbs")
-            } else if (!adviceSet[1]) {
-                setTmrwAdvice2("Consider eating less")
-                settmrwAdvice2Highlight("carbs")
-            } else {
-                setTmrwAdvice3("Consider eating less")
-                settmrwAdvice3Highlight("carbs")
-            }
+            let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+            carbsAdvice = {text: changeLessAdviceStarters[randInt], highlight: "carbs"}
+            adviceInfo.less.push("carbs")
+            changeLessAdviceStarters.splice(randInt, randInt);
         }
-        //fats
+        // Fats
         if (ratios.fatCalorieRatio < 0.2) {
-            setTmrwAdvice3("Consider eating some more")
-            settmrwAdvice3Highlight("healthy fats")
+            let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+            fatsAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "healthy fats"}
+            adviceInfo.more.push("fats")
+            changeMoreAdviceStarters.splice(randInt, randInt);
         } else if (ratios.fatCalorieRatio > 0.35) {
-            setTmrwAdvice3("Try eating less")
-            settmrwAdvice3Highlight("fats")
+            let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+            fatsAdvice = {text: changeLessAdviceStarters[randInt], highlight: "fats"}
+            adviceInfo.less.push("fats")
+            changeLessAdviceStarters.splice(randInt, randInt);
         }
+
+        // Compile advice
+        setAdvice([overallAdvice, proteinAdvice, carbsAdvice, fatsAdvice])
+
+        // set advice message and store advice -> change to firebase!
+        console.log(adviceInfo)
+
+        console.log(auth.currentUser.displayName)
+        const adviceStarters = [`Hey, ${auth.currentUser.displayName}!`, `How's it hanging, ${auth.currentUser.displayName}?`, `Sup, ${auth.currentUser.displayName}!`]
+        
+        let randIntAdviceStarters = getRandomInt(0, adviceStarters.length)
+
+        let moreAdvice = null
+        adviceInfo.more
+
+        const adviceBlurb = adviceStarters[randIntAdviceStarters] + ` Today, don't forget to eat lots of ${JSON.stringify(adviceInfo.more)}.`
+
+
+        console.log(adviceBlurb)
+
+        await AsyncStorage.setItem("@adviceInfo", JSON.stringify(adviceInfo))
 
 
         // Guaranteed "change" advice
@@ -303,6 +316,7 @@ export default function Feedback({ navigation }) {
         let personalMetrics;
         if (snapshot.exists()) {
             personalMetrics = snapshot.val().profile;
+            console.log(personalMetrics)
         } else {
             console.log("No data available");
         }
@@ -396,9 +410,6 @@ export default function Feedback({ navigation }) {
 
 
 
-
-
-
     if (numMeals != 3) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
@@ -467,11 +478,6 @@ export default function Feedback({ navigation }) {
                     <Animated.Text key={"page2subtitle"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.bigSubtitle}>Tomorrow...</Animated.Text>
                     <Animated.View key={"page2"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
                         
-{/*                         
-                        <Text style={styles.blurbText}>{tmrwAdvice1}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice1Highlight}.</Text></Text>
-                        {tmrwAdvice2 ? <Text style={styles.blurbText}>{tmrwAdvice2}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice2Highlight}.</Text></Text> : null}
-                        {tmrwAdvice3 ? <Text style={styles.blurbText}>{tmrwAdvice3}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice3Highlight}!</Text></Text> : null} */}
-
                         {advice.map((value, index) => {
                             console.log(value)
                             return (
