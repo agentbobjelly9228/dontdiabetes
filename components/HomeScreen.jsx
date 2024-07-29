@@ -304,13 +304,13 @@ export default function HomeScreen({ route, navigation }) {
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
                 <Image source={homeguy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.25, }} />
-                <View style={{ paddingTop: screenHeight * 0.3, justifyContent: "center", width: "100%", }}>
+                <View style={{ marginTop: screenHeight * 0.3, justifyContent: "center", width: "100%", gap: 10, }}>
                     <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, paddingBottom: 30 }}>
                         {/* <Text style={styles.blurb}>Hi {name},</Text> */}
                         <Text style={styles.title}>{title}</Text>
                     </View>
 
-                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#FFE292", }}>
+                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
 
                         <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
                             <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }] }} />
@@ -320,7 +320,7 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
 
                     {/* FOOD POLAROIDS */}
-                    <View style={{ height: 175, marginBottom: 20, flexDirection: "row", marginTop: 20 }}>
+                    <View style={{ flexDirection: "row", marginTop: 40, marginBottom: 30 }}>
                         <Pressable onPress={() => meals.includes("breakfast") || navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })} style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
                                 {images && images.breakfast && images.breakfast !== "none" ?
@@ -372,7 +372,7 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
 
                     {/* STATS CONTAINER */}
-                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#FFE292", padding: 20}}>
+                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", padding: 20}}>
                         <View>
                             <WeeklyGraph datapoints={graphData} />
                         </View>
@@ -381,8 +381,8 @@ export default function HomeScreen({ route, navigation }) {
 
                     {/* #FFF8DA */}
 
-                    {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
-                    <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center", paddingTop: 30 }}>
+                    <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
+                    <View style={{ flexDirection: "row", paddingBottom: 50, gap: 15, alignSelf: "center", marginTop: 20 }}>
                         <Pressable style={styles.settingsButton} onPress={() => {
                             // deleteAppleAccount()
                             clearHistory()

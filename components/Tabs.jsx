@@ -132,7 +132,7 @@ export default function Tabs({ route, navigation }) {
     const lastMealTime = await AsyncStorage.getItem("@lastMealTime")
     const d = new Date(lastMealTime)
     console.log(now.getDate())
-    console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
+    // console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
     if (!sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()])) {
       clearData();
     }

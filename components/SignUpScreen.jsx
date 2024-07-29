@@ -64,7 +64,7 @@ export default function SignUpScreen({ navigation, route }) {
             webClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com",
             androidClientId: "9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com"
         });
-        console.log("sup")
+        // console.log("sup")
         checkPlayServices();
     }, []);
 

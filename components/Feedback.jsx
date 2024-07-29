@@ -62,6 +62,8 @@ export default function Feedback({ navigation }) {
     const [tmrwAdvice3, setTmrwAdvice3] = useState("");
     const [tmrwAdvice3Highlight, settmrwAdvice3Highlight] = useState("");
 
+    const [advice, setAdvice] = useState([])
+
     const [finalNote, setFinalNote] = useState(null);
 
     const continueAdviceStarters = ["Continue eating lots of", "Keep on having lots of"]
@@ -110,38 +112,32 @@ export default function Feedback({ navigation }) {
         }
 
         // Tomorrow Screen: 3 pieces of advice
-        console.log("ALL Ratios: " + ratios);
+        console.log("ALL Ratios: " + JSON.stringify(ratios));
 
-        //overall amount
+
+        
+
+        let overallAdvice = null;
+        let proteinAdvice = null;
+        let carbsAdvice = null;
+        let fatsAdvice = null;
+
+        // Overall amount
         if (ratios.overallScore < 0.75) {
-            setTmrwAdvice1("Consider eating")
-            settmrwAdvice1Highlight("more")
-            adviceSet[0] = true
+            overallAdvice = {text: "In general, consider eating", highlight: "more"}
         } else if (ratios.overallScore > 1.25) {
-            setTmrwAdvice1("Consider eating")
-            settmrwAdvice1Highlight("less")
-            adviceSet[0] = true
+            overallAdvice = {text: "In general, consider eating", highlight: "less"}
         }
         //protein
         if (ratios.proteinCalorieRatio < 0.1) {
-            if (!adviceSet[0]) {
-                setTmrwAdvice1("Try eating some more")
-                settmrwAdvice1Highlight("protein")
-            } else {
-                setTmrwAdvice2("Try eating some more")
-                settmrwAdvice2Highlight("protein")
-            }
-            adviceSet[1] = true
-
+            let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+            proteinAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "protein"}
+            changeMoreAdviceStarters.splice(randInt, randInt);
         } else if (ratios.proteinCalorieRatio > 0.35) {
-            if (!adviceSet[0]) {
-                setTmrwAdvice1("Try eating less")
-                settmrwAdvice1Highlight("protein")
-            } else {
-                setTmrwAdvice2("Try eating less")
-                settmrwAdvice2Highlight("protein")
-            }
-            adviceSet[1] = true
+            let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+            setAdvice([...advice, {text: changeLessAdviceStarters[randInt], highlight: "protein"}])
+            changeLessAdviceStarters.splice(randInt, randInt);
+
         }
         //carbs
         if (ratios.carbCalorieRatio < 0.45) {
@@ -266,7 +262,7 @@ export default function Feedback({ navigation }) {
             }
             // console.log(ref(database))
             console.log(allScores)
-            console.log("sup")
+            // console.log("sup")
             let parsedScores = allScores
             // let tempScore = [];
 
@@ -378,7 +374,7 @@ export default function Feedback({ navigation }) {
         // console.log("Total Error: " + totalError)
 
 
-        // // Calculate position of point on WeeklyGraph
+        // Calculate position of point on WeeklyGraph
         let totalError = Math.abs(1 - ratios.overallScore)
         // let temp = 0.8;
         // let totalError = Math.abs(1 - temp)
@@ -449,43 +445,6 @@ export default function Feedback({ navigation }) {
             </SafeAreaView>
         );
 
-    // if (page == 1)
-    //     return (
-    //         <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
-    //             <View style={styles.container}>
-    //                 <View style={styles.titleContainer}>
-    //                     <Text style={styles.title}>Daily Recap</Text>
-    //                     <View style={{ justifyContent: 'center', alignItems: "center", }}>
-    //                         <Svg height={10} width={75}>
-    //                             <Path
-    //                                 d="M1.01929 4.3045C3.45133 0.413228 5.88338 0.413228 8.31543 4.3045C10.7475 8.19578 13.1795 8.19578 15.6116 4.3045C18.0436 0.413228 20.4757 0.413228 22.9077 4.3045C25.3398 8.19578 27.7718 8.19578 30.2039 4.3045C32.6359 0.413228 35.068 0.413228 37.5 4.3045C39.932 8.19578 42.3641 8.19578 44.7961 4.3045C47.2282 0.413228 49.6602 0.413228 52.0923 4.3045C54.5243 8.19578 56.9564 8.19578 59.3884 4.3045C61.8205 0.413228 64.2525 0.413228 66.6846 4.3045C69.1166 8.19578 71.5487 8.19578 73.9807 4.3045"
-    //                                 stroke="#FFCC26"
-    //                                 strokeWidth="2"
-    //                                 fill="none"
-    //                                 style={{ justifyContent: "center" }}
-    //                             />
-    //                         </Svg>
-    //                     </View>
-    //                 </View>
-    //                 <Animated.View key={"page1"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
-    //                     <Text style={styles.blurbText}>
-    //                         <Text style={styles.blurbTextHighlighted}>Today, </Text>
-    //                         you focused on a
-    //                         <Text style={styles.blurbTextHighlighted}> balanced lunch, </Text>
-    //                         maintained
-    //                         <Text style={styles.blurbTextHighlighted}> high energy levels </Text>
-    //                         throughout the day, and ate all
-    //                         <Text style={styles.blurbTextHighlighted}> three meals </Text>
-    //                         -- keep it up!
-    //                     </Text>
-    //                 </Animated.View>
-    //                 <Pressable onPress={() => setPage(page + 1)} style={styles.nextBtn}>
-    //                     <ArrowRight size="32" color="#A29CAF" />
-    //                 </Pressable>
-    //             </View>
-    //         </SafeAreaView>
-    //     );
-
     if (page == 1)
 
         return (
@@ -507,13 +466,18 @@ export default function Feedback({ navigation }) {
                     </View>
                     <Animated.Text key={"page2subtitle"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.bigSubtitle}>Tomorrow...</Animated.Text>
                     <Animated.View key={"page2"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
-                        {/* <Text style={styles.blurbText}>Try to eat some<Text style={styles.blurbTextHighlighted}> berries!</Text></Text>
-                        <Text style={styles.blurbText}>Continue eating lots of<Text style={styles.blurbTextHighlighted}> protein!</Text></Text>
-                        <Text style={styles.blurbText}>Consider drinking a glass of<Text style={styles.blurbTextHighlighted}> milk!</Text></Text> */}
-
+                        
+{/*                         
                         <Text style={styles.blurbText}>{tmrwAdvice1}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice1Highlight}.</Text></Text>
                         {tmrwAdvice2 ? <Text style={styles.blurbText}>{tmrwAdvice2}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice2Highlight}.</Text></Text> : null}
-                        {tmrwAdvice3 ? <Text style={styles.blurbText}>{tmrwAdvice3}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice3Highlight}!</Text></Text> : null}
+                        {tmrwAdvice3 ? <Text style={styles.blurbText}>{tmrwAdvice3}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice3Highlight}!</Text></Text> : null} */}
+
+                        {advice.map((value, index) => {
+                            console.log(value)
+                            return (
+                                <Text style={styles.blurbText}>{value.text}<Text style={styles.blurbTextHighlighted}> {value.highlight}.</Text></Text>
+                            )
+                        })}
 
                     </Animated.View>
                     <Pressable onPress={() => setPage(page + 1)} style={styles.nextBtn}>
