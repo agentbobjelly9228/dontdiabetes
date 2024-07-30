@@ -192,6 +192,7 @@ export default function Feedback({ navigation }) {
                 blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}. `
             } 
         }
+
         const secondStarters = ["Also", "In addition"]
         const lessAdviceStarters = ["try to eat less"]
 
@@ -201,21 +202,19 @@ export default function Feedback({ navigation }) {
             if (adviceInfo.more.length)
                 blurb = blurb + secondStarters[randIntSecondAdvice] + ", "
 
-            
-            
-
             let randIntLessAdvice = getRandomInt(0, lessAdviceStarters.length);
 
             if (adviceInfo.less.length == 3) {
-                blurb = lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}, ${adviceInfo.less[1]}, and ${adviceInfo.less[2]}. `
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}, ${adviceInfo.less[1]}, and ${adviceInfo.less[2]}. `
             } else if (adviceInfo.less.length == 2) {
-                blurb = lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]} and ${adviceInfo.less[1]}. `
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]} and ${adviceInfo.less[1]}. `
             } else if (adviceInfo.less.length == 1) {
-                blurb = lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}. `
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}. `
             } 
 
         }
 
+        
         // Ending advice
         const endings = ["You got this!", "No sweat!", "Have a tasty meal!"]
         let randIntEndingAdvice = getRandomInt(0, endings.length);
@@ -434,14 +433,14 @@ export default function Feedback({ navigation }) {
         let totalLeeway = 0.25
         if (totalError <= totalLeeway) {
             if (ratios.overallScore >= 1) // Error above center
-                position += ((totalError / totalLeeway) * 1.5)
+                position += ((totalError / totalLeeway) * 1)
             else // Error below center
-                position -= ((totalError / totalLeeway) * 1.5)
+                position -= ((totalError / totalLeeway) * 1)
         } else {
             if (ratios.overallScore > 1.25)
-                position = 4
+                position = 4.6
             else
-                position = 1
+                position = 0.3
         }
 
         return [position, ratios]

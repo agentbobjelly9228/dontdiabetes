@@ -29,7 +29,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
 
     datapoints = datapoints.slice(-7);
     // console.log(datapoints)
-    datapoints = [{"date": "\"2024-07-30T07:00:00.000Z\"", "score": 0.3}, {"date": "\"2024-07-30T07:00:00.000Z\"", "score": 2.5}, {"date": "\"2024-07-30T07:00:00.000Z\"", "score": 4.6}]
+    // datapoints = [{"date": "\"2024-07-30T07:00:00.000Z\"", "score": 0.3}, {"date": "\"2024-07-30T07:00:00.000Z\"", "score": 1.5}, {"date": "\"2024-07-30T07:00:00.000Z\"", "score": 4.6}]
 
 
     let scores = []
@@ -86,7 +86,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                 fromZero={true}
                 withHorizontalLines={false}
                 withVerticalLines={false}
-                segments={4}
+                segments={5}
                 xLabelsOffset={0}
                 getDotProps={(dataPoint, dataPointIndex) => {
                     return {
@@ -117,7 +117,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                 fromNumber={5}
 
                 fromZero={true}
-                segments={4}
+                segments={5}
                 withHorizontalLines={false}
                 withVerticalLines={false}
                 xLabelsOffset={10}

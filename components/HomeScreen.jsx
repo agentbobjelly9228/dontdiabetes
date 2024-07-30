@@ -20,6 +20,7 @@ import { Logout } from "iconsax-react-native";
 import homeguy from "../assets/mascots/homeguy.png"
 import { MagicStar } from "iconsax-react-native";
 import SweetSFSymbol from "sweet-sfsymbols";
+import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown, SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from "react-native-reanimated";
 
 
 
@@ -278,31 +279,10 @@ export default function HomeScreen({ route, navigation }) {
 
     );
     async function getFeedback() {
-        // const advice1 = await AsyncStorage.getItem("@tmrwAdvice1")
-        // const advice2 = await AsyncStorage.getItem("@tmrwAdvice2")
-        // const advice3 = await AsyncStorage.getItem("@tmrwAdvice3")
-        // const advice1Highlight = await AsyncStorage.getItem("@tmrwAdvice1Highlight")
-        // const advice2Highlight = await AsyncStorage.getItem("@tmrwAdvice2Highlight")
-        // const advice3Highlight = await AsyncStorage.getItem("@tmrwAdvice3Highlight")
-        // var temp = "";
-        // if (advice1 && advice1Highlight) {
-        //     temp += advice1 + " " + advice1Highlight + ". "
-        // }
-        // if (advice2 && advice2Highlight) {
-        //     temp += advice2 + " " + advice2Highlight + ". "
-        // }
-        // if (advice3 && advice3Highlight) {
-        //     temp += advice3 + " " + advice3Highlight + ". "
-        // }
-        // console.log(temp + " whadup there")
-
         let adviceBlurb = await AsyncStorage.getItem("@adviceBlurb");
         adviceBlurb = adviceBlurb ? JSON.parse(adviceBlurb) : { "advice": "You don't have anything here yet." }
 
         setAdvice(adviceBlurb);
-        // console.log(advice1 + advice1Highlight)
-        // console.log(advice2 + advice2Highlight)
-        // console.log(advice3 + advice3Highlight)
     }
     useEffect(() => {
         getFeedback()
@@ -324,40 +304,42 @@ export default function HomeScreen({ route, navigation }) {
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
                 <Image source={homeguy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.25, }} />
-                <View style={{ marginTop: screenHeight * 0.3, justifyContent: "center", width: "100%", gap: 10, }}>
+                <View style={{ marginTop: screenHeight * 0.25, justifyContent: "center", width: "100%", gap: 10, }}>
                     <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, paddingBottom: 30 }}>
                         <Text style={styles.title}>{title}</Text>
                     </View>
                     <View style={{ height: 220, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
-                        <Pressable onPress={() => setShowAdvice(true)} style={{ left: "25%", position: "absolute", zIndex: 10, top: -33, backgroundColor: "#FFF8DA", height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", }}>
-                            <View style={{ backgroundColor: "#FFF8DA", height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
+                        <Pressable onPress={() => setShowAdvice(true)} style={[ {left: "20%"}, showAdvice ? styles.activeBtnContainer : styles.inactiveBtnContainer]}>
+                            <View style={{ height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
                                 <SweetSFSymbol name="sparkles" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
                             </View>
                         </Pressable>
-                        <Pressable onPress={() => setShowAdvice(false)} style={{ right: "25%", zIndex: 10, top: -34, position: "absolute", height: 32.5, overflow: "hidden", }}>
-                            <View style={{ backgroundColor: "#F4E6A7", height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
-                                <SweetSFSymbol name="sparkles" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
+                        <Pressable onPress={() => setShowAdvice(false)} style={[ {right: "20%"}, showAdvice ? styles.inactiveBtnContainer : styles.activeBtnContainer]}>
+                            <View style={{ height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
+                                <SweetSFSymbol name="chart.xyaxis.line" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
                             </View>
                         </Pressable>
 
                         {showAdvice
-                            ? <>
+                            ? <Animated.View style={{  zIndex: 11, }} entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)} key="advice">
                                 <Text style={{ ...styles.adviceText, paddingTop: 20 }}>{advice?.intro}</Text>
                                 <Text style={styles.adviceTextRegular}>{advice?.advice}</Text>
                                 <Text style={{ ...styles.adviceText, paddingBottom: 20 }}>{advice?.end}</Text>
-                            </>
-                            : <>
+                            </Animated.View>
+                            : <Animated.View style={{  zIndex: 11, }} entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)}  key="weekly">
                                 <Text style={{ ...styles.adviceText, paddingTop: 10, fontSize: 15 }}>Wow! Look at that EPIC streak!</Text>
                                 <View style={{ zIndex: 10000000 }}>
                                     <WeeklyGraph datapoints={graphData} />
                                 </View>
-                            </>
+                            </Animated.View>
                         }
 
                     </View>
 
                     {/* FOOD POLAROIDS */}
-                    <View style={{ flexDirection: "row", marginTop: 40, marginBottom: 30 }}>
+                    <View style={{width: "90%", height: 1, alignSelf: "center", backgroundColor: "lightgray", marginTop: 15, marginBottom: 10}}/>
+                    <Text style={styles.sectionTitle}>Today's Meals</Text>
+                    <View style={{ flexDirection: "row", marginTop: 30, marginBottom: 20 }}>
                         <Pressable onPress={() => meals.includes("breakfast") || navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })} style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
                                 {images && images.breakfast && images.breakfast !== "none" ?
@@ -407,16 +389,11 @@ export default function HomeScreen({ route, navigation }) {
                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
                         </Pressable>
                     </View>
-
-                    {/* STATS CONTAINER */}
-                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", padding: 20 }}>
-                        <View>
-                            <WeeklyGraph datapoints={graphData} />
-                        </View>
-                    </View>
+                    <View style={{width: "90%", height: 1, alignSelf: "center", backgroundColor: "lightgray", marginTop: 10, }}/>
 
 
-                    {/* #FFF8DA */}
+
+
 
                     <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
                     <View style={{ flexDirection: "row", paddingBottom: 50, gap: 15, alignSelf: "center", marginTop: 20 }}>
@@ -439,8 +416,38 @@ export default function HomeScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+    sectionTitle: {
+        fontFamily: "SF-Rounded",
+        fontSize: 20,
+        fontWeight: "bold",
+        // marginLeft: "5%",
+        textAlign: "center",
+        alignSelf: "center"
+    },
+    activeBtnContainer: {
+        position: "absolute", 
+        zIndex: 10, 
+        top: -33, 
+        backgroundColor: "#FFF8DA", 
+        height: 65, 
+        width: 65, 
+        borderRadius: 300, 
+        justifyContent: "center", 
+        alignItems: "center", 
+    },
+    inactiveBtnContainer: {
+        zIndex: 10, 
+        top: -34, 
+        position: 
+        "absolute", 
+        height: 32, 
+        overflow: "hidden",
+        backgroundColor: "#FFFDF3",
+        borderTopLeftRadius: 300, 
+        borderTopRightRadius: 300, 
+    },
     adviceText: {
-        fontSize: 18,
+        fontSize: 20,
         zIndex: 10,
         fontFamily: "SF-Pro-Medium",
         textAlign: "center",
@@ -452,12 +459,12 @@ const styles = StyleSheet.create({
         fontFamily: "SF-Pro",
         textAlign: "center",
         alignSelf: "center",
-        marginTop: 20,
-        marginBottom: 20
+        margin: 25,
+        
     },
     title: {
         fontFamily: "SF-Rounded",
-        fontSize: 35,
+        fontSize: 30,
         fontWeight: "bold",
         textAlign: "center",
         alignSelf: "center"
