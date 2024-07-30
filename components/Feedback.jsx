@@ -185,22 +185,41 @@ export default function Feedback({ navigation }) {
         if (adviceInfo.more.length) {
             let randIntMoreAdvice  = getRandomInt(0, moreAdviceStarters.length);
             if (adviceInfo.more.length == 3) {
-                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}, ${adviceInfo.more[1]}, and ${adviceInfo.more[2]}.`
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}, ${adviceInfo.more[1]}, and ${adviceInfo.more[2]}. `
             } else if (adviceInfo.more.length == 2) {
-                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]} and ${adviceInfo.more[1]}.`
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]} and ${adviceInfo.more[1]}. `
             } else if (adviceInfo.more.length == 1) {
-                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}.`
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}. `
             } 
         }
         const secondStarters = ["Also", "In addition"]
+        const lessAdviceStarters = ["try to eat less"]
+
         let randIntSecondAdvice = getRandomInt(0, secondStarters.length)
         if (adviceInfo.less.length) {
-            blurb = blurb + secondStarters[randIntSecondAdvice] + ", "
+            // Add in addition only when something precedes it
+            if (adviceInfo.more.length)
+                blurb = blurb + secondStarters[randIntSecondAdvice] + ", "
+
+            
+            
+
+            let randIntLessAdvice = getRandomInt(0, lessAdviceStarters.length);
+
+            if (adviceInfo.less.length == 3) {
+                blurb = lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}, ${adviceInfo.less[1]}, and ${adviceInfo.less[2]}. `
+            } else if (adviceInfo.less.length == 2) {
+                blurb = lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]} and ${adviceInfo.less[1]}. `
+            } else if (adviceInfo.less.length == 1) {
+                blurb = lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}. `
+            } 
+
         }
 
         // Ending advice
         const endings = ["You got this!", "No sweat!", "Have a tasty meal!"]
-        let randIntEndingAdvice = getRandomInt(0, endings.length)
+        let randIntEndingAdvice = getRandomInt(0, endings.length);
+
 
 
         console.log(blurb)
@@ -501,7 +520,7 @@ export default function Feedback({ navigation }) {
                         {advice.map((value, index) => {
                             if (value)
                             return (
-                                <Text style={styles.blurbText}>{value?.text}<Text style={styles.blurbTextHighlighted}> {value?.highlight}.</Text></Text>
+                                <Text key={index} style={styles.blurbText}>{value?.text}<Text style={styles.blurbTextHighlighted}> {value?.highlight}.</Text></Text>
                             )
                         })}
 

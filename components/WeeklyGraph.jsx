@@ -29,6 +29,8 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
 
     datapoints = datapoints.slice(-7);
     // console.log(datapoints)
+    datapoints = [{"date": "\"2024-07-30T07:00:00.000Z\"", "score": 0.3}, {"date": "\"2024-07-30T07:00:00.000Z\"", "score": 2.5}, {"date": "\"2024-07-30T07:00:00.000Z\"", "score": 4.6}]
+
 
     let scores = []
     let dayNums = []
@@ -56,10 +58,10 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
     };
 
     return (
-        <View style={{ height: 200, zIndex: 1000000 }}>
-            <View style={{ gap: 5, top: 0, position: "absolute", width: screenWidth * 0.85, alignSelf: "center", paddingBottom: 0 }}>
+        <View style={{  zIndex: 1000000 }}>
+            <View style={{ gap: 10, top: 18, position: "absolute", width: screenWidth * 0.85, alignSelf: "center", paddingBottom: 0 }}>
                 <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", padding: 0 }} />
-                <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 15, alignItems: "center", justifyContent: "center", margin: 0 }}>
+                <View style={{ backgroundColor: "#FFCC26", height: 65, borderRadius: 15, alignItems: "center", justifyContent: "center", margin: 0 }}>
                     {datapoints.length === 0 ? <Text style={{ fontSize: 18, width: "70%", textAlign: "center" }}>Scan your first few meals to receive insights tonight.</Text> : null}
                 </View>
                 <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", }} />
@@ -76,23 +78,23 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                     ],
                 }}
                 width={screenWidth}
-                height={200}
+                height={160}
                 chartConfig={chartConfig}
                 withHorizontalLabels={false}
                 withShadow={false}
-                fromNumber={4}
+                fromNumber={5}
                 fromZero={true}
                 withHorizontalLines={false}
                 withVerticalLines={false}
                 segments={4}
-                xLabelsOffset={-25}
+                xLabelsOffset={0}
                 getDotProps={(dataPoint, dataPointIndex) => {
                     return {
                         r: "13",
                     }
                 }}
 
-                style={{ position: "absolute", left: -10 }}
+                style={{ position: "absolute", left: -10, }}
 
 
             />
@@ -108,17 +110,17 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                     ],
                 }}
                 width={screenWidth}
-                height={200}
+                height={160}
                 chartConfig={chartConfig}
                 withHorizontalLabels={false}
                 withShadow={false}
-                fromNumber={4}
+                fromNumber={5}
 
                 fromZero={true}
                 segments={4}
                 withHorizontalLines={false}
                 withVerticalLines={false}
-                xLabelsOffset={-15}
+                xLabelsOffset={10}
 
                 getDotProps={(dataPoint, dataPointIndex) => {
                     // if (dataPointIndex == 6) {

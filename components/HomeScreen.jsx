@@ -31,9 +31,22 @@ function createNoSettingsAlert() {
         { text: 'OK' },
     ])
 }
-
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
+
+const fetchAllItems = async () => {
+    try {
+        const keys = await AsyncStorage.getAllKeys()
+        const items = await AsyncStorage.multiGet(keys)
+
+        console.log(keys)
+        console.log(items)
+        return items
+
+    } catch (error) {
+        console.log(error, "problemo")
+    }
+}
 
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
@@ -293,7 +306,8 @@ export default function HomeScreen({ route, navigation }) {
     }
     useEffect(() => {
         getFeedback()
-    })
+        // fetchAllItems()
+    }, [])
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -304,27 +318,42 @@ export default function HomeScreen({ route, navigation }) {
         "SpaceGrotesk-Bold": require("../assets/fonts/SpaceGrotesk-Bold.ttf"),
     });
 
+    const [showAdvice, setShowAdvice] = useState(true)
+
     if (!loading && name)
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
                 <Image source={homeguy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.25, }} />
                 <View style={{ marginTop: screenHeight * 0.3, justifyContent: "center", width: "100%", gap: 10, }}>
                     <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, paddingBottom: 30 }}>
-                        {/* <Text style={styles.blurb}>Hi {name},</Text> */}
                         <Text style={styles.title}>{title}</Text>
                     </View>
+                    <View style={{ height: 220, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
+                        <Pressable onPress={() => setShowAdvice(true)} style={{ left: "25%", position: "absolute", zIndex: 10, top: -33, backgroundColor: "#FFF8DA", height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", }}>
+                            <View style={{ backgroundColor: "#FFF8DA", height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
+                                <SweetSFSymbol name="sparkles" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
+                            </View>
+                        </Pressable>
+                        <Pressable onPress={() => setShowAdvice(false)} style={{ right: "25%", zIndex: 10, top: -34, position: "absolute", height: 32.5, overflow: "hidden", }}>
+                            <View style={{ backgroundColor: "#F4E6A7", height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
+                                <SweetSFSymbol name="sparkles" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
+                            </View>
+                        </Pressable>
 
+                        {showAdvice
+                            ? <>
+                                <Text style={{ ...styles.adviceText, paddingTop: 20 }}>{advice?.intro}</Text>
+                                <Text style={styles.adviceTextRegular}>{advice?.advice}</Text>
+                                <Text style={{ ...styles.adviceText, paddingBottom: 20 }}>{advice?.end}</Text>
+                            </>
+                            : <>
+                                <Text style={{ ...styles.adviceText, paddingTop: 10, fontSize: 15 }}>Wow! Look at that EPIC streak!</Text>
+                                <View style={{ zIndex: 10000000 }}>
+                                    <WeeklyGraph datapoints={graphData} />
+                                </View>
+                            </>
+                        }
 
-                    <View style={{ height: 200, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
-                        <View style={{ position: "absolute", zIndex: 10, top: -30, backgroundColor: "#FFF8DA", height: 60, width: 60, borderRadius: 35, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
-                            <SweetSFSymbol name="sparkles" size={24} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], }} />
-                        </View>
-                        <Text style={{...styles.adviceText, paddingTop: 20}}>{advice?.intro}</Text>
-                        <Text style={styles.adviceTextRegular}>{advice?.advice}</Text>
-                        <Text style={{...styles.adviceText, paddingBottom: 20}}>{advice?.end}</Text>
-                        {/* <View style={{zIndex: 10000000, paddingTop: 20, }}>
-                            <WeeklyGraph datapoints={graphData} />
-                        </View> */}
                     </View>
 
                     {/* FOOD POLAROIDS */}
