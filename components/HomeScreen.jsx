@@ -265,24 +265,28 @@ export default function HomeScreen({ route, navigation }) {
 
     );
     async function getFeedback() {
-        const advice1 = await AsyncStorage.getItem("@tmrwAdvice1")
-        const advice2 = await AsyncStorage.getItem("@tmrwAdvice2")
-        const advice3 = await AsyncStorage.getItem("@tmrwAdvice3")
-        const advice1Highlight = await AsyncStorage.getItem("@tmrwAdvice1Highlight")
-        const advice2Highlight = await AsyncStorage.getItem("@tmrwAdvice2Highlight")
-        const advice3Highlight = await AsyncStorage.getItem("@tmrwAdvice3Highlight")
-        var temp = "";
-        if (advice1 && advice1Highlight) {
-            temp += advice1 + " " + advice1Highlight + ". "
-        }
-        if (advice2 && advice2Highlight) {
-            temp += advice2 + " " + advice2Highlight + ". "
-        }
-        if (advice3 && advice3Highlight) {
-            temp += advice3 + " " + advice3Highlight + ". "
-        }
+        // const advice1 = await AsyncStorage.getItem("@tmrwAdvice1")
+        // const advice2 = await AsyncStorage.getItem("@tmrwAdvice2")
+        // const advice3 = await AsyncStorage.getItem("@tmrwAdvice3")
+        // const advice1Highlight = await AsyncStorage.getItem("@tmrwAdvice1Highlight")
+        // const advice2Highlight = await AsyncStorage.getItem("@tmrwAdvice2Highlight")
+        // const advice3Highlight = await AsyncStorage.getItem("@tmrwAdvice3Highlight")
+        // var temp = "";
+        // if (advice1 && advice1Highlight) {
+        //     temp += advice1 + " " + advice1Highlight + ". "
+        // }
+        // if (advice2 && advice2Highlight) {
+        //     temp += advice2 + " " + advice2Highlight + ". "
+        // }
+        // if (advice3 && advice3Highlight) {
+        //     temp += advice3 + " " + advice3Highlight + ". "
+        // }
         // console.log(temp + " whadup there")
-        setAdvice(temp);
+
+        let adviceBlurb = await AsyncStorage.getItem("@adviceBlurb");
+        adviceBlurb = adviceBlurb ? JSON.parse(adviceBlurb) : { "advice": "You don't have anything here yet." }
+
+        setAdvice(adviceBlurb);
         // console.log(advice1 + advice1Highlight)
         // console.log(advice2 + advice2Highlight)
         // console.log(advice3 + advice3Highlight)
@@ -310,13 +314,17 @@ export default function HomeScreen({ route, navigation }) {
                         <Text style={styles.title}>{title}</Text>
                     </View>
 
-                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
 
-                        <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
-                            <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }] }} />
+                    <View style={{ height: 200, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
+                        <View style={{ position: "absolute", zIndex: 10, top: -30, backgroundColor: "#FFF8DA", height: 60, width: 60, borderRadius: 35, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
+                            <SweetSFSymbol name="sparkles" size={24} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], }} />
                         </View>
-
-                        <Text style={styles.adviceText}>{advice}</Text>
+                        <Text style={{...styles.adviceText, paddingTop: 20}}>{advice?.intro}</Text>
+                        <Text style={styles.adviceTextRegular}>{advice?.advice}</Text>
+                        <Text style={{...styles.adviceText, paddingBottom: 20}}>{advice?.end}</Text>
+                        {/* <View style={{zIndex: 10000000, paddingTop: 20, }}>
+                            <WeeklyGraph datapoints={graphData} />
+                        </View> */}
                     </View>
 
                     {/* FOOD POLAROIDS */}
@@ -372,7 +380,7 @@ export default function HomeScreen({ route, navigation }) {
                     </View>
 
                     {/* STATS CONTAINER */}
-                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", padding: 20}}>
+                    <View style={{ alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", padding: 20 }}>
                         <View>
                             <WeeklyGraph datapoints={graphData} />
                         </View>
@@ -408,8 +416,14 @@ const styles = StyleSheet.create({
         fontFamily: "SF-Pro-Medium",
         textAlign: "center",
         alignSelf: "center",
-        margin: 10,
-        marginTop: 30,
+    },
+    adviceTextRegular: {
+        fontSize: 18,
+        zIndex: 10,
+        fontFamily: "SF-Pro",
+        textAlign: "center",
+        alignSelf: "center",
+        marginTop: 20,
         marginBottom: 20
     },
     title: {

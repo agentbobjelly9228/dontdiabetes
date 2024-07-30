@@ -56,7 +56,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
     };
 
     return (
-        <View style={{ height: 200 }}>
+        <View style={{ height: 200, zIndex: 1000000 }}>
             <View style={{ gap: 5, top: 0, position: "absolute", width: screenWidth * 0.85, alignSelf: "center", paddingBottom: 0 }}>
                 <View style={{ backgroundColor: "#FFEFBC", height: 15, borderRadius: 15, alignItems: "center", padding: 0 }} />
                 <View style={{ backgroundColor: "#FFCC26", height: 100, borderRadius: 15, alignItems: "center", justifyContent: "center", margin: 0 }}>
@@ -85,7 +85,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                 withHorizontalLines={false}
                 withVerticalLines={false}
                 segments={4}
-                xLabelsOffset={-10}
+                xLabelsOffset={-25}
                 getDotProps={(dataPoint, dataPointIndex) => {
                     return {
                         r: "13",
@@ -118,7 +118,7 @@ export default function WeeklyGraph({ navigation, datapoints, yellow = false }) 
                 segments={4}
                 withHorizontalLines={false}
                 withVerticalLines={false}
-                xLabelsOffset={0}
+                xLabelsOffset={-15}
 
                 getDotProps={(dataPoint, dataPointIndex) => {
                     // if (dataPointIndex == 6) {

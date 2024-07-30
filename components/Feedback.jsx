@@ -156,7 +156,7 @@ export default function Feedback({ navigation }) {
         if (ratios.fatCalorieRatio < 0.2) {
             let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
             fatsAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "healthy fats"}
-            adviceInfo.more.push("fats")
+            adviceInfo.more.push("healthy fats")
             changeMoreAdviceStarters.splice(randInt, randInt);
         } else if (ratios.fatCalorieRatio > 0.35) {
             let randInt = getRandomInt(0, changeLessAdviceStarters.length)
@@ -169,22 +169,42 @@ export default function Feedback({ navigation }) {
         setAdvice([overallAdvice, proteinAdvice, carbsAdvice, fatsAdvice])
 
         // set advice message and store advice -> change to firebase!
-        console.log(adviceInfo)
-
-        console.log(auth.currentUser.displayName)
-        const adviceStarters = [`Hey, ${auth.currentUser.displayName}!`, `How's it hanging, ${auth.currentUser.displayName}?`, `Sup, ${auth.currentUser.displayName}!`]
-        
-        let randIntAdviceStarters = getRandomInt(0, adviceStarters.length)
-
-        let moreAdvice = null
-        adviceInfo.more
-
-        const adviceBlurb = adviceStarters[randIntAdviceStarters] + ` Today, don't forget to eat lots of ${JSON.stringify(adviceInfo.more)}.`
+        console.log(advice)
+        console.log("advice")
 
 
-        console.log(adviceBlurb)
+        // Introduction
+        const adviceStarters = [`Hey, ${auth.currentUser.displayName}!`, `How's it hanging, ${auth.currentUser.displayName}?`, `Sup, ${auth.currentUser.displayName}!`, `Don't forget, ${auth.currentUser.displayName}!`]        
+        let randIntAdvice = getRandomInt(0, adviceStarters.length)
+        // blurb = blurb + adviceStarters[randIntAdvice]
 
-        await AsyncStorage.setItem("@adviceInfo", JSON.stringify(adviceInfo))
+
+        // Advice
+        let blurb = ""
+        const moreAdviceStarters = ["Today, eat lots of"]        
+        if (adviceInfo.more.length) {
+            let randIntMoreAdvice  = getRandomInt(0, moreAdviceStarters.length);
+            if (adviceInfo.more.length == 3) {
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}, ${adviceInfo.more[1]}, and ${adviceInfo.more[2]}.`
+            } else if (adviceInfo.more.length == 2) {
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]} and ${adviceInfo.more[1]}.`
+            } else if (adviceInfo.more.length == 1) {
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}.`
+            } 
+        }
+        const secondStarters = ["Also", "In addition"]
+        let randIntSecondAdvice = getRandomInt(0, secondStarters.length)
+        if (adviceInfo.less.length) {
+            blurb = blurb + secondStarters[randIntSecondAdvice] + ", "
+        }
+
+        // Ending advice
+        const endings = ["You got this!", "No sweat!", "Have a tasty meal!"]
+        let randIntEndingAdvice = getRandomInt(0, endings.length)
+
+
+        console.log(blurb)
+        await AsyncStorage.setItem("@adviceBlurb", JSON.stringify({intro: adviceStarters[randIntAdvice], advice: blurb, end: endings[randIntEndingAdvice]}))
 
 
         // Guaranteed "change" advice
@@ -479,9 +499,9 @@ export default function Feedback({ navigation }) {
                     <Animated.View key={"page2"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
                         
                         {advice.map((value, index) => {
-                            console.log(value)
+                            if (value)
                             return (
-                                <Text style={styles.blurbText}>{value.text}<Text style={styles.blurbTextHighlighted}> {value.highlight}.</Text></Text>
+                                <Text style={styles.blurbText}>{value?.text}<Text style={styles.blurbTextHighlighted}> {value?.highlight}.</Text></Text>
                             )
                         })}
 
