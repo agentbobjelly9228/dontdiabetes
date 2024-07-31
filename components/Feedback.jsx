@@ -205,11 +205,11 @@ export default function Feedback({ navigation }) {
             let randIntLessAdvice = getRandomInt(0, lessAdviceStarters.length);
 
             if (adviceInfo.less.length == 3) {
-                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}, ${adviceInfo.less[1]}, and ${adviceInfo.less[2]}. `
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}, ${adviceInfo.less[1]}, and ${adviceInfo.less[2]}.`
             } else if (adviceInfo.less.length == 2) {
-                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]} and ${adviceInfo.less[1]}. `
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]} and ${adviceInfo.less[1]}.`
             } else if (adviceInfo.less.length == 1) {
-                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}. `
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}.`
             } 
 
         }
