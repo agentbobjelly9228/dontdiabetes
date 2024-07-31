@@ -433,14 +433,14 @@ export default function Feedback({ navigation }) {
         let totalLeeway = 0.25
         if (totalError <= totalLeeway) {
             if (ratios.overallScore >= 1) // Error above center
-                position += ((totalError / totalLeeway) * 1)
+                position += ((totalError / totalLeeway) * 1.5)
             else // Error below center
-                position -= ((totalError / totalLeeway) * 1)
+                position -= ((totalError / totalLeeway) * 1.5)
         } else {
             if (ratios.overallScore > 1.25)
-                position = 4.6
+                position = 5
             else
-                position = 0.3
+                position = 0
         }
 
         return [position, ratios]
