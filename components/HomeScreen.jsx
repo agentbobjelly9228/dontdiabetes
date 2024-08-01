@@ -20,7 +20,7 @@ import { Logout } from "iconsax-react-native";
 import homeguy from "../assets/mascots/homeguy.png"
 import { MagicStar } from "iconsax-react-native";
 import SweetSFSymbol from "sweet-sfsymbols";
-import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown, SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from "react-native-reanimated";
+import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown, SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 
 const dayjs = require('dayjs')
@@ -39,7 +39,6 @@ export default function HomeScreen({ route, navigation }) {
     // console.log(route.params.updateCameraBtn)
 
     const auth = FIREBASE_AUTH;
-    // auth.signOut()
     const database = FIREBASE_DATABASE;
     const [loading, setLoading] = useState(true);
     const [emojis, setEmojis] = useState([]);
@@ -56,10 +55,10 @@ export default function HomeScreen({ route, navigation }) {
     const [name, setName] = useState(null)
     const [meals, setMeals] = useState([])
 
+    const [selectedPolaroid, setSelectedPolaroid] = useState(null)
+
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
-    // auth.signOut()
-    // AsyncStorage.clear()
 
     const deleteAppleAccount = async () => {
         AsyncStorage.clear()
@@ -169,11 +168,10 @@ export default function HomeScreen({ route, navigation }) {
         }
     }
 
-    // clearData()
-    // TODO: Add reset on new day
     function clearData() {
         AsyncStorage.removeItem("@todayMacros")
     }
+
     function sameDay(day1, day2) {
         // console.log(day1)
         // console.log(day2)
@@ -182,6 +180,7 @@ export default function HomeScreen({ route, navigation }) {
         }
         return false
     }
+
     async function checkClear() {
         const now = new Date();
         // console.log(now)
@@ -193,14 +192,6 @@ export default function HomeScreen({ route, navigation }) {
             clearData();
         }
     }
-    // console.log(emojis)
-    // useEffect(() => {
-    //     // clearData()
-    //     checkClear().then(() => {
-    //         getAsyncData()
-    //     })
-
-    // }, [])
 
     const getAsyncData = async () => {
         let savedData = await AsyncStorage.getItem('@todayMacros');
@@ -262,6 +253,7 @@ export default function HomeScreen({ route, navigation }) {
 
 
     );
+
     async function getFeedback() {
         let userRef = ref(database, auth.currentUser.uid);
         onValue(userRef, (snapshot) => {
@@ -299,6 +291,67 @@ export default function HomeScreen({ route, navigation }) {
 
     const [showDaily, setShowDaily] = useState(true)
 
+
+
+    // Polaroid animations
+
+    const translateY0 = useSharedValue(0);
+    const zIndex0 = useSharedValue(0)
+
+    const translateY1 = useSharedValue(0)
+    const zIndex1 = useSharedValue(0)
+
+    const translateY2 = useSharedValue(0)
+    const zIndex2 = useSharedValue(0)
+
+
+    // I KNOW THIS IS BAD I"LL FIX IT LATER
+    function selectPolaroid(num) {
+        if (selectedPolaroid == num) {
+            setSelectedPolaroid(null)
+            if (num == 0) {
+                translateY0.value = withSpring(0);
+                zIndex0.value = 0
+            } else if (num == 1) {
+                translateY1.value = withSpring(0);
+                zIndex1.value = 0
+            } else {
+                translateY2.value = withSpring(0);
+                zIndex2.value = 0
+            }
+        }
+        else {
+            setSelectedPolaroid(num)
+
+            if (num == 0) {
+                translateY0.value = withSpring(15);
+                translateY1.value = withSpring(0);
+                translateY2.value = withSpring(0)
+
+                zIndex0.value = 100
+                zIndex1.value = 0
+                zIndex2.value = 0
+
+            } else if (num == 1) {
+                translateY1.value = withSpring(15);
+                translateY0.value = withSpring(0);
+                translateY2.value = withSpring(0)
+                
+                zIndex1.value = 100
+                zIndex0.value = 0
+                zIndex2.value = 0
+            } else {
+                translateY2.value = withSpring(15);
+                translateY0.value = withSpring(0);
+                translateY1.value = withSpring(0)
+
+                zIndex2.value = 100
+                zIndex1.value = 0
+                zIndex0.value = 0
+            }
+        }
+    }
+
     if (!loading && name)
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
@@ -332,8 +385,8 @@ export default function HomeScreen({ route, navigation }) {
 
                                 {/* FOOD POLAROIDS */}
                                 <View style={{ flexDirection: "row", marginTop: 35, }}>
-                                    <View style={{ shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, transform: [{ rotate: '-10deg' }], zIndex: 2 }}>
-                                        <Pressable onPress={() => meals.includes("breakfast") || navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })}
+                                    <Animated.View style={{ shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, transform: [{ rotate: '-10deg' }, { translateY: translateY0 }], zIndex: zIndex0 }}>
+                                        <Pressable onPress={() => meals.includes("breakfast") ? selectPolaroid(0) : navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })}
                                             style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", backgroundColor: "#FFFEF8", }}>
 
                                             <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center", }}>
@@ -350,14 +403,66 @@ export default function HomeScreen({ route, navigation }) {
                                                 }
                                             </View>
                                             <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", textAlign: "center", fontSize: 12, marginLeft: 5, marginRight: 5 }} numberOfLines={2}>{foods[0] ? foods[0] : "Breakfast"}</Text>
-
-                                            {/*  shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, */}
                                         </Pressable>
-                                        <Pressable onPress={() => console.log("E")} style={{ alignSelf: "center", width: 40, height: 35, backgroundColor: "white", justifyContent: "center", alignItems: "center", borderBottomRightRadius: 5, borderBottomLeftRadius: 5}}>
-                                            <SweetSFSymbol name="pencil" size={25} />
-                                        </Pressable>
-                                    </View>
+                                        {selectedPolaroid == 0 &&
+                                            <Pressable onPress={() => console.log()} style={{ alignSelf: "center", width: 50, height: 35, backgroundColor: "white", justifyContent: "center", alignItems: "center", borderBottomRightRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                <SweetSFSymbol name="xmark.circle" size={20} colors={["#FF6231"]} />
+                                            </Pressable>
+                                        }
+                                    </Animated.View>
 
+                                    <Animated.View style={{ margin: -20, shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, transform: [{ translateY: translateY1 }], zIndex: zIndex1 }}>
+                                        <Pressable onPress={() => meals.includes("lunch") ? selectPolaroid(1) : navigation.navigate('Camera', { mealKey: "lunch", alertBadPhoto: false })}
+                                            style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", backgroundColor: "#FFFEF8", }}>
+
+                                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center", }}>
+                                                {images && images.lunch && images.lunch !== "none" ?
+                                                    <Image
+                                                        source={{ uri: images.lunch }}
+                                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
+                                                    />
+
+                                                    : emojis && emojis.lunch ?
+                                                        <Text style={{ fontSize: 70 }}>{emojis.lunch}</Text>
+                                                        :
+                                                        <SweetSFSymbol name="plus" size={50} colors={["#b0b0b0"]} />
+                                                }
+                                            </View>
+                                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", textAlign: "center", fontSize: 12, marginLeft: 5, marginRight: 5 }} numberOfLines={2}>{foods[1] ? foods[1] : "Lunch"}</Text>
+                                        </Pressable>
+                                        {selectedPolaroid == 1 &&
+                                            <Pressable onPress={() => console.log("E")} style={{ alignSelf: "center", width: 50, height: 35, backgroundColor: "white", justifyContent: "center", alignItems: "center", borderBottomRightRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                <SweetSFSymbol name="xmark.circle" size={20} colors={["#FF6231"]} />
+                                            </Pressable>
+                                        }
+                                    </Animated.View>
+
+                                    <Animated.View style={{ shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, transform: [{ rotate: '10deg' }, { translateY: translateY2 }], zIndex: zIndex2 }}>
+                                        <Pressable onPress={() => meals.includes("dinner") ? selectPolaroid(2) : navigation.navigate('Camera', { mealKey: "dinner", alertBadPhoto: false })}
+                                            style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", backgroundColor: "#FFFEF8", }}>
+
+                                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center", }}>
+                                                {images && images.dinner && images.dinner !== "none" ?
+                                                    <Image
+                                                        source={{ uri: images.dinner }}
+                                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
+                                                    />
+
+                                                    : emojis && emojis.dinner ?
+                                                        <Text style={{ fontSize: 70 }}>{emojis.dinner}</Text>
+                                                        :
+                                                        <SweetSFSymbol name="plus" size={50} colors={["#b0b0b0"]} />
+                                                }
+                                            </View>
+                                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", textAlign: "center", fontSize: 12, marginLeft: 5, marginRight: 5 }} numberOfLines={2}>{foods[2] ? foods[2] : "Dinner"}</Text>
+                                        </Pressable>
+                                        {selectedPolaroid == 2 &&
+                                            <Pressable onPress={() => console.log("E")} style={{ alignSelf: "center", width: 50, height: 35, backgroundColor: "white", justifyContent: "center", alignItems: "center", borderBottomRightRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                <SweetSFSymbol name="xmark.circle" size={20} colors={["#FF6231"]} />
+                                            </Pressable>
+                                        }
+                                    </Animated.View>
+                                    {/* 
                                     <Pressable onPress={() => meals.includes("lunch") || navigation.navigate('Camera', { mealKey: "lunch", alertBadPhoto: false })} style={{ margin: -20, width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 0, zIndex: 1, }}>
                                         <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
                                             {images && images.lunch && images.lunch != "none" ?
@@ -389,7 +494,7 @@ export default function HomeScreen({ route, navigation }) {
                                             }
                                         </View>
                                         <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", textAlign: "center", fontSize: 12, marginLeft: 5, marginRight: 5 }} numberOfLines={2}>{foods[2] ? foods[2] : "Dinner"}</Text>
-                                    </Pressable>
+                                    </Pressable> */}
                                 </View>
                             </Animated.View>
                             :
