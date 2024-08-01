@@ -150,9 +150,10 @@ export default function Tabs({ route, navigation }) {
     let macros = await AsyncStorage.getItem('@todayMacros');
     macros = JSON.parse(macros)
     let asyncMeals = macros ? Object.keys(macros?.foods) : []
-    console.log(asyncMeals)
+    // console.log(asyncMeals)
     setMealsEaten(asyncMeals)
   }
+  
   useFocusEffect(
     useCallback(() => {
 

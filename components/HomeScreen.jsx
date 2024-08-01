@@ -11,7 +11,6 @@ import yellowGuy from '../assets/mascots/yellowGuy.png';
 import redGuy from '../assets/mascots/redGuy.png';
 import anotherGuy from "../assets/anotherguy.png"
 import { FIREBASE_AUTH } from '../FirebaseConfig';
-import Tabs from "./Tabs";
 
 import ProgressBar from "./ProgressBar";
 import WeeklyGraph from "./WeeklyGraph";
@@ -162,7 +161,7 @@ export default function HomeScreen({ route, navigation }) {
             setTheme("#F1CF48");
             setCurrentMeal(1);
         } else {
-            setTitle("BREAKFAST TIME!!!!");
+            setTitle("Breakfast Time!");
             setSubtitle("Kick today off with a great start by enjoying your meal.");
             setMascot(greenGuy);
             setTheme("#A8C84C");
@@ -264,24 +263,16 @@ export default function HomeScreen({ route, navigation }) {
 
     );
     async function getFeedback() {
-        // let adviceBlurb = await AsyncStorage.getItem("@adviceBlurb");
-        // let snapshot = await get(ref(database, auth.currentUser.uid))
-        // if (snapshot.exists() && snapshot.val().currentAdvice) {
-        //     setAdvice(snapshot.val().currentAdvice);
-        // } else {
-        //     setAdvice("Welcome to Nutrivision! Get started by scanning your first meal.")
-        // }
-
-        // if (snapshot.exists() && snapshot.val().weeklyReviewComment) {
-        //     setWeeklyReviewComment(snapshot.val().weeklyReviewComment);
-        // } else {
-        //     setWeeklyReviewComment("Welcome to Nutrivision! Get started by scanning your first meal.")
-        // }
-
         let userRef = ref(database, auth.currentUser.uid);
         onValue(userRef, (snapshot) => {
             const data = snapshot.val();
-            setAdvice(data?.currentAdvice);
+            if (meals.length === 3) {
+                setAdvice("Whoop whoop - you've done it! Enjoy the rest of your day.");
+            } else if (meals.includes("dinner")) {
+                setAdvice("And that's it! But it looks like you haven't logged everything yet. What'd you eat? We're curious!")
+            } else
+                setAdvice(data?.currentAdvice);
+
             setWeeklyReviewComment(data?.weeklyReviewComment);
 
             if (!data?.currentAdvice)
@@ -294,7 +285,7 @@ export default function HomeScreen({ route, navigation }) {
 
     useEffect(() => {
         getFeedback()
-    }, [])
+    }, [meals])
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
@@ -333,7 +324,7 @@ export default function HomeScreen({ route, navigation }) {
                         </Pressable>
                         {showDaily
                             ?
-                            <Animated.View entering={FadeInDown.duration(200).delay(200).withInitialValues({ transform: [{ translateY: 20 }] })} exiting={FadeOutDown.duration(200).withInitialValues({ transform: [{ translateY: 0 }] })} key="daily" style={{ backgroundColor: "#FFF8DA", alignItems: "center", width: "100%", alignSelf: "center", }}>
+                            <Animated.View entering={FadeInDown.duration(200).delay(200).withInitialValues({ transform: [{ translateY: 20 }] })} exiting={FadeOutDown.duration(200).withInitialValues({ transform: [{ translateY: 0 }] })} key="daily" style={{ alignItems: "center", width: "100%", alignSelf: "center", }}>
                                 <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center", marginTop: 5 }}>
                                     <Text style={styles.sectionTitle}>Today</Text>
                                 </View>
@@ -341,23 +332,33 @@ export default function HomeScreen({ route, navigation }) {
 
                                 {/* FOOD POLAROIDS */}
                                 <View style={{ flexDirection: "row", marginTop: 35, }}>
-                                    <Pressable onPress={() => meals.includes("breakfast") || navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })} style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
-                                        <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
-                                            {images && images.breakfast && images.breakfast !== "none" ?
-                                                <Image
-                                                    source={{ uri: images.breakfast }}
-                                                    style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
-                                                />
+                                    <View style={{ shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, transform: [{ rotate: '-10deg' }], zIndex: 2 }}>
+                                        <Pressable onPress={() => meals.includes("breakfast") || navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })}
+                                            style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", backgroundColor: "#FFFEF8", }}>
 
-                                                : emojis && emojis.breakfast ?
-                                                    <Text style={{ fontSize: 62 }}>{emojis.breakfast}</Text>
-                                                    :
-                                                    <SweetSFSymbol name="plus" size={62} colors={["#b0b0b0"]} />
-                                            }
-                                        </View>
-                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
-                                    </Pressable>
-                                    <Pressable onPress={() => meals.includes("lunch") || navigation.navigate('Camera', { mealKey: "lunch", alertBadPhoto: false })} style={{ margin: -20, width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 0 }}>
+                                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center", }}>
+                                                {images && images.breakfast && images.breakfast !== "none" ?
+                                                    <Image
+                                                        source={{ uri: images.breakfast }}
+                                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
+                                                    />
+
+                                                    : emojis && emojis.breakfast ?
+                                                        <Text style={{ fontSize: 70 }}>{emojis.breakfast}</Text>
+                                                        :
+                                                        <SweetSFSymbol name="plus" size={50} colors={["#b0b0b0"]} />
+                                                }
+                                            </View>
+                                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", textAlign: "center", fontSize: 12, marginLeft: 5, marginRight: 5 }} numberOfLines={2}>{foods[0] ? foods[0] : "Breakfast"}</Text>
+
+                                            {/*  shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, */}
+                                        </Pressable>
+                                        <Pressable onPress={() => console.log("E")} style={{ alignSelf: "center", width: 40, height: 35, backgroundColor: "white", justifyContent: "center", alignItems: "center", borderBottomRightRadius: 5, borderBottomLeftRadius: 5}}>
+                                            <SweetSFSymbol name="pencil" size={25} />
+                                        </Pressable>
+                                    </View>
+
+                                    <Pressable onPress={() => meals.includes("lunch") || navigation.navigate('Camera', { mealKey: "lunch", alertBadPhoto: false })} style={{ margin: -20, width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 0, zIndex: 1, }}>
                                         <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
                                             {images && images.lunch && images.lunch != "none" ?
                                                 <Image
@@ -366,13 +367,13 @@ export default function HomeScreen({ route, navigation }) {
                                                 />
                                                 :
                                                 emojis && emojis.lunch ?
-                                                    <Text style={{ fontSize: 62 }}>{emojis.lunch}</Text>
+                                                    <Text style={{ fontSize: 70 }}>{emojis.lunch}</Text>
                                                     :
-                                                    <SweetSFSymbol name="plus" size={62} colors={["#b0b0b0"]} />
+                                                    <SweetSFSymbol name="plus" size={50} colors={["#b0b0b0"]} />
                                             }
                                         </View>
 
-                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[1] ? foods[1] : "Lunch"}</Text>
+                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", textAlign: "center", fontSize: 12, marginLeft: 5, marginRight: 5 }} numberOfLines={2}>{foods[1] ? foods[1] : "Lunch"}</Text>
                                     </Pressable>
                                     <Pressable onPress={() => meals.includes("dinner") || navigation.navigate('Camera', { mealKey: "dinner", alertBadPhoto: false })} style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
                                         <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
@@ -382,12 +383,12 @@ export default function HomeScreen({ route, navigation }) {
                                                     style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
                                                 />
                                                 : emojis && emojis.dinner ?
-                                                    <Text style={{ fontSize: 62 }}>{emojis.dinner}</Text>
+                                                    <Text style={{ fontSize: 70 }}>{emojis.dinner}</Text>
                                                     :
-                                                    <SweetSFSymbol name="plus" size={62} colors={["#b0b0b0"]} />
+                                                    <SweetSFSymbol name="plus" size={50} colors={["#b0b0b0"]} />
                                             }
                                         </View>
-                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
+                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", textAlign: "center", fontSize: 12, marginLeft: 5, marginRight: 5 }} numberOfLines={2}>{foods[2] ? foods[2] : "Dinner"}</Text>
                                     </Pressable>
                                 </View>
                             </Animated.View>
@@ -406,38 +407,6 @@ export default function HomeScreen({ route, navigation }) {
                             </Animated.View>
                         }
                     </View>
-
-
-                    {/* <View style={{ height: 220, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
-                        <Pressable onPress={() => setShowAdvice(true)} style={[ {left: "22%"}, showAdvice ? styles.activeBtnContainer : styles.inactiveBtnContainer]}>
-                            <View style={{ height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
-                                <SweetSFSymbol name="sparkles" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
-                            </View>
-                        </Pressable>
-                        <Pressable onPress={() => setShowAdvice(false)} style={[ {right: "22%"}, showAdvice ? styles.inactiveBtnContainer : styles.activeBtnContainer]}>
-                            <View style={{ height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
-                                <SweetSFSymbol name="chart.xyaxis.line" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
-                            </View>
-                        </Pressable>
-
-                        {showAdvice
-                            ? <Animated.View style={{  zIndex: 11, }} entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)} key="advice">
-                                <Text style={{ ...styles.adviceText, paddingTop: 20 }}>{advice?.intro}</Text>
-                                <Text style={styles.adviceTextRegular}>{advice?.advice}</Text>
-                                <Text style={{ ...styles.adviceText, paddingBottom: 20 }}>{advice?.end}</Text>
-                            </Animated.View>
-                            : <Animated.View style={{  zIndex: 11, }} entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)}  key="weekly">
-                                <Text style={{ ...styles.adviceText, paddingTop: 10, fontSize: 15 }}>Wow! Look at that EPIC streak!</Text>
-                                <View style={{ zIndex: 10000000, }}>
-                                    <WeeklyGraph datapoints={graphData} />
-                                </View>
-                            </Animated.View>
-                        }
-
-                    </View> */}
-
-
-
 
 
                     <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
