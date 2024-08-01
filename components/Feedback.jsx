@@ -62,6 +62,8 @@ export default function Feedback({ navigation }) {
     const [tmrwAdvice3, setTmrwAdvice3] = useState("");
     const [tmrwAdvice3Highlight, settmrwAdvice3Highlight] = useState("");
 
+    const [advice, setAdvice] = useState([])
+
     const [finalNote, setFinalNote] = useState(null);
 
     const continueAdviceStarters = ["Continue eating lots of", "Keep on having lots of"]
@@ -71,17 +73,17 @@ export default function Feedback({ navigation }) {
 
     const finalNotes = ["Don't die.", "Your body deserves nourishment. :)", "Cars don't run on soda, but also they don't run on water either. Eat gasoline.", "Don't stress yourself out! You're doing great.", "Your most important sale in life is to sell yourself to yourself."]
 
-    async function storeAdvice() {
-        await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
-        await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
-        await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
-        await AsyncStorage.setItem('@tmrwAdvice1Highlight', tmrwAdvice1Highlight)
-        await AsyncStorage.setItem('@tmrwAdvice2Highlight', tmrwAdvice2Highlight)
-        await AsyncStorage.setItem('@tmrwAdvice3Highlight', tmrwAdvice3Highlight)
-    }
-    useEffect(() => {
-        storeAdvice();
-    }, [tmrwAdvice1, tmrwAdvice2, tmrwAdvice3, tmrwAdvice1Highlight, tmrwAdvice2Highlight, tmrwAdvice3Highlight])
+    // async function storeAdvice() {
+    //     await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
+    //     await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
+    //     await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
+    //     await AsyncStorage.setItem('@tmrwAdvice1Highlight', tmrwAdvice1Highlight)
+    //     await AsyncStorage.setItem('@tmrwAdvice2Highlight', tmrwAdvice2Highlight)
+    //     await AsyncStorage.setItem('@tmrwAdvice3Highlight', tmrwAdvice3Highlight)
+    // }
+    // useEffect(() => {
+    //     storeAdvice();
+    // }, [tmrwAdvice1, tmrwAdvice2, tmrwAdvice3, tmrwAdvice1Highlight, tmrwAdvice2Highlight, tmrwAdvice3Highlight])
     // useEffect(() => {
     //     storeAdvice()
     // }, tmrwAdvice3)
@@ -93,12 +95,10 @@ export default function Feedback({ navigation }) {
     }
 
     // Set messages in daily recap
-    function setMessages(position, ratios) {
+    async function setMessages(position, ratios) {
         // Final Note
-        let adviceSet = [false, false, false]
         let randInt = getRandomInt(0, finalNotes.length);
         setFinalNote(finalNotes[randInt])
-
 
         // Today Screen: good or bad job
         if (position > 1 && position < 4) {
@@ -110,72 +110,119 @@ export default function Feedback({ navigation }) {
         }
 
         // Tomorrow Screen: 3 pieces of advice
-        console.log("ALL Ratios: " + ratios);
+        console.log("ALL Ratios: " + JSON.stringify(ratios));
 
-        //overall amount
+        let overallAdvice = null;
+        let proteinAdvice = null;
+        let carbsAdvice = null;
+        let fatsAdvice = null;
+
+        let adviceInfo = {more: [], less: []}
+
+        // Overall amount
         if (ratios.overallScore < 0.75) {
-            setTmrwAdvice1("Consider eating")
-            settmrwAdvice1Highlight("more")
-            adviceSet[0] = true
+            overallAdvice = {text: "In general, consider eating", highlight: "more"}
+            // adviceInfo.more.push("overall")
         } else if (ratios.overallScore > 1.25) {
-            setTmrwAdvice1("Consider eating")
-            settmrwAdvice1Highlight("less")
-            adviceSet[0] = true
+            overallAdvice = {text: "In general, consider eating", highlight: "less"}
+            // adviceInfo.less.push("overall")
         }
-        //protein
+        // Protein
         if (ratios.proteinCalorieRatio < 0.1) {
-            if (!adviceSet[0]) {
-                setTmrwAdvice1("Try eating some more")
-                settmrwAdvice1Highlight("protein")
-            } else {
-                setTmrwAdvice2("Try eating some more")
-                settmrwAdvice2Highlight("protein")
-            }
-            adviceSet[1] = true
-
+            let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+            proteinAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "protein"}
+            adviceInfo.more.push("protein")
+            changeMoreAdviceStarters.splice(randInt, randInt);
         } else if (ratios.proteinCalorieRatio > 0.35) {
-            if (!adviceSet[0]) {
-                setTmrwAdvice1("Try eating less")
-                settmrwAdvice1Highlight("protein")
-            } else {
-                setTmrwAdvice2("Try eating less")
-                settmrwAdvice2Highlight("protein")
-            }
-            adviceSet[1] = true
+            let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+            proteinAdvice = {text: changeLessAdviceStarters[randInt], highlight: "protein"}
+            adviceInfo.less.push("protein")
+            changeLessAdviceStarters.splice(randInt, randInt);
         }
-        //carbs
+        // Carbs
         if (ratios.carbCalorieRatio < 0.45) {
-            if (!adviceSet[1] && !adviceSet[0]) {
-                setTmrwAdvice1("Consider eating more")
-                settmrwAdvice1Highlight("carbs")
-            } else if (!adviceSet[1]) {
-                setTmrwAdvice2("Consider eating more")
-                settmrwAdvice2Highlight("carbs")
-            } else {
-                setTmrwAdvice3("Consider eating more")
-                settmrwAdvice3Highlight("carbs")
-            }
+            let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+            carbsAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "carbs"}
+            adviceInfo.more.push("carbs")
+            changeMoreAdviceStarters.splice(randInt, randInt);
 
         } else if (ratios.proteinCalorieRatio > 0.65) {
-            if (!adviceSet[1] && !adviceSet[0]) {
-                setTmrwAdvice1("Consider eating less")
-                settmrwAdvice1Highlight("carbs")
-            } else if (!adviceSet[1]) {
-                setTmrwAdvice2("Consider eating less")
-                settmrwAdvice2Highlight("carbs")
-            } else {
-                setTmrwAdvice3("Consider eating less")
-                settmrwAdvice3Highlight("carbs")
-            }
+            let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+            carbsAdvice = {text: changeLessAdviceStarters[randInt], highlight: "carbs"}
+            adviceInfo.less.push("carbs")
+            changeLessAdviceStarters.splice(randInt, randInt);
         }
-        //fats
+        // Fats
         if (ratios.fatCalorieRatio < 0.2) {
-            setTmrwAdvice3("Consider eating some more")
-            settmrwAdvice3Highlight("healthy fats")
+            let randInt = getRandomInt(0, changeMoreAdviceStarters.length)
+            fatsAdvice = {text: changeMoreAdviceStarters[randInt], highlight: "healthy fats"}
+            adviceInfo.more.push("healthy fats")
+            changeMoreAdviceStarters.splice(randInt, randInt);
         } else if (ratios.fatCalorieRatio > 0.35) {
-            setTmrwAdvice3("Try eating less")
-            settmrwAdvice3Highlight("fats")
+            let randInt = getRandomInt(0, changeLessAdviceStarters.length)
+            fatsAdvice = {text: changeLessAdviceStarters[randInt], highlight: "fats"}
+            adviceInfo.less.push("fats")
+            changeLessAdviceStarters.splice(randInt, randInt);
         }
+
+        // Compile advice
+        setAdvice([overallAdvice, proteinAdvice, carbsAdvice, fatsAdvice])
+
+        // set advice message and store advice -> change to firebase!
+        console.log(advice)
+        console.log("advice")
+
+
+        // Introduction
+        const adviceStarters = [`Hey, ${auth.currentUser.displayName}!`, `How's it hanging, ${auth.currentUser.displayName}?`, `Sup, ${auth.currentUser.displayName}!`, `Don't forget, ${auth.currentUser.displayName}!`]        
+        let randIntAdvice = getRandomInt(0, adviceStarters.length)
+        // blurb = blurb + adviceStarters[randIntAdvice]
+
+
+        // Advice
+        let blurb = ""
+        const moreAdviceStarters = ["Today, eat lots of"]        
+        if (adviceInfo.more.length) {
+            let randIntMoreAdvice  = getRandomInt(0, moreAdviceStarters.length);
+            if (adviceInfo.more.length == 3) {
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}, ${adviceInfo.more[1]}, and ${adviceInfo.more[2]}. `
+            } else if (adviceInfo.more.length == 2) {
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]} and ${adviceInfo.more[1]}. `
+            } else if (adviceInfo.more.length == 1) {
+                blurb = moreAdviceStarters[randIntMoreAdvice] + " " + `${adviceInfo.more[0]}. `
+            } 
+        }
+
+        const secondStarters = ["Also", "In addition"]
+        const lessAdviceStarters = ["try to eat less"]
+
+        let randIntSecondAdvice = getRandomInt(0, secondStarters.length)
+        if (adviceInfo.less.length) {
+            // Add in addition only when something precedes it
+            if (adviceInfo.more.length)
+                blurb = blurb + secondStarters[randIntSecondAdvice] + ", "
+
+            let randIntLessAdvice = getRandomInt(0, lessAdviceStarters.length);
+
+            if (adviceInfo.less.length == 3) {
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}, ${adviceInfo.less[1]}, and ${adviceInfo.less[2]}.`
+            } else if (adviceInfo.less.length == 2) {
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]} and ${adviceInfo.less[1]}.`
+            } else if (adviceInfo.less.length == 1) {
+                blurb = blurb + lessAdviceStarters[randIntLessAdvice] + " " + `${adviceInfo.less[0]}.`
+            } 
+
+        }
+
+        
+        // Ending advice
+        const endings = ["You got this!", "No sweat!", "Have a tasty meal!"]
+        let randIntEndingAdvice = getRandomInt(0, endings.length);
+
+
+
+        console.log(blurb)
+        await AsyncStorage.setItem("@adviceBlurb", JSON.stringify({intro: adviceStarters[randIntAdvice], advice: blurb, end: endings[randIntEndingAdvice]}))
 
 
         // Guaranteed "change" advice
@@ -266,7 +313,7 @@ export default function Feedback({ navigation }) {
             }
             // console.log(ref(database))
             console.log(allScores)
-            console.log("sup")
+            // console.log("sup")
             let parsedScores = allScores
             // let tempScore = [];
 
@@ -307,6 +354,7 @@ export default function Feedback({ navigation }) {
         let personalMetrics;
         if (snapshot.exists()) {
             personalMetrics = snapshot.val().profile;
+            console.log(personalMetrics)
         } else {
             console.log("No data available");
         }
@@ -378,7 +426,7 @@ export default function Feedback({ navigation }) {
         // console.log("Total Error: " + totalError)
 
 
-        // // Calculate position of point on WeeklyGraph
+        // Calculate position of point on WeeklyGraph
         let totalError = Math.abs(1 - ratios.overallScore)
         // let temp = 0.8;
         // let totalError = Math.abs(1 - temp)
@@ -390,16 +438,13 @@ export default function Feedback({ navigation }) {
                 position -= ((totalError / totalLeeway) * 1.5)
         } else {
             if (ratios.overallScore > 1.25)
-                position = 4
+                position = 5
             else
-                position = 1
+                position = 0
         }
 
         return [position, ratios]
     }
-
-
-
 
 
 
@@ -449,43 +494,6 @@ export default function Feedback({ navigation }) {
             </SafeAreaView>
         );
 
-    // if (page == 1)
-    //     return (
-    //         <SafeAreaView style={{ flex: 1, backgroundColor: "#130630", }}>
-    //             <View style={styles.container}>
-    //                 <View style={styles.titleContainer}>
-    //                     <Text style={styles.title}>Daily Recap</Text>
-    //                     <View style={{ justifyContent: 'center', alignItems: "center", }}>
-    //                         <Svg height={10} width={75}>
-    //                             <Path
-    //                                 d="M1.01929 4.3045C3.45133 0.413228 5.88338 0.413228 8.31543 4.3045C10.7475 8.19578 13.1795 8.19578 15.6116 4.3045C18.0436 0.413228 20.4757 0.413228 22.9077 4.3045C25.3398 8.19578 27.7718 8.19578 30.2039 4.3045C32.6359 0.413228 35.068 0.413228 37.5 4.3045C39.932 8.19578 42.3641 8.19578 44.7961 4.3045C47.2282 0.413228 49.6602 0.413228 52.0923 4.3045C54.5243 8.19578 56.9564 8.19578 59.3884 4.3045C61.8205 0.413228 64.2525 0.413228 66.6846 4.3045C69.1166 8.19578 71.5487 8.19578 73.9807 4.3045"
-    //                                 stroke="#FFCC26"
-    //                                 strokeWidth="2"
-    //                                 fill="none"
-    //                                 style={{ justifyContent: "center" }}
-    //                             />
-    //                         </Svg>
-    //                     </View>
-    //                 </View>
-    //                 <Animated.View key={"page1"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
-    //                     <Text style={styles.blurbText}>
-    //                         <Text style={styles.blurbTextHighlighted}>Today, </Text>
-    //                         you focused on a
-    //                         <Text style={styles.blurbTextHighlighted}> balanced lunch, </Text>
-    //                         maintained
-    //                         <Text style={styles.blurbTextHighlighted}> high energy levels </Text>
-    //                         throughout the day, and ate all
-    //                         <Text style={styles.blurbTextHighlighted}> three meals </Text>
-    //                         -- keep it up!
-    //                     </Text>
-    //                 </Animated.View>
-    //                 <Pressable onPress={() => setPage(page + 1)} style={styles.nextBtn}>
-    //                     <ArrowRight size="32" color="#A29CAF" />
-    //                 </Pressable>
-    //             </View>
-    //         </SafeAreaView>
-    //     );
-
     if (page == 1)
 
         return (
@@ -507,13 +515,13 @@ export default function Feedback({ navigation }) {
                     </View>
                     <Animated.Text key={"page2subtitle"} entering={FadeInDown.duration(duration).delay(delay)} exiting={FadeOutDown.duration(duration)} style={styles.bigSubtitle}>Tomorrow...</Animated.Text>
                     <Animated.View key={"page2"} entering={FadeInDown.duration(duration).delay(delay * 1.5)} exiting={FadeOutDown.duration(duration)} style={styles.feedbackContainer}>
-                        {/* <Text style={styles.blurbText}>Try to eat some<Text style={styles.blurbTextHighlighted}> berries!</Text></Text>
-                        <Text style={styles.blurbText}>Continue eating lots of<Text style={styles.blurbTextHighlighted}> protein!</Text></Text>
-                        <Text style={styles.blurbText}>Consider drinking a glass of<Text style={styles.blurbTextHighlighted}> milk!</Text></Text> */}
-
-                        <Text style={styles.blurbText}>{tmrwAdvice1}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice1Highlight}.</Text></Text>
-                        {tmrwAdvice2 ? <Text style={styles.blurbText}>{tmrwAdvice2}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice2Highlight}.</Text></Text> : null}
-                        {tmrwAdvice3 ? <Text style={styles.blurbText}>{tmrwAdvice3}<Text style={styles.blurbTextHighlighted}> {tmrwAdvice3Highlight}!</Text></Text> : null}
+                        
+                        {advice.map((value, index) => {
+                            if (value)
+                            return (
+                                <Text key={index} style={styles.blurbText}>{value?.text}<Text style={styles.blurbTextHighlighted}> {value?.highlight}.</Text></Text>
+                            )
+                        })}
 
                     </Animated.View>
                     <Pressable onPress={() => setPage(page + 1)} style={styles.nextBtn}>

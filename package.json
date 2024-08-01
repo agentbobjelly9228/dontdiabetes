@@ -55,7 +55,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
-    "@types/react-native": "^0.73.0"
+    "@types/react-native": "^0.73.0",
+    "react-native-svg-transformer": "^1.5.0"
   },
   "private": true
 }

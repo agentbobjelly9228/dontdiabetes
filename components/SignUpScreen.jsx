@@ -15,6 +15,7 @@ import { ref, set, get } from 'firebase/database';
 import * as AppleAuthentication from 'expo-apple-authentication';
 
 
+import google from "../assets/google.png"
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
 import { Apple, ArrowLeft2, Google } from 'iconsax-react-native';
@@ -63,7 +64,7 @@ export default function SignUpScreen({ navigation, route }) {
             webClientId: "9059900724-ujc24i91h8rf7l56l0976ku3m68hki88.apps.googleusercontent.com",
             androidClientId: "9059900724-gbn4pdbecr9m9o5h0qrckjsfnhb31env.apps.googleusercontent.com"
         });
-        console.log("sup")
+        // console.log("sup")
         checkPlayServices();
     }, []);
 
@@ -183,10 +184,6 @@ export default function SignUpScreen({ navigation, route }) {
 
                 {/* <Text style={styles.infoText}>Or continue with</Text> */}
                 <View style={styles.thirdPartyButtonContainer}>
-                    <GoogleSigninButton style={styles.GoogleButton} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={signIn}>
-
-                    </GoogleSigninButton>
-
                     <AppleAuthentication.AppleAuthenticationButton
                         buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
                         buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
@@ -220,6 +217,13 @@ export default function SignUpScreen({ navigation, route }) {
                             }
                         }}
                     />
+                    <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? "#F6F4F1" : "white", width: "100%", height: 50, alignItems: "center", justifyContent: "center", borderRadius: 7, borderWidth: 1, borderColor: "rgba(0,0,0,0.2)" }]}
+                        onPress={signIn}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 5, }}>
+                            <Image source={google} style={{ width: 15, height: 15 }} />
+                            <Text style={{ fontFamily: "SF-Text", fontSize: 17 }}>Sign up with Google</Text>
+                        </View>
+                    </Pressable>
                 </View>
             </View>
 

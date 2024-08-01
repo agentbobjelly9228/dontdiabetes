@@ -12,6 +12,7 @@ import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-goo
 import happylunchguy from "../assets/mascots/yellowGuy.png"
 import onboardingguy from "../assets/mascots/onboardingguy.png"
 import { Apple, ArrowLeft2, Google } from 'iconsax-react-native';
+import google from '../assets/google.png';
 
 const screenWidth = Dimensions.get("screen").width
 const screenHeight = Dimensions.get("screen").height
@@ -128,14 +129,7 @@ export default function LoginScreen({ navigation, route }) {
                     </Pressable>
                 }
 
-
-
-                {/* <Text style={styles.infoText}>Or continue with</Text> */}
-
                 <View style={styles.thirdPartyButtonContainer}>
-                    <GoogleSigninButton style={styles.GoogleButton} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={signInWithGoogle}>
-
-                    </GoogleSigninButton>
                     <AppleAuthentication.AppleAuthenticationButton
                         buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
                         buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
@@ -172,6 +166,13 @@ export default function LoginScreen({ navigation, route }) {
                             }
                         }}
                     />
+                    <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? "#F6F4F1" : "white", width: "100%", height: 50, alignItems: "center", justifyContent: "center", borderRadius: 7, borderWidth: 1, borderColor: "rgba(0,0,0,0.2)" }]}
+                        onPress={signInWithGoogle}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 5, }}>
+                            <Image source={google} style={{ width: 15, height: 15 }} />
+                            <Text style={{ fontFamily: "SF-Text", fontSize: 17 }}>Sign up with Google</Text>
+                        </View>
+                    </Pressable>
                 </View>
             </View>
 
@@ -267,7 +268,8 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         gap: 20,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        width: 300
     },
     iconButton: {
         padding: 10,

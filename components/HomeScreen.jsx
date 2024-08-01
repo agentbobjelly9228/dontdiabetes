@@ -9,6 +9,7 @@ import { ref, set, get, remove } from 'firebase/database';
 import greenGuy from '../assets/mascots/greenGuy.png';
 import yellowGuy from '../assets/mascots/yellowGuy.png';
 import redGuy from '../assets/mascots/redGuy.png';
+import anotherGuy from "../assets/anotherguy.png"
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import Tabs from "./Tabs";
 
@@ -20,6 +21,7 @@ import { Logout } from "iconsax-react-native";
 import homeguy from "../assets/mascots/homeguy.png"
 import { MagicStar } from "iconsax-react-native";
 import SweetSFSymbol from "sweet-sfsymbols";
+import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown, SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from "react-native-reanimated";
 
 
 
@@ -31,9 +33,22 @@ function createNoSettingsAlert() {
         { text: 'OK' },
     ])
 }
-
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
+
+const fetchAllItems = async () => {
+    try {
+        const keys = await AsyncStorage.getAllKeys()
+        const items = await AsyncStorage.multiGet(keys)
+
+        console.log(keys)
+        console.log(items)
+        return items
+
+    } catch (error) {
+        console.log(error, "problemo")
+    }
+}
 
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
@@ -56,6 +71,7 @@ export default function HomeScreen({ route, navigation }) {
     // const [uid, setUID] = useState("");
     const [currentMeal, setCurrentMeal] = useState(0)
     const [name, setName] = useState(null)
+    const [meals, setMeals] = useState([])
 
     // Assumes user has breakfast at 8, lunch at 12, and dinner at 18
     const [preferredMealTimes, setTimes] = useState({ "breakfast": 8, "lunch": 12, "dinner": 18 })
@@ -176,8 +192,8 @@ export default function HomeScreen({ route, navigation }) {
         AsyncStorage.removeItem("@todayMacros")
     }
     function sameDay(day1, day2) {
-        console.log(day1)
-        console.log(day2)
+        // console.log(day1)
+        // console.log(day2)
         if (day1[0] == day2[0] && day1[1] == day2[1] && day1[2] == day2[2]) {
             return true
         }
@@ -185,16 +201,16 @@ export default function HomeScreen({ route, navigation }) {
     }
     async function checkClear() {
         const now = new Date();
-        console.log(now)
+        // console.log(now)
         const lastMealTime = await AsyncStorage.getItem("@lastMealTime")
         const d = new Date(lastMealTime)
-        console.log(now.getDate())
-        console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
+        // console.log(now.getDate())
+        // console.log(sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()]) + "sup")
         if (!sameDay([now.getDate(), now.getMonth(), now.getFullYear()], [d.getDate(), d.getMonth(), d.getFullYear()])) {
             clearData();
         }
     }
-    console.log(emojis)
+    // console.log(emojis)
     // useEffect(() => {
     //     // clearData()
     //     checkClear().then(() => {
@@ -207,7 +223,7 @@ export default function HomeScreen({ route, navigation }) {
         let savedData = await AsyncStorage.getItem('@todayMacros');
 
         let uid = auth.currentUser.uid;
-        console.log(auth.currentUser.uid)
+        // console.log(auth.currentUser.uid)
         getGraphData(uid);
 
         let displayName = auth.currentUser.displayName || await AsyncStorage.getItem("@name")
@@ -215,12 +231,15 @@ export default function HomeScreen({ route, navigation }) {
 
         let macros = savedData ? JSON.parse(savedData) : null;
 
+        console.log(macros)
+
         // Set title, subtitle, mascot, and theme
         let hour = dayjs().hour();
         let meals = []
 
         if (macros)
             meals = Object.keys(macros?.foods)
+        setMeals(meals)
         try {
             let temp = []
             temp.push(macros?.foods["breakfast"]?.food)
@@ -228,13 +247,13 @@ export default function HomeScreen({ route, navigation }) {
             temp.push(macros?.foods["dinner"]?.food)
             setFoods(temp)
             setImages(macros?.images)
-            console.log(macros?.images + "hi")
+            // console.log(macros?.images + "hi")
         } catch (e) {
             console.log(e)
         }
 
 
-        console.log(meals)
+        // console.log(meals)
         setMessages(hour, meals)
         setEmojis(macros?.emojis);
 
@@ -261,141 +280,162 @@ export default function HomeScreen({ route, navigation }) {
 
     );
     async function getFeedback() {
-        const advice1 = await AsyncStorage.getItem("@tmrwAdvice1")
-        const advice2 = await AsyncStorage.getItem("@tmrwAdvice2")
-        const advice3 = await AsyncStorage.getItem("@tmrwAdvice3")
-        const advice1Highlight = await AsyncStorage.getItem("@tmrwAdvice1Highlight")
-        const advice2Highlight = await AsyncStorage.getItem("@tmrwAdvice2Highlight")
-        const advice3Highlight = await AsyncStorage.getItem("@tmrwAdvice3Highlight")
-        var temp = "";
-        if (advice1 && advice1Highlight) {
-            temp += advice1 + " " + advice1Highlight + ". "
-        }
-        if (advice2 && advice2Highlight) {
-            temp += advice2 + " " + advice2Highlight + ". "
-        }
-        if (advice3 && advice3Highlight) {
-            temp += advice3 + " " + advice3Highlight + ". "
-        }
-        console.log(temp + " whadup there")
-        setAdvice(temp);
-        console.log(advice1 + advice1Highlight)
-        console.log(advice2 + advice2Highlight)
-        console.log(advice3 + advice3Highlight)
+        let adviceBlurb = await AsyncStorage.getItem("@adviceBlurb");
+        adviceBlurb = adviceBlurb ? JSON.parse(adviceBlurb) : { "advice": "You don't have anything here yet." }
+
+        setAdvice(adviceBlurb);
     }
     useEffect(() => {
         getFeedback()
-    })
-
-    const handleSheetChanges = React.useCallback((index) => {
-        console.log('handleSheetChanges', index);
-    }, []);
-
-    const bottomSheetRef = React.useRef(null);
-
+        // fetchAllItems()
+    }, [])
 
     const [fontsLoaded] = useFonts({
         "SF-Compact": require("../assets/fonts/SF-Compact-Text-Medium.otf"),
         "SF-Rounded": require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
+        "SF-Rounded-Medium": require("../assets/fonts/SF-Pro-Rounded-Medium.otf"),
         "SF-Text": require("../assets/fonts/SF-Pro-Text-Regular.otf"),
+        "SF-Pro-Medium": require("../assets/fonts/SF-Pro-Text-Medium.otf"),
         "SpaceGrotesk-Regular": require("../assets/fonts/SpaceGrotesk-Regular.ttf"),
         "SpaceGrotesk-Bold": require("../assets/fonts/SpaceGrotesk-Bold.ttf"),
     });
-    // console.log(screenWidth)
-    // console.log(screenHeight)
-    // 393
-    // 852
+
+    const [showDaily, setShowDaily] = useState(true)
+
     if (!loading && name)
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
-                <Image source={homeguy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.25, }} />
-                <View style={{ paddingTop: screenHeight * 0.3, justifyContent: "center", width: "100%", }}>
-                    <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, paddingBottom: 30 }}>
-                        {/* <Text style={styles.blurb}>Hi {name},</Text> */}
+                <Image source={anotherGuy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.05,  }} />
+                {/* <Image source={homeguy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.20, transform: [{ rotate: "10deg" }] }} /> */}
+
+                <View style={{ marginTop: screenHeight * 0.33, justifyContent: "center", width: "100%", gap: 10, }}>
+                    <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, marginBottom: 0 }}>
                         <Text style={styles.title}>{title}</Text>
                     </View>
+                    <Text style={{ ...styles.adviceText }}>{advice?.intro} {advice?.advice} {advice?.end}</Text>
 
-                    <View style={{ height: 300, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, marginTop: 20, marginBottom: 20, borderWidth: 2, borderColor: "#b0b0b0" }}>
+                    <View style={{ padding: 15, height: 300, backgroundColor: "#FFF8DA", alignItems: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 1, borderColor: "#FFE292", }}>
+                        <Pressable style={{ ...styles.changeBtn, position: "absolute", zIndex: 100, top: 15, right: 15 }} onPress={() => setShowDaily(!showDaily)}>
+                            {showDaily
+                                ? <Animated.View key="chart-icon" entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)}>
+                                    <SweetSFSymbol name="chart.xyaxis.line" size={18} />
+                                </Animated.View>
+                                : <Animated.View key="photo-icon" entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)}>
+                                    <SweetSFSymbol name="photo" size={18} />
+                                </Animated.View>
+                            }
+                        </Pressable>
+                        {showDaily
+                            ?
+                            <Animated.View entering={FadeInDown.duration(200).delay(200).withInitialValues({ transform: [{ translateY: 20 }] })} exiting={FadeOutDown.duration(200).withInitialValues({ transform: [{ translateY: 0 }] })} key="daily" style={{ backgroundColor: "#FFF8DA", alignItems: "center", width: "100%", alignSelf: "center", }}>
+                                <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center", marginTop: 5 }}>
+                                    <Text style={styles.sectionTitle}>Today</Text>
+                                </View>
+                                <Text style={{ alignSelf: "left", fontSize: 16, width: "80%" }}>Here's your meals. Scruptious!</Text>
 
-                        <View style={{ position: "absolute", zIndex: 10, top: -35, backgroundColor: "#FFF8DA", height: 70, width: 70, borderRadius: 35, alignItems: "center", justifyContent: "center", borderWidth: 2, borderTopColor: "#b0b0b0", borderRightColor: "#b0b0b0", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
-                            {/* <MagicStar size={40} variant="Bold" color="#FFC53A" /> */}
-                            <SweetSFSymbol name="sparkles" size={32} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }] }} />
-                        </View>
-                        <Text style={{
-                            fontSize: 17,
-                            position: "absolute",
-                            zIndex: 10,
-                            fontFamily: "SF-Pro",
-                            textAlign: "center",
-                            alignSelf: "center",
-                            top: 25
-                        }}>{advice}</Text>
-                        <View style={{ position: "absolute", bottom: 10, margin: 0 }}>
-                            <WeeklyGraph datapoints={graphData} />
-                        </View>
+                                {/* FOOD POLAROIDS */}
+                                <View style={{ flexDirection: "row", marginTop: 35, }}>
+                                    <Pressable onPress={() => meals.includes("breakfast") || navigation.navigate('Camera', { mealKey: "breakfast", alertBadPhoto: false })} style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
+                                        <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
+                                            {images && images.breakfast && images.breakfast !== "none" ?
+                                                <Image
+                                                    source={{ uri: images.breakfast }}
+                                                    style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
+                                                />
+
+                                                : emojis && emojis.breakfast ?
+                                                    <Text style={{ fontSize: 62 }}>{emojis.breakfast}</Text>
+                                                    :
+                                                    <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} />
+                                            }
+                                        </View>
+                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
+                                    </Pressable>
+                                    <Pressable onPress={() => meals.includes("lunch") || navigation.navigate('Camera', { mealKey: "lunch", alertBadPhoto: false })} style={{ margin: -20, width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 0 }}>
+                                        <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
+                                            {images && images.lunch && images.lunch != "none" ?
+                                                <Image
+                                                    source={{ uri: images.lunch }}
+                                                    style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10 }}
+                                                />
+                                                :
+                                                emojis && emojis.lunch ?
+                                                    <Text style={{ fontSize: 62 }}>{emojis.lunch}</Text>
+                                                    :
+                                                    <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} />
+                                            }
+                                        </View>
+
+                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[1] ? foods[1] : "Lunch"}</Text>
+                                    </Pressable>
+                                    <Pressable onPress={() => meals.includes("dinner") || navigation.navigate('Camera', { mealKey: "dinner", alertBadPhoto: false })} style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
+                                        <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb", justifyContent: "center", alignItems: "center" }}>
+                                            {images && images.dinner && images.dinner != "none" ?
+                                                <Image
+                                                    source={{ uri: images.dinner }}
+                                                    style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
+                                                />
+                                                : emojis && emojis.dinner ?
+                                                    <Text style={{ fontSize: 62 }}>{emojis.dinner}</Text>
+                                                    :
+                                                    <SweetSFSymbol name="moon" size={62} colors={["#b0b0b0"]} />
+                                            }
+                                        </View>
+                                        <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
+                                    </Pressable>
+                                </View>
+                            </Animated.View>
+                            :
+
+                            <Animated.View key="weekly" entering={FadeInDown.duration(200).delay(200).withInitialValues({ transform: [{ translateY: 10 }] })} exiting={FadeOutDown.duration(200).withInitialValues({ transform: [{ translateY: 0 }] })} style={{ backgroundColor: "#FFF8DA", alignItems: "center", width: "100%", alignSelf: "center", }}>
+                                <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center", marginTop: 5 }}>
+                                    <Text style={styles.sectionTitle}>Weekly Review</Text>
+                                </View>
+                                <Text style={{ alignSelf: "left", fontSize: 16, width: "80%" }}>Wow! Look at that super duper epic streak you have going on!</Text>
+
+                                <View style={{ zIndex: 10000000, marginTop: 15 }}>
+                                    <WeeklyGraph datapoints={graphData} />
+                                </View>
+
+                            </Animated.View>
+                        }
                     </View>
 
-                    <View style={{ height: 175, marginBottom: 20, flexDirection: "row", marginTop: 20 }}>
-                        {/* <ProgressBar
-                            stage={currentMeal}
-                            color={themeColor}
-                            emojis={emojis}
-                        /> */}
-                        <View style={{ width: screenWidth / 3, height: screenHeight / 5, borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '-10deg' }] }}>
-                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images.breakfast && images.breakfast !== "none" ?
-                                    <Image
-                                        source={{ uri: images.breakfast }}
-                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
-                                    />
 
-                                    : emojis && emojis.breakfast ?
-                                        <Text style={{ fontSize: 100 }}>{emojis.breakfast}</Text>
-                                        :
-                                        <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
-                                }
+                    {/* <View style={{ height: 220, alignItems: "center", backgroundColor: "#FFF8DA", alignItems: "center", justifyContent: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 2, borderColor: "#FFE292", }}>
+                        <Pressable onPress={() => setShowAdvice(true)} style={[ {left: "22%"}, showAdvice ? styles.activeBtnContainer : styles.inactiveBtnContainer]}>
+                            <View style={{ height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
+                                <SweetSFSymbol name="sparkles" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
                             </View>
-                            {/* Fix the camera with emoji bugg. Image lunch places in breakfast because it is list not json */}
-                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
-                        </View>
-                        <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", bottom: 20 }}>
-                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images.lunch && images.lunch != "none" ?
-                                    <Image
-                                        source={{ uri: images.lunch }}
-                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10 }}
-                                    />
-                                    :
-                                    emojis && emojis.lunch ?
-                                        <Text style={{ fontSize: 100 }}>{emojis.lunch}</Text>
-                                        :
-                                        <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
-                                }
+                        </Pressable>
+                        <Pressable onPress={() => setShowAdvice(false)} style={[ {right: "22%"}, showAdvice ? styles.inactiveBtnContainer : styles.activeBtnContainer]}>
+                            <View style={{ height: 65, width: 65, borderRadius: 300, justifyContent: "center", alignItems: "center", borderWidth: 2, borderTopColor: "#FFE292", borderRightColor: "#FFE292", borderBottomColor: "#FFF8DA", borderLeftColor: "#FFF8DA", transform: [{ rotate: '-45deg' }] }}>
+                                <SweetSFSymbol name="chart.xyaxis.line" size={18} colors={["#FFC53A"]} style={{ transform: [{ rotate: '45deg' }], marginBottom: 20, marginLeft: 20 }} />
                             </View>
+                        </Pressable>
 
-                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[1] ? foods[1] : "Lunch"}</Text>
-                        </View>
-                        <View style={{ width: (screenWidth / 3), height: (screenHeight / 5), borderColor: "grey", shadowColor: "black", shadowOffset: { "width": 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 14, backgroundColor: "#FFFEF8", transform: [{ rotate: '10deg' }] }}>
-                            <View style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, margin: 5, borderWidth: 2, borderRadius: 5, opacity: 1, borderColor: "#ebebeb" }}>
-                                {images && images.dinner && images.dinner != "none" ?
-                                    <Image
-                                        source={{ uri: images.dinner }}
-                                        style={{ width: (screenWidth / 3) - 10, height: (screenWidth / 3) - 10, borderRadius: 5 }}
-                                    />
-                                    : emojis && emojis.dinner ?
-                                        <Text style={{ fontSize: 100 }}>{emojis.dinner}</Text>
-                                        :
-                                        <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} style={{ alignSelf: "center", top: 20 }} />
-                                }
-                            </View>
+                        {showAdvice
+                            ? <Animated.View style={{  zIndex: 11, }} entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)} key="advice">
+                                <Text style={{ ...styles.adviceText, paddingTop: 20 }}>{advice?.intro}</Text>
+                                <Text style={styles.adviceTextRegular}>{advice?.advice}</Text>
+                                <Text style={{ ...styles.adviceText, paddingBottom: 20 }}>{advice?.end}</Text>
+                            </Animated.View>
+                            : <Animated.View style={{  zIndex: 11, }} entering={FadeIn.duration(200).delay(200)} exiting={FadeOut.duration(200)}  key="weekly">
+                                <Text style={{ ...styles.adviceText, paddingTop: 10, fontSize: 15 }}>Wow! Look at that EPIC streak!</Text>
+                                <View style={{ zIndex: 10000000, }}>
+                                    <WeeklyGraph datapoints={graphData} />
+                                </View>
+                            </Animated.View>
+                        }
 
-                            <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
-                        </View>
-                    </View>
-                    {/* #FFF8DA */}
+                    </View> */}
+
+
+
+
 
                     {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
-                    <View style={{ flexDirection: "row", paddingBottom: 70, gap: 15, alignSelf: "center" }}>
+                    <View style={{ flexDirection: "row", paddingBottom: 50, gap: 15, alignSelf: "center", marginTop: 50 }}>
                         <Pressable style={styles.settingsButton} onPress={() => {
                             // deleteAppleAccount()
                             clearHistory()
@@ -415,13 +455,65 @@ export default function HomeScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+    changeBtn: {
+        backgroundColor: "white",
+        borderRadius: 12,
+        padding: 8,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
+    sectionTitle: {
+        fontFamily: "SF-Rounded",
+        fontSize: 20,
+        fontWeight: "bold",
+        // marginLeft: "5%",
+        textAlign: "center",
+        marginBottom: 5
+    },
+    activeBtnContainer: {
+        position: "absolute",
+        zIndex: 10,
+        top: -33,
+        backgroundColor: "#FFF8DA",
+        height: 65,
+        width: 65,
+        borderRadius: 300,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    inactiveBtnContainer: {
+        zIndex: 10,
+        top: -34,
+        position:
+            "absolute",
+        height: 32,
+        overflow: "hidden",
+        backgroundColor: "#FFFDF3",
+        borderTopLeftRadius: 300,
+        borderTopRightRadius: 300,
+    },
+    adviceText: {
+        fontSize: 18,
+        zIndex: 10,
+        fontFamily: "SF-Pro",
+        textAlign: "center",
+        alignSelf: "center",
+        width: "80%",
+        paddingBottom: 10
+    },
     title: {
         fontFamily: "SF-Rounded",
-        fontSize: 45,
+        fontSize: 40,
         fontWeight: "bold",
-        marginBottom: 15,
         textAlign: "center",
-        alignSelf: "center"
+        alignSelf: "center",
     },
     blurb: {
         fontSize: 20,
