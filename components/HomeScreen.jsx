@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
 import DashedLine from 'react-native-dashed-line';
 import { FIREBASE_DATABASE } from '../FirebaseConfig';
-import { ref, set, get, remove } from 'firebase/database';
+import { ref, set, get, remove, onValue } from 'firebase/database';
 import greenGuy from '../assets/mascots/greenGuy.png';
 import yellowGuy from '../assets/mascots/yellowGuy.png';
 import redGuy from '../assets/mascots/redGuy.png';
@@ -24,8 +24,6 @@ import SweetSFSymbol from "sweet-sfsymbols";
 import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown, SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from "react-native-reanimated";
 
 
-
-
 const dayjs = require('dayjs')
 
 function createNoSettingsAlert() {
@@ -35,20 +33,6 @@ function createNoSettingsAlert() {
 }
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
-
-const fetchAllItems = async () => {
-    try {
-        const keys = await AsyncStorage.getAllKeys()
-        const items = await AsyncStorage.multiGet(keys)
-
-        console.log(keys)
-        console.log(items)
-        return items
-
-    } catch (error) {
-        console.log(error, "problemo")
-    }
-}
 
 export default function HomeScreen({ route, navigation }) {
     // AsyncStorage.clear()
@@ -63,12 +47,12 @@ export default function HomeScreen({ route, navigation }) {
     const [graphData, setGraphData] = useState([]);
     const [mascot, setMascot] = useState("");
     const [advice, setAdvice] = useState("");
+    const [weeklyReviewComment, setWeeklyReviewComment] = useState("");
     const [themeColor, setTheme] = useState("");
     const [images, setImages] = useState([]);
     const [foods, setFoods] = useState([])
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("");
-    // const [uid, setUID] = useState("");
     const [currentMeal, setCurrentMeal] = useState(0)
     const [name, setName] = useState(null)
     const [meals, setMeals] = useState([])
@@ -280,14 +264,36 @@ export default function HomeScreen({ route, navigation }) {
 
     );
     async function getFeedback() {
-        let adviceBlurb = await AsyncStorage.getItem("@adviceBlurb");
-        adviceBlurb = adviceBlurb ? JSON.parse(adviceBlurb) : { "advice": "You don't have anything here yet." }
+        // let adviceBlurb = await AsyncStorage.getItem("@adviceBlurb");
+        // let snapshot = await get(ref(database, auth.currentUser.uid))
+        // if (snapshot.exists() && snapshot.val().currentAdvice) {
+        //     setAdvice(snapshot.val().currentAdvice);
+        // } else {
+        //     setAdvice("Welcome to Nutrivision! Get started by scanning your first meal.")
+        // }
 
-        setAdvice(adviceBlurb);
+        // if (snapshot.exists() && snapshot.val().weeklyReviewComment) {
+        //     setWeeklyReviewComment(snapshot.val().weeklyReviewComment);
+        // } else {
+        //     setWeeklyReviewComment("Welcome to Nutrivision! Get started by scanning your first meal.")
+        // }
+
+        let userRef = ref(database, auth.currentUser.uid);
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            setAdvice(data?.currentAdvice);
+            setWeeklyReviewComment(data?.weeklyReviewComment);
+
+            if (!data?.currentAdvice)
+                setAdvice("Welcome to Nutrivision! Get started by scanning your first meal.")
+            if (!data?.weeklyReviewComment)
+                setWeeklyReviewComment("Here, you'll view your progress over time. Come back later!")
+        })
+
     }
+
     useEffect(() => {
         getFeedback()
-        // fetchAllItems()
     }, [])
 
     const [fontsLoaded] = useFonts({
@@ -305,14 +311,14 @@ export default function HomeScreen({ route, navigation }) {
     if (!loading && name)
         return (
             <ScrollView style={{ flex: 1, backgroundColor: "#FFFBEE" }}>
-                <Image source={anotherGuy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.05,  }} />
+                <Image source={anotherGuy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.06, }} />
                 {/* <Image source={homeguy} style={{ alignSelf: "center", height: screenHeight * 0.8, resizeMode: "contain", position: "absolute", top: screenHeight * -0.20, transform: [{ rotate: "10deg" }] }} /> */}
 
                 <View style={{ marginTop: screenHeight * 0.33, justifyContent: "center", width: "100%", gap: 10, }}>
                     <View style={{ alignItems: "left", marginLeft: 20, marginRight: 20, marginBottom: 0 }}>
                         <Text style={styles.title}>{title}</Text>
                     </View>
-                    <Text style={{ ...styles.adviceText }}>{advice?.intro} {advice?.advice} {advice?.end}</Text>
+                    <Text style={{ ...styles.adviceText }}>{advice}</Text>
 
                     <View style={{ padding: 15, height: 300, backgroundColor: "#FFF8DA", alignItems: "center", width: "90%", alignSelf: "center", borderRadius: 15, borderWidth: 1, borderColor: "#FFE292", }}>
                         <Pressable style={{ ...styles.changeBtn, position: "absolute", zIndex: 100, top: 15, right: 15 }} onPress={() => setShowDaily(!showDaily)}>
@@ -346,7 +352,7 @@ export default function HomeScreen({ route, navigation }) {
                                                 : emojis && emojis.breakfast ?
                                                     <Text style={{ fontSize: 62 }}>{emojis.breakfast}</Text>
                                                     :
-                                                    <SweetSFSymbol name="mug" size={62} colors={["#b0b0b0"]} />
+                                                    <SweetSFSymbol name="plus" size={62} colors={["#b0b0b0"]} />
                                             }
                                         </View>
                                         <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[0] ? foods[0] : "Breakfast"}</Text>
@@ -362,7 +368,7 @@ export default function HomeScreen({ route, navigation }) {
                                                 emojis && emojis.lunch ?
                                                     <Text style={{ fontSize: 62 }}>{emojis.lunch}</Text>
                                                     :
-                                                    <SweetSFSymbol name="sun.max" size={62} colors={["#b0b0b0"]} />
+                                                    <SweetSFSymbol name="plus" size={62} colors={["#b0b0b0"]} />
                                             }
                                         </View>
 
@@ -378,7 +384,7 @@ export default function HomeScreen({ route, navigation }) {
                                                 : emojis && emojis.dinner ?
                                                     <Text style={{ fontSize: 62 }}>{emojis.dinner}</Text>
                                                     :
-                                                    <SweetSFSymbol name="moon" size={62} colors={["#b0b0b0"]} />
+                                                    <SweetSFSymbol name="plus" size={62} colors={["#b0b0b0"]} />
                                             }
                                         </View>
                                         <Text style={{ alignSelf: "center", fontFamily: "SpaceGrotesk-Bold", }}>{foods[2] ? foods[2] : "Dinner"}</Text>
@@ -391,7 +397,7 @@ export default function HomeScreen({ route, navigation }) {
                                 <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center", marginTop: 5 }}>
                                     <Text style={styles.sectionTitle}>Weekly Review</Text>
                                 </View>
-                                <Text style={{ alignSelf: "left", fontSize: 16, width: "80%" }}>Wow! Look at that super duper epic streak you have going on!</Text>
+                                <Text style={{ alignSelf: "left", fontSize: 16, width: "80%" }}>{weeklyReviewComment}</Text>
 
                                 <View style={{ zIndex: 10000000, marginTop: 15 }}>
                                     <WeeklyGraph datapoints={graphData} />
@@ -434,7 +440,7 @@ export default function HomeScreen({ route, navigation }) {
 
 
 
-                    {/* <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable> */}
+                    <Pressable onPress={() => navigation.navigate("Feedback")}><Text>Feedback</Text></Pressable>
                     <View style={{ flexDirection: "row", paddingBottom: 50, gap: 15, alignSelf: "center", marginTop: 50 }}>
                         <Pressable style={styles.settingsButton} onPress={() => {
                             // deleteAppleAccount()

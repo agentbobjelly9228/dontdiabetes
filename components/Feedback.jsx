@@ -73,20 +73,6 @@ export default function Feedback({ navigation }) {
 
     const finalNotes = ["Don't die.", "Your body deserves nourishment. :)", "Cars don't run on soda, but also they don't run on water either. Eat gasoline.", "Don't stress yourself out! You're doing great.", "Your most important sale in life is to sell yourself to yourself."]
 
-    // async function storeAdvice() {
-    //     await AsyncStorage.setItem('@tmrwAdvice1', tmrwAdvice1)
-    //     await AsyncStorage.setItem('@tmrwAdvice2', tmrwAdvice2)
-    //     await AsyncStorage.setItem('@tmrwAdvice3', tmrwAdvice3)
-    //     await AsyncStorage.setItem('@tmrwAdvice1Highlight', tmrwAdvice1Highlight)
-    //     await AsyncStorage.setItem('@tmrwAdvice2Highlight', tmrwAdvice2Highlight)
-    //     await AsyncStorage.setItem('@tmrwAdvice3Highlight', tmrwAdvice3Highlight)
-    // }
-    // useEffect(() => {
-    //     storeAdvice();
-    // }, [tmrwAdvice1, tmrwAdvice2, tmrwAdvice3, tmrwAdvice1Highlight, tmrwAdvice2Highlight, tmrwAdvice3Highlight])
-    // useEffect(() => {
-    //     storeAdvice()
-    // }, tmrwAdvice3)
     // From mozilla
     function getRandomInt(min, max) {
         const minCeiled = Math.ceil(min);
@@ -222,7 +208,12 @@ export default function Feedback({ navigation }) {
 
 
         console.log(blurb)
-        await AsyncStorage.setItem("@adviceBlurb", JSON.stringify({intro: adviceStarters[randIntAdvice], advice: blurb, end: endings[randIntEndingAdvice]}))
+        const consolidatedAdvice = [adviceStarters[randIntAdvice], blurb.trim(), endings[randIntEndingAdvice]].join(" ")
+        console.log(consolidatedAdvice)
+        // await AsyncStorage.setItem("@adviceBlurb", JSON.stringify({intro: adviceStarters[randIntAdvice], advice: blurb, end: endings[randIntEndingAdvice]}))
+
+        update(ref(database, auth.currentUser.uid), { currentAdvice: consolidatedAdvice })
+
 
 
         // Guaranteed "change" advice
