@@ -75,7 +75,10 @@ export default function SignUpScreen({ navigation, route }) {
             const googleCredential = GoogleAuthProvider.credential(userInfo.idToken);
 
             // Sign-in the user with the credential
-            return signInWithCredential(auth, googleCredential);
+            signInWithCredential(auth, googleCredential).then(() => {
+                createProfile()
+            });
+            console.log("wasuup")
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 console.log('User cancelled the login flow');
@@ -205,6 +208,7 @@ export default function SignUpScreen({ navigation, route }) {
                                         rawNonce: appleCredential.authorizationCode
                                     })
                                     await signInWithCredential(auth, credential);
+                                    await createProfile();
                                 }
                             } catch (e) {
                                 if (e.code === 'ERR_REQUEST_CANCELED') {
